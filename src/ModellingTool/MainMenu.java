@@ -9,8 +9,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.util.Properties;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -19,11 +22,10 @@ import java.util.Vector;
 public class MainMenu extends JPanel implements ActionListener {
 
 
-		public static RunParameters params;
-//	public static Properties params;
+	public static RunParameters params;
 
 	static private final String newline = "\n";
-	private JTextArea crystallographyModelingToolV0TextArea;
+	private JTextPane crystallographyModelingToolV0TextPane;
 	private JButton SCWRLExecutableButton;
 	private JButton SFCheckExecutableButton;
 	private JTextPane pleasePointToSCWRLTextPane;
@@ -69,6 +71,8 @@ public class MainMenu extends JPanel implements ActionListener {
 			System.setOut(printStream);
 		}
 
+		updateFields();
+
 
 	}
 
@@ -81,26 +85,30 @@ public class MainMenu extends JPanel implements ActionListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
+
+
 	}
 
 	private void createUIComponents() {
 		// populate the files tables
-		Vector<String> rowOne = new Vector<>(2);
-		rowOne.addElement("Map File");
-		rowOne.addElement("None yet");
+		Object rowData[][] = {
+				{"SCWRL exe", "..."},
+				{"SFChck exe", "..."},
+				{"Map source", "..."},
+				{"PDB source", "..."},
 
-		Vector<Vector> rowData = new Vector<>();
+		};
+		Object columnNames[] = {"Object", "Path"};
+		TableModel model = new DefaultTableModel(rowData, columnNames);
+		CurrentData = new JTable(model);
+		// update values from config.xml
 
-		Vector<String> titlesList = new Vector<>(2);
-		titlesList.addElement("Property");
-		titlesList.addElement("File Path");
-
-		CurrentData = new JTable(rowData, titlesList);
 		chainListTable = new JTable(new ChainListTableModel());
 
-		SpinnerNumberModel model1 = new SpinnerNumberModel(50.0, 0.0, 100.0, 10.0);
+		//thread count spinner
+		SpinnerNumberModel model1 = new SpinnerNumberModel(50, 0, 100, 10);
 		threadLimit = new JSpinner(model1);
-
+		updateFields();
 
 	}
 
@@ -108,7 +116,6 @@ public class MainMenu extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		DefaultTableModel model1 = (DefaultTableModel)(CurrentData.getModel());
 
 		//Handle SCWRL EXE button action.
 		if (e.getSource() == SCWRLExecutableButton) {
@@ -118,12 +125,6 @@ public class MainMenu extends JPanel implements ActionListener {
 				File file = fc.getSelectedFile();
 				params.setSCWRLexe(file);
 				System.out.println("SCWRL executable: " + file.getName() + " selected.");
-
-				Vector<String> newRow = new Vector<>(2);
-				newRow.addElement("SCWRL exe File");
-				newRow.addElement(file.getPath());
-				model1.addRow(newRow);
-
 			} else {
 				System.out.println("Select SCWRL Exe cancelled by user.");
 			}
@@ -136,13 +137,12 @@ public class MainMenu extends JPanel implements ActionListener {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = fc.getSelectedFile();
 				System.out.println("Opening PDB file: " + file.getName() + ".");
-				System.out.println(params.setPDBsrc(file,params));
-
-				Vector<String> newRow = new Vector<>(2);
-				newRow.addElement("PDB File");
-				newRow.addElement(file.getPath());
-				model1.addRow(newRow);
-
+				try {
+					System.out.println(params.setPDBsrc(file));
+				} catch (Exception e1) {
+					System.err.println(e1.getMessage());
+					System.out.println("PDB file bad / missing");
+				}
 				populateChainsList(params.getProtein());
 
 			} else {
@@ -157,11 +157,6 @@ public class MainMenu extends JPanel implements ActionListener {
 				params.setSFChkexe(file);
 				System.out.println("SFcheck Exe: " + file.getName() + " selected.");
 
-				Vector<String> newRow = new Vector<>(2);
-				newRow.addElement("SFCheck exe File");
-				newRow.addElement(file.getPath());
-				model1.addRow(newRow);
-
 			} else {
 				System.out.println("Select SFcheck Exe cancelled by user.");
 			}
@@ -174,11 +169,6 @@ public class MainMenu extends JPanel implements ActionListener {
 				params.setMAPsrc(file);
 				System.out.println("Opening MAP file: " + file.getName() + ".");
 
-				Vector<String> newRow =  new Vector<>(2);
-				newRow.addElement("Map File");
-				newRow.addElement(file.getPath());
-				model1.addRow(newRow);
-
 			} else {
 				System.out.println("PDB selection canceled by user.");
 			}
@@ -187,10 +177,11 @@ public class MainMenu extends JPanel implements ActionListener {
 		} else if (e.getSource() == executeButton) {
 			params.setHetAtmProcess(keepHetAtm.isSelected());
 			params.setDebug(debug.isSelected());
-			params.setThreadLimit((Double) threadLimit.getValue());
+			params.setThreadLimit((Integer) threadLimit.getValue());
+			params.setSaveDefaults(saveDefaultsCheckBox.isSelected());
 
-			if (saveDefaultsCheckBox.isSelected()){
-				params.setProperty("Save Defaults",String.valueOf(true));
+			if (saveDefaultsCheckBox.isSelected()) {
+				params.setProperty("Save Defaults", String.valueOf(true));
 				File configFile = new File("config.xml");
 				OutputStream outputStream = null;
 				try {
@@ -203,24 +194,71 @@ public class MainMenu extends JPanel implements ActionListener {
 				}
 
 
-			} else{
+			} else {
 				File configFile = new File("config.xml");
 				configFile.delete();
 			}
+
+			TableModel chainlist = chainListTable.getModel();
+			LinkedList<Character> chainsToStrip = new LinkedList<>();
+			LinkedList<Character> homologues = new LinkedList<>();
+			Character chainsToProcess = null;
+			for (int i=0; i< chainlist.getRowCount(); i++){
+				if (chainlist.getValueAt(i,2).equals(true)){
+					chainsToProcess = (Character) chainlist.getValueAt(i,0);
+
+				}
+				if (chainlist.getValueAt(i,3).equals(true)){
+					chainsToStrip.add((Character) chainlist.getValueAt(i,0));
+				}
+				if (chainlist.getValueAt(i,4).equals(true)){
+					homologues.add((Character) chainlist.getValueAt(i,0));
+				}
+			}
+			params.setChainsToStrip(chainsToStrip.toArray(new Character[chainsToStrip.size()]));
+			params.setSymmetricHomologues(homologues.toArray(new Character[homologues.size()]));
+			params.setChainToProcess(chainsToProcess);
+
+			int cores =  Runtime.getRuntime().availableProcessors();
+			ExecutorService executor = Executors.newFixedThreadPool(params.getThreadLimit() / cores * 100);
+			Runnable worker = new WorkerThread(params, executor);
+			executor.execute(worker);
+
 		}
+		updateFields();
 
+	}
 
+	private void updateFields() {
+		DefaultTableModel model1 = (DefaultTableModel) (CurrentData.getModel());
+
+		model1.setValueAt(params.getProperty(RunParameters.SCWRLEXE), 0, 1);
+		model1.setValueAt(params.getProperty(RunParameters.SFCHECK_PATH), 1, 1);
+		model1.setValueAt(params.getProperty(RunParameters.MAPSRC), 2, 1);
+		model1.setValueAt(params.getProperty(RunParameters.PDBSRC), 3, 1);
+
+		try {
+			keepHetAtm.getModel().setSelected(Boolean.parseBoolean(params.getProperty(RunParameters.HETATM)));
+		} catch (Exception e) {
+			System.out.println("There was an issue with the HetAtm default value. no worries.");
+		}
+		try {
+			saveDefaultsCheckBox.getModel().setSelected(Boolean.parseBoolean(params.getProperty(RunParameters.DEFAULT)));
+		} catch (Exception e) {
+			System.out.println("There was an issue with the saveDefault values. no worries.");
+		}
 	}
 
 	private void populateChainsList(SimpleProtein protein) {
 		ChainListTableModel model1 = (ChainListTableModel) chainListTable.getModel();
-
-		for (SimpleProtein.ProtChain chain : protein){
-			Vector row = new Vector();
+		model1.setRowCount(0);
+		for (SimpleProtein.ProtChain chain : protein) {
+			Vector<Object> row = new Vector<>();
 			row.add(chain.getChainID());
 			row.add(chain.getLength());
-			row.add(false);
-			row.add(true);
+			row.add(false); // process
+			row.add(true);  // strip
+			row.add(false); // homologue
 			model1.addRow(row);
 		}
 	}

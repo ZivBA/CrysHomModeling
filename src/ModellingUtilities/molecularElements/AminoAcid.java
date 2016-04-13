@@ -32,6 +32,15 @@ public class AminoAcid implements Iterable<SimpleAtom>{
 		chainID = atoms[0].chain;
 		seqNum = atoms[0].aAcidSequence;
 
+		Double CATemp = Double.MIN_VALUE;
+		for (int i=0; i<atoms.length; i++){
+			if (atoms[i].getName().equals("CA")){
+				CATemp = atoms[i].tempFactor;
+			}
+			if (atoms[i].tempFactor==Double.MIN_VALUE){
+				atoms[i].tempFactor=CATemp;
+			}
+		}
 	}
 
 	public void setAcidScore(double acidScore) {

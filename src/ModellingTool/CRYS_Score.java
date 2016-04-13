@@ -3,8 +3,9 @@ package ModellingTool;
 import ModellingUtilities.molecularElements.ProteinActions;
 import ModellingUtilities.molecularElements.SimpleProtein;
 import ScoreUtilities.MRC_Map_New;
-import ScoreUtilities.SCWRLactions;
+import ScoreUtilities.SFCheckIntegration.SFCheckThread;
 import ScoreUtilities.ScoringGeneralHelpers;
+import ScoreUtilities.scwrlIntegration.SCWRLactions;
 import UtilExceptions.MissingChainID;
 
 import java.io.File;
@@ -12,7 +13,12 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.InvalidPropertiesFormatException;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+
+import static ScoreUtilities.ScoringGeneralHelpers.csvToMatrix;
 
 /**
  * Created by zivben on 09/04/16.
@@ -43,7 +49,8 @@ public class CRYS_Score {
 		return (myProt.acidDist != null ? myProt.acidDist : myProt.calcAcidDist());
 	}
 
-	public double[][] scoreProtein() throws IOException, MissingChainID {
+	public double[][] scoreProtein(ExecutorService executor) throws IOException, MissingChainID {
+
 		// if cannot read existing results, generate new files.
 		if (!checkExistingCSVs()) {
 
@@ -51,17 +58,16 @@ public class CRYS_Score {
 			myProt.saveOriginalPositions();
 			originalPos = myProt.getOriginalPositions();
 
-
 			System.out.println("Stripping all amino acid resiudes and setting to ALA.");
 			ProteinActions.stripAndAllALAToObject(myProt,params);
 			System.out.println("Iterating all acid permutations and creating SCWRL input files");
 			File scwrlOutput = ProteinActions.iterateAcids(myProt,params);
-
+			params.setScwrlOutputFolder(scwrlOutput);
 			File chainSubFolders[] = scwrlOutput.listFiles();
 			for (File chain : chainSubFolders) {
 				if (chain.isDirectory()) {
 					if (chain.getAbsolutePath().endsWith(File.separator + requestedChain) || requestedChain == '\0') {
-						SCWRLactions.genSCWRLforFolder(chain);
+						SCWRLactions.genSCWRLforFolder(chain, params.isDebug());
 						if (!params.isDebug()) {
 							toDelete.add(chain);
 						}
@@ -69,7 +75,7 @@ public class CRYS_Score {
 				}
 			}
 
-			processSCWRLfolder(scwrlOutput, requestedChain, params.isDebug());
+			processSCWRLfolder(scwrlOutput, requestedChain, params.isDebug(), executor);
 
 
 		}
@@ -99,7 +105,7 @@ public class CRYS_Score {
 									+ "_" + chain.getChainID() + "_originalPositions.csv");
 
 					double[][] temp;
-					temp = ScoringGeneralHelpers.csvToMatrix(resultCSV);
+					temp = csvToMatrix(resultCSV);
 					if (temp != null) {
 						chain.resIntensityValueMatrix = temp;
 					} else {
@@ -135,7 +141,7 @@ public class CRYS_Score {
 	}
 
 
-	private void processSCWRLfolder(File processingFolder, char requestedChain, boolean debug) throws IOException, MissingChainID {
+	private void processSCWRLfolder(File processingFolder, char requestedChain, boolean debug, ExecutorService executor) throws IOException, MissingChainID {
 
 
 		SimpleProtein tempProt;
@@ -165,8 +171,8 @@ public class CRYS_Score {
 		for (File chain : chainFolders) {
 			try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(chain.toPath())) {
 				for (Path path : directoryStream) {
-					tempProt = new SimpleProtein(path.toFile(),params);
-					scoreSingleScwrl(tempProt);
+					executor.execute(new SFCheckThread(chain, params));
+//					scoreSingleScwrl(tempProt);
 				}
 			} catch (ArrayIndexOutOfBoundsException ex) {
 				System.out.println("array index OOB exception for file: " + chain.getAbsolutePath());
@@ -183,6 +189,7 @@ public class CRYS_Score {
 	private void scoreSingleScwrl(SimpleProtein tempProt) {
 		//TODO process SCWRL file with SFCHECK
 	}
+
 
 
 }

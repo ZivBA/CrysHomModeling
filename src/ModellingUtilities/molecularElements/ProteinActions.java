@@ -1,13 +1,13 @@
 package ModellingUtilities.molecularElements;
 
+import ModellingTool.RunParameters;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.InvalidPropertiesFormatException;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,12 +18,14 @@ import static ScoreUtilities.ScoringGeneralHelpers.*;
  */
 public class ProteinActions {
 
-	public static void stripAndAllALAToObject(SimpleProtein sourceProtein) {
-
+	public static void stripAndAllALAToObject(SimpleProtein sourceProtein, RunParameters params) {
+		TreeSet<Character> toStrip = new TreeSet<>(Arrays.asList(params.getChainsToStrip()));
 		for (SimpleProtein.ProtChain chain : sourceProtein) {
-			for (AminoAcid acid : chain) {
-				acid.substituteWith("ALA");
-				acid.strip();
+			if (toStrip.contains(chain.getChainID())) {
+				for (AminoAcid acid : chain) {
+					acid.substituteWith("ALA");
+					acid.strip();
+				}
 			}
 
 		}
@@ -62,39 +64,44 @@ public class ProteinActions {
 		writer.close();
 	}
 
-	public static File iterateAcids(SimpleProtein sourceProtein) throws IOException {
+	public static File iterateAcids(SimpleProtein sourceProtein, RunParameters params) throws IOException {
 
 
 		File outputFolder = makeSubFolderAt(sourceProtein.getSource(), "_scwrlFiles");
 
-		for (SimpleProtein.ProtChain chain : sourceProtein) {
-			File ChainFolder = makeSubFolderAt(outputFolder, String.valueOf(chain.getChainID()));
-			for (AminoAcid aminoAcid : chain) {
+		SimpleProtein.ProtChain chainToProcess = sourceProtein.getChain(params.getChainToProcess());
+		Character[] homologChains = params.getSymmetricHomologues();
 
-				for (String newAcid : aAcids) {
-					aminoAcid.substituteWith(newAcid);
-
-					// write new processed file
-					File fileWithNewRes = new File(ChainFolder.getAbsolutePath() + File.separator + sourceProtein
-							.getFileName() + "_res_" + aminoAcid.getSeqNum() + "_to_" + newAcid +
-							PDB_EXTENSION);
-
-//					if (debug) {
-//						System.out.println("Generating permutation: " + fileWithNewRes.getName());
-//					}
-
-					if (!fileWithNewRes.exists() || fileWithNewRes.length() == 0) {
-						sourceProtein.writePDB(fileWithNewRes);
-					}
+		File ChainFolder = makeSubFolderAt(outputFolder, String.valueOf(params.getChainToProcess()));
 
 
-					//reset to ALA
-					aminoAcid.substituteWith("ALA");
+		for (AminoAcid aminoAcid : chainToProcess) {
 
+			for (String newAcid : aAcids) {
+				aminoAcid.substituteWith(newAcid);
+				for (int i=0; i<homologChains.length; i++){
+					sourceProtein.getChain(homologChains[i]).getAminoAcidAt(aminoAcid.getSeqNum()).substituteWith(newAcid);
+				}
+
+				// write new processed file
+				File fileWithNewRes = new File(ChainFolder.getAbsolutePath() + File.separator + sourceProtein
+						.getFileName() + "_res_" + aminoAcid.getSeqNum() + "_to_" + newAcid + PDB_EXTENSION);
+
+				if (params.isDebug()) {
+					System.out.println("Generating permutation: " + fileWithNewRes.getName());
+				}
+
+				if (!fileWithNewRes.exists() || fileWithNewRes.length() == 0) {
+					sourceProtein.writePDB(fileWithNewRes);
 				}
 
 
+				//reset to ALA
+				aminoAcid.substituteWith("ALA");
+
 			}
+
+
 		}
 
 
@@ -159,7 +166,7 @@ public class ProteinActions {
 			return 1;
 			//TODO - fix this 21st amino acid thing.
 		} else
-		throw new InvalidPropertiesFormatException("Bad AminoAcid Name: " + name);
+			throw new InvalidPropertiesFormatException("Bad AminoAcid Name: " + name);
 
 
 	}
@@ -178,7 +185,6 @@ public class ProteinActions {
 			//TODO - fix this 21st amino acid thing.
 		} else
 			throw new InvalidPropertiesFormatException("Bad AminoAcid Name: " + name);
-
 
 
 	}

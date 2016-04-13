@@ -14,6 +14,7 @@ public class SimpleAtom {
 	protected char chain;
 	protected int aAcidSequence;
 	protected float[] atomCoords;
+	protected double tempFactor;
 
 	protected double atomScore;
 	protected boolean isBackBone;
@@ -26,6 +27,12 @@ public class SimpleAtom {
 		aAcidName = atom.substring(RES_NAME_START, RES_NAME_END + 1);
 		chain = atom.charAt(CHAIN_ID);
 		aAcidSequence = Integer.parseInt(atom.substring(RES_SEQ_START, RES_SEQ_END + 1).trim());
+		try {
+			tempFactor = Double.parseDouble(atom.substring(RES_TEMP_START, RES_TEMP_END));
+		} catch (NullPointerException | NumberFormatException e){
+			System.err.println("No Temperture factor data for some atoms, using C-Alpha value instead");
+			tempFactor = Double.MIN_VALUE;
+		}
 		atomCoords = parseCoords(atom.substring(30, 54));
 		isBackBone = name.matches("\\s*(C|CA|O|N)\\s*");
 

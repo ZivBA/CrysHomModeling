@@ -24,7 +24,7 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 	private boolean keepHetAtm;
 
 	private List<Integer[]> protOriginalPositions = new ArrayList<>();
-
+	private String crysHeader;
 	private List<ProtChain> protChains; // list of the seperate AminoAcid chains
 	private List<String> hetAtm;   // array of the remaining HeteroAtoms.
 	private List<String> footers;   // array of the remaining footer tags.
@@ -90,7 +90,10 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 					System.out.println("string index OOB exception at line:\n" + lineInFile);
 					System.out.println("from file: " + pdbFile.getName());
 				}
-			} else if (lineInFile.startsWith("TER")) {
+			} else if (lineInFile.startsWith("CRYST1")) {
+				crysHeader = lineInFile;
+			}
+			else if (lineInFile.startsWith("TER")) {
 				chains.get(chainCounter).add(lineInFile);
 				chainCounter++;
 				chains.add(new ArrayList<String>());
@@ -136,6 +139,9 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 	public void writePDB(File destination) throws IOException {
 		FileWriter FW = new FileWriter(destination);
 
+
+		// write Crystalographic header line
+		FW.write(crysHeader);
 		// write structural atoms
 		for (ProtChain chain : protChains) {
 			for (AminoAcid acid : chain) {
@@ -286,6 +292,8 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 			backBoneIntensityValueMatrix = new double[20][residues.size()];
 			backBoneZvalue = new double[residues.size()];
 
+
+
 		}
 
 		public int getAcidSequenceID(int position) {
@@ -319,6 +327,10 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 
 		public int getLength() {
 			return residues.size();
+		}
+
+		public AminoAcid getAminoAcidAt(int seqNum) {
+			return residues.get(seqNum);
 		}
 	}
 }

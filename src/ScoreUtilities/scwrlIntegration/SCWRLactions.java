@@ -1,4 +1,4 @@
-package ScoreUtilities;
+package ScoreUtilities.scwrlIntegration;
 
 /**
  * Created by zivben on 09/04/16.
@@ -11,21 +11,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
-import static utils.ScoreUtilities.ScoringGeneralHelpers.*;
+import static ScoreUtilities.ScoringGeneralHelpers.*;
 
 /**
  * Created by zivben on 06/08/15.
  */
 public class SCWRLactions {
-
+	private static boolean debugFlag;
 	/**
 	 * iterate all files in folder and scwrl them.
-	 *
 	 * @param tempFolder
+	 * @param debug
 	 */
-	public static void genSCWRLforFolder(File tempFolder) throws IOException {
-
+	public static void genSCWRLforFolder(File tempFolder, boolean debug) throws IOException {
+		SCWRLactions.debugFlag = debug;
 		if (debug) {
 			System.out.println("******************************************************************");
 			System.out.println("Processing SCWRL input folder: \n" + tempFolder.getAbsolutePath());
@@ -55,7 +56,7 @@ public class SCWRLactions {
 			}
 			fileName.delete();
 			filesScwrled++;
-			if (debug) {
+			if (debugFlag) {
 				if (filesScwrled % blockSize == 0) {
 					tempTime = System.currentTimeMillis();
 					float elapsed = (tempTime - startTime) / 1000f;
@@ -67,7 +68,7 @@ public class SCWRLactions {
 				}
 			}
 		}
-		if (debug) {
+		if (debugFlag) {
 			long stopTime = System.currentTimeMillis();
 			float elapsedTime = (stopTime - startTime) / 1000f;
 			System.out.println("******************************************************************");
@@ -85,7 +86,7 @@ public class SCWRLactions {
 		File newScwrlFile;
 
 
-		if (debug) {
+		if (debugFlag) {
 
 			newScwrlFile = new File(
 					targetFolder.getAbsolutePath() + File.separator + inputFile.getName().replaceFirst(

@@ -9,12 +9,72 @@ import java.util.Properties;
  * Created by zivben on 22/03/16.
  */
 public class RunParameters extends Properties{
-	private static final String SFCHECK_PATH = "SFCheck Executable", SCWRLEXE = "SCWRL Executable", PDBSRC = "PDB Source File";
-	private static final String HETATM = "Process Het-Atm",MAPSRC = "Map Source File", DEBUG="Debug Flag", THREADS = "Max threads ratio";
-	private boolean debug;
+	public static final String SFCHECK_PATH = "SFCheck Executable", SCWRLEXE = "SCWRL Executable", PDBSRC = "PDB Source File";
+	public static final String HETATM = "Process Het-Atm",MAPSRC = "Map Source File", DEBUG="Debug Flag", THREADS = "Max threads ratio",
+			DEFAULT="Save Defaults";
+	private File SCWRLexe;
 
-	public boolean isDebug() {
-		return debug;
+	private File SFChkexe;
+
+	private File PDBsrc;
+
+	private File MAPsrc;
+	private Character[] chainsToStrip;
+	private char chainToProcess;
+	private Character[] symmetricHomologues;
+
+	private boolean debug;
+	private boolean hetAtmProcess;
+	private boolean saveDefaults;
+
+	private File scwrlOutputFolder;
+	private int threadLimit;
+
+	SimpleProtein sourceProt;
+
+	public RunParameters() throws FileNotFoundException {
+
+		// try to load the properties file, if a current one exists.
+		try {
+			File configFile = new File("config.xml");
+			InputStream inputStream = new FileInputStream(configFile);
+
+			this.loadFromXML(inputStream);
+			inputStream.close();
+
+
+
+			try {
+				setSCWRLexe(new File(this.getProperty(SCWRLEXE)));
+			} catch (Exception e) {
+				System.err.println("Error opening SCWRL exe, probably missing file.");
+			}
+			try {
+				setSFChkexe(new File(this.getProperty(SFCHECK_PATH)));
+			} catch (Exception e) {
+				System.err.println("Error opening SFCheck exe, probably missing file.");
+			} try {
+				setPDBsrc(new File(this.getProperty(PDBSRC)));
+			} catch (Exception e){
+				System.err.println("Error opening PDB source, probably missing file.");
+			}
+
+			setHetAtmProcess(Boolean.parseBoolean(this.getProperty(HETATM)));
+			setThreadLimit(Integer.valueOf(this.getProperty(THREADS)));
+
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+
+
+	}
+	public boolean isSaveDefaults() {
+		return saveDefaults;
+	}
+
+	public void setSaveDefaults(boolean saveDefaults) {
+		this.setProperty(DEFAULT,String.valueOf(saveDefaults));
+		this.saveDefaults = saveDefaults;
 	}
 
 	public void setDebug(boolean debug) {
@@ -22,45 +82,8 @@ public class RunParameters extends Properties{
 		this.debug = debug;
 	}
 
-	private File SCWRLexe;
-	private File SFChkexe;
-	private File PDBsrc;
-	private File MAPsrc;
-	private char[] chainsToStrip;
-	private char chainToProcess;
-	private char[] symmetricHomologues;
-	private boolean hetAtmProcess;
-	private Double threadLimit;
-
-	SimpleProtein sourceProt;
-
-	public RunParameters() throws FileNotFoundException {
-		// load the properties file:
-		try {
-			File configFile = new File("config.xml");
-			InputStream inputStream = new FileInputStream(configFile);
-
-			this.loadFromXML(inputStream);
-
-			try {
-				SCWRLexe = new File(this.getProperty(SCWRLEXE));
-			} catch (Exception e) {
-				System.err.println("Error opening SCWRL exe, probably missing file.");
-			}
-			try {
-				SFChkexe = new File(this.getProperty(SFCHECK_PATH));
-			} catch (Exception e) {
-				System.err.println("Error opening SFCheck exe, probably missing file.");
-			}
-
-			hetAtmProcess = Boolean.parseBoolean(this.getProperty(HETATM));
-			threadLimit = Double.valueOf(this.getProperty(THREADS));
-
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-		}
-
-
+	public boolean isDebug() {
+		return debug;
 	}
 
 	public File getSCWRLexe() {
@@ -85,14 +108,11 @@ public class RunParameters extends Properties{
 		return PDBsrc;
 	}
 
-	public String setPDBsrc(File PDBsrc, RunParameters params) {
+	public String setPDBsrc(File PDBsrc) throws Exception {
 
 		this.PDBsrc = PDBsrc;
-		try {
-			sourceProt = new SimpleProtein(PDBsrc,params);
-		} catch (IOException e) {
-			return e.getMessage();
-		}
+
+		sourceProt = new SimpleProtein(PDBsrc, this);
 
 		this.setProperty(PDBSRC, PDBsrc.getAbsolutePath());
 
@@ -108,11 +128,11 @@ public class RunParameters extends Properties{
 		this.setProperty(MAPSRC,MAPsrc.getAbsolutePath());
 	}
 
-	public char[] getChainsToStrip() {
+	public Character[] getChainsToStrip() {
 		return chainsToStrip;
 	}
 
-	public void setChainsToStrip(char[] chainsToStrip) {
+	public void setChainsToStrip(Character[] chainsToStrip) {
 		this.chainsToStrip = chainsToStrip;
 	}
 
@@ -124,11 +144,11 @@ public class RunParameters extends Properties{
 		this.chainToProcess = chainToProcess;
 	}
 
-	public char[] getSymmetricHomologues() {
+	public Character[] getSymmetricHomologues() {
 		return symmetricHomologues;
 	}
 
-	public void setSymmetricHomologues(char[] symmetricHomologues) {
+	public void setSymmetricHomologues(Character[] symmetricHomologues) {
 		this.symmetricHomologues = symmetricHomologues;
 	}
 
@@ -141,16 +161,24 @@ public class RunParameters extends Properties{
 		this.setProperty(HETATM, String.valueOf(hetAtmProcess));
 	}
 
-	public Double getThreadLimit() {
+	public int getThreadLimit() {
 		return threadLimit;
 	}
 
-	public void setThreadLimit(Double threadLimit) {
+	public void setThreadLimit(int threadLimit) {
 		this.threadLimit = threadLimit;
 		this.setProperty(THREADS, String.valueOf(threadLimit));
 	}
 
 	public SimpleProtein getProtein() {
 		return sourceProt;
+	}
+
+	public void setScwrlOutputFolder(File scwrlOutputFolder) {
+		this.scwrlOutputFolder = scwrlOutputFolder;
+	}
+
+	public File getScwrlOutputFolder() {
+		return scwrlOutputFolder;
 	}
 }

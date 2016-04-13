@@ -20,7 +20,8 @@ public class ScoringGeneralHelpers {
 	 * constatns from PDB format. (positions are "-1" since format starts at '1' and computers start at '0'
 	 */
 	public static final int ATOM_NUM_START = 6, ATOM_NUM_END = 10, ATOM_NAME_START = 12, ATOM_NAME_END = 15,
-			RES_NAME_START = 17, RES_NAME_END = 19, CHAIN_ID = 21, RES_SEQ_START = 22, RES_SEQ_END = 25;
+			RES_NAME_START = 17, RES_NAME_END = 19, CHAIN_ID = 21, RES_SEQ_START = 22, RES_SEQ_END = 25,
+			RES_TEMP_START = 60, RES_TEMP_END = 65;
 	public static final String FOOTER_TAGS = "MASTER|END", ALLOWED_ATOMS = "N|CA|C|O", PDB_EXTENSION = ".pdb", HETATM= "HETATM";
 	//consts
 	// keep ALA as first item, as this is being called explicitly by stripAllRes method.
