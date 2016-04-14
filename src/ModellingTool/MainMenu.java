@@ -3,6 +3,8 @@ package ModellingTool;
 import ModellingUtilities.molecularElements.SimpleProtein;
 
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
@@ -18,12 +20,14 @@ import java.util.concurrent.Executors;
 
 /**
  * Created by zivben on 06/03/16.
+ * Main Menu GUI class - holds the user interface and execution instructions.
  */
 public class MainMenu extends JPanel implements ActionListener {
 
 
-	public static RunParameters params;
+	private static PrintStream printStream;
 
+	public static RunParameters params;
 	static private final String newline = "\n";
 	private JTextPane crystallographyModelingToolV0TextPane;
 	private JButton SCWRLExecutableButton;
@@ -41,13 +45,14 @@ public class MainMenu extends JPanel implements ActionListener {
 	private JTextPane limitNumberOfThreadsTextPane;
 	private JButton executeButton;
 	private JTable chainListTable;
+
 	private JCheckBox saveDefaultsCheckBox;
 
 	private JFileChooser fc;
-
 	private JCheckBox debug;
 	private JCheckBox keepHetAtm;
 	private JScrollPane chainsListContainer;
+
 	private JScrollPane filesContainer;
 
 	public MainMenu() {
@@ -61,18 +66,19 @@ public class MainMenu extends JPanel implements ActionListener {
 		mapButton.addActionListener(this);
 		PDBButton.addActionListener(this);
 		executeButton.addActionListener(this);
-
+		debug.addActionListener(this);
 		//redirect standard output to onscreen log.
-		PrintStream printStream = new PrintStream(new CustomOutputStream(log));
+		printStream = new PrintStream(new CustomOutputStream(log));
+
+
+		Runtime.getRuntime().addShutdownHook(new ShutDownHook());
+		updateFields();
 		if (debug.isSelected()) {
 			System.setErr(printStream);
 			System.setOut(printStream);
 		} else {
 			System.setOut(printStream);
 		}
-
-		updateFields();
-
 
 	}
 
@@ -106,9 +112,8 @@ public class MainMenu extends JPanel implements ActionListener {
 		chainListTable = new JTable(new ChainListTableModel());
 
 		//thread count spinner
-		SpinnerNumberModel model1 = new SpinnerNumberModel(50, 0, 100, 10);
+		SpinnerNumberModel model1 = new SpinnerNumberModel(50, 0, 100, 5);
 		threadLimit = new JSpinner(model1);
-		updateFields();
 
 	}
 
@@ -128,6 +133,10 @@ public class MainMenu extends JPanel implements ActionListener {
 			} else {
 				System.out.println("Select SCWRL Exe cancelled by user.");
 			}
+
+			//handle DEBUG button action.
+		} else if (e.getSource() == debug) {
+			params.setDebug(!params.isDebug());
 
 
 			//Handle PDB src button action.
@@ -203,23 +212,25 @@ public class MainMenu extends JPanel implements ActionListener {
 			LinkedList<Character> chainsToStrip = new LinkedList<>();
 			LinkedList<Character> homologues = new LinkedList<>();
 			Character chainsToProcess = null;
-			for (int i=0; i< chainlist.getRowCount(); i++){
-				if (chainlist.getValueAt(i,2).equals(true)){
-					chainsToProcess = (Character) chainlist.getValueAt(i,0);
+			for (int i = 0; i < chainlist.getRowCount(); i++) {
+				if (chainlist.getValueAt(i, 2).equals(true)) {
+					chainsToProcess = (Character) chainlist.getValueAt(i, 0);
 
 				}
-				if (chainlist.getValueAt(i,3).equals(true)){
-					chainsToStrip.add((Character) chainlist.getValueAt(i,0));
+				if (chainlist.getValueAt(i, 3).equals(true)) {
+					chainsToStrip.add((Character) chainlist.getValueAt(i, 0));
 				}
-				if (chainlist.getValueAt(i,4).equals(true)){
-					homologues.add((Character) chainlist.getValueAt(i,0));
+				if (chainlist.getValueAt(i, 4).equals(true)) {
+					homologues.add((Character) chainlist.getValueAt(i, 0));
 				}
 			}
 			params.setChainsToStrip(chainsToStrip.toArray(new Character[chainsToStrip.size()]));
 			params.setSymmetricHomologues(homologues.toArray(new Character[homologues.size()]));
 			params.setChainToProcess(chainsToProcess);
+			params.setDebug(debug.isSelected());
 
-			int cores =  Runtime.getRuntime().availableProcessors();
+
+			int cores = Runtime.getRuntime().availableProcessors();
 			ExecutorService executor = Executors.newFixedThreadPool(params.getThreadLimit() / cores * 100);
 			Runnable worker = new WorkerThread(params, executor);
 			executor.execute(worker);
@@ -247,6 +258,14 @@ public class MainMenu extends JPanel implements ActionListener {
 		} catch (Exception e) {
 			System.out.println("There was an issue with the saveDefault values. no worries.");
 		}
+
+		try {
+			debug.setSelected(Boolean.parseBoolean(params.getProperty(RunParameters.DEBUG)));
+		} catch (Exception e) {
+			System.out.println("There was an issue with the Debug Flag values. no worries.");
+		}
+
+
 	}
 
 	private void populateChainsList(SimpleProtein protein) {
@@ -263,6 +282,7 @@ public class MainMenu extends JPanel implements ActionListener {
 		}
 	}
 
+
 	public static void main(String[] args) throws FileNotFoundException {
 		// get number of cores
 		int cores = Runtime.getRuntime().availableProcessors();
@@ -276,5 +296,20 @@ public class MainMenu extends JPanel implements ActionListener {
 				createAndShowGUI();
 			}
 		});
+
+
+
+	}
+
+
+	private class ShutDownHook extends Thread {
+		public void run() {
+			File logFile = new File(System.getProperty("user.dir") + "/CrysModeling.log");
+			try (BufferedWriter fileOut = new BufferedWriter(new FileWriter(logFile))) {
+				log.write(fileOut);
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
+			}
+		}
 	}
 }

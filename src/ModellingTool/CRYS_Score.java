@@ -67,7 +67,7 @@ public class CRYS_Score {
 			for (File chain : chainSubFolders) {
 				if (chain.isDirectory()) {
 					if (chain.getAbsolutePath().endsWith(File.separator + requestedChain) || requestedChain == '\0') {
-						SCWRLactions.genSCWRLforFolder(chain, params.isDebug());
+						SCWRLactions.genSCWRLforFolder(chain, params.isDebug(), executor);
 						if (!params.isDebug()) {
 							toDelete.add(chain);
 						}

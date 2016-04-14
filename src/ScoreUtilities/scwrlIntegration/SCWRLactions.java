@@ -10,6 +10,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -24,8 +25,9 @@ public class SCWRLactions {
 	 * iterate all files in folder and scwrl them.
 	 * @param tempFolder
 	 * @param debug
+	 * @param executor
 	 */
-	public static void genSCWRLforFolder(File tempFolder, boolean debug) throws IOException {
+	public static void genSCWRLforFolder(File tempFolder, boolean debug, ExecutorService executor) throws IOException {
 		SCWRLactions.debugFlag = debug;
 		if (debug) {
 			System.out.println("******************************************************************");
@@ -48,11 +50,17 @@ public class SCWRLactions {
 		int numOfFiles = fileNames.size();
 		int blockSize = (int) (numOfFiles / (Math.ceil(Math.log10(numOfFiles))));
 		int filesScwrled = 0;
-		SCWRLrunner scwrl = new SCWRLrunner(SCWRL_PATH);
+
+
 		for (File fileName : fileNames) {
 			File SCWRLFile = new File(fileName.getAbsolutePath().replace(".pdb", "_SCWRLed.pdb"));
 			if (!SCWRLFile.exists()) {
-				scwrl.runScwrl(fileName, SCWRLFile);
+				SCWRLrunner oneRun = new SCWRLrunner(SCWRL_PATH,fileName,SCWRLFile);
+				executor.execute(oneRun);
+				if (debugFlag){
+					System.out.println(Arrays.toString(oneRun.runLog));
+				}
+
 			}
 			fileName.delete();
 			filesScwrled++;
@@ -77,27 +85,6 @@ public class SCWRLactions {
 			System.out.println("SCWRL execution terminated!");
 		}
 
-
-	}
-
-	public static void scwrlRunOnce(File inputFile, File targetFolder) throws IOException {
-
-		SCWRLrunner scwrl = new SCWRLrunner(SCWRL_PATH);
-		File newScwrlFile;
-
-
-		if (debugFlag) {
-
-			newScwrlFile = new File(
-					targetFolder.getAbsolutePath() + File.separator + inputFile.getName().replaceFirst(
-							PDB_EXTENSION + "+$", "_SCWRL" + PDB_EXTENSION));
-
-		} else {
-			newScwrlFile = inputFile;
-		}
-
-
-		scwrl.runScwrl(inputFile, newScwrlFile);
 
 	}
 

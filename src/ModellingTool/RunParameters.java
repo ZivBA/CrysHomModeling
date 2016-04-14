@@ -1,6 +1,7 @@
 package ModellingTool;
 
 import ModellingUtilities.molecularElements.SimpleProtein;
+import ScoreUtilities.ScoringGeneralHelpers;
 
 import java.io.*;
 import java.util.Properties;
@@ -92,6 +93,7 @@ public class RunParameters extends Properties{
 
 	public void setSCWRLexe(File SCWRLexe) {
 		this.SCWRLexe = SCWRLexe;
+		ScoringGeneralHelpers.SCWRL_PATH = SCWRLexe.getAbsolutePath();
 		this.setProperty(SCWRLEXE,SCWRLexe.getAbsolutePath());
 	}
 

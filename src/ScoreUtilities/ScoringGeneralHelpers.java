@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class ScoringGeneralHelpers {
 	//path to SCWRL
-	public static final String SCWRL_PATH = "./utils/scwrlIntegration/Scwrl4";
+	public static String SCWRL_PATH = "./utils/scwrlIntegration/Scwrl4";
 	/**
 	 * constatns from PDB format. (positions are "-1" since format starts at '1' and computers start at '0'
 	 */

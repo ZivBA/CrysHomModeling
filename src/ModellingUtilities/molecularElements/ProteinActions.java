@@ -80,7 +80,7 @@ public class ProteinActions {
 			for (String newAcid : aAcids) {
 				aminoAcid.substituteWith(newAcid);
 				for (int i=0; i<homologChains.length; i++){
-					sourceProtein.getChain(homologChains[i]).getAminoAcidAt(aminoAcid.getSeqNum()).substituteWith(newAcid);
+					sourceProtein.getChain(homologChains[i]).getAminoAcidAt(aminoAcid.getSeqNum()-chainToProcess.getSequenceBias()).substituteWith(newAcid);
 				}
 
 				// write new processed file
