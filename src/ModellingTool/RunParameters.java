@@ -58,6 +58,10 @@ public class RunParameters extends Properties{
 				setPDBsrc(new File(this.getProperty(PDBSRC)));
 			} catch (Exception e){
 				System.err.println("Error opening PDB source, probably missing file.");
+			} try {
+				setMAPsrc(new File(this.getProperty(MAPSRC)));
+			}catch (Exception e) {
+				System.err.println("Error opening MAP source, probably missing file.");
 			}
 
 			setHetAtmProcess(Boolean.parseBoolean(this.getProperty(HETATM)));

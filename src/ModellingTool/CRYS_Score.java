@@ -6,6 +6,7 @@ import ScoreUtilities.MRC_Map_New;
 import ScoreUtilities.SFCheckIntegration.SFCheckThread;
 import ScoreUtilities.ScoringGeneralHelpers;
 import ScoreUtilities.scwrlIntegration.SCWRLactions;
+import ScoreUtilities.scwrlIntegration.SCWRLrunner;
 import UtilExceptions.MissingChainID;
 
 import java.io.File;
@@ -15,8 +16,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 import static ScoreUtilities.ScoringGeneralHelpers.csvToMatrix;
 
@@ -32,12 +33,13 @@ public class CRYS_Score {
 	public ArrayList<String> logFile = new ArrayList<>();
 	public ArrayList<File> toDelete = new ArrayList<>();
 	private List<Integer[]> originalPos;
+	File scwrlOutput;
 
 	public CRYS_Score(RunParameters params) {
 		this.params = params;
 		try {
-
 			this.myProt = new SimpleProtein(params.getPDBsrc(), params);
+			requestedChain = params.getChainToProcess();
 			//TODO new MAP object
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -49,8 +51,9 @@ public class CRYS_Score {
 		return (myProt.acidDist != null ? myProt.acidDist : myProt.calcAcidDist());
 	}
 
-	public double[][] scoreProtein(ExecutorService executor) throws IOException, MissingChainID {
+	public List<List<SCWRLrunner>> iterateAndGenScwrl() throws IOException, MissingChainID {
 
+		List<List<SCWRLrunner>> taskList = new LinkedList<>();
 		// if cannot read existing results, generate new files.
 		if (!checkExistingCSVs()) {
 
@@ -61,13 +64,13 @@ public class CRYS_Score {
 			System.out.println("Stripping all amino acid resiudes and setting to ALA.");
 			ProteinActions.stripAndAllALAToObject(myProt,params);
 			System.out.println("Iterating all acid permutations and creating SCWRL input files");
-			File scwrlOutput = ProteinActions.iterateAcids(myProt,params);
+			scwrlOutput = ProteinActions.iterateAcids(myProt,params);
 			params.setScwrlOutputFolder(scwrlOutput);
 			File chainSubFolders[] = scwrlOutput.listFiles();
 			for (File chain : chainSubFolders) {
 				if (chain.isDirectory()) {
 					if (chain.getAbsolutePath().endsWith(File.separator + requestedChain) || requestedChain == '\0') {
-						SCWRLactions.genSCWRLforFolder(chain, params.isDebug(), executor);
+						taskList.add(SCWRLactions.genSCWRLforFolder(chain));
 						if (!params.isDebug()) {
 							toDelete.add(chain);
 						}
@@ -75,11 +78,10 @@ public class CRYS_Score {
 				}
 			}
 
-			processSCWRLfolder(scwrlOutput, requestedChain, params.isDebug(), executor);
 
 
 		}
-		return proteinIntensityValueMatrix;
+		return taskList;
 	}
 
 
@@ -141,16 +143,16 @@ public class CRYS_Score {
 	}
 
 
-	private void processSCWRLfolder(File processingFolder, char requestedChain, boolean debug, ExecutorService executor) throws IOException, MissingChainID {
+	List<SFCheckThread> processSCWRLfolder() throws IOException, MissingChainID {
 
-
+		List<SFCheckThread> taskList = new LinkedList<>();
 		SimpleProtein tempProt;
 
 		/**
 		 * get input File object, read and convert to List of Files (PDB Iterations) for processing.
 		 */
 		List<File> chainFolders = new ArrayList<>();
-		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(processingFolder.toPath())) {
+		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(scwrlOutput.toPath())) {
 			for (Path path : directoryStream) {
 				if (path.toString().endsWith(File.separator + requestedChain)) {
 					chainFolders.add(path.toFile());
@@ -169,27 +171,39 @@ public class CRYS_Score {
 		 * read each chain File object
 		 */
 		for (File chain : chainFolders) {
-			try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(chain.toPath())) {
-				for (Path path : directoryStream) {
-					executor.execute(new SFCheckThread(chain, params));
-//					scoreSingleScwrl(tempProt);
+			if (chain.isDirectory()) {
+				try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(chain.toPath())) {
+					for (Path path : directoryStream) {
+						if (path.getFileName().toString().endsWith("_SCWRLed.pdb")) {
+							taskList.add(new SFCheckThread(path.toFile(), params));
+						}
+
+					}
+				} catch (ArrayIndexOutOfBoundsException ex) {
+					System.out.println("array index OOB exception for file: " + chain.getAbsolutePath());
+				} catch (IOException ex) {
+					System.out.println("array index OOB exception for file: " + chain.getAbsolutePath());
+					System.err.println(ex.getMessage());
+					throw ex;
 				}
-			} catch (ArrayIndexOutOfBoundsException ex) {
-				System.out.println("array index OOB exception for file: " + chain.getAbsolutePath());
-			} catch (IOException   ex) {
-				System.out.println("array index OOB exception for file: " + chain.getAbsolutePath());
-				System.err.println(ex.getMessage());
-				throw ex;
 			}
 
-
 		}
+		return taskList;
 	}
 
 	private void scoreSingleScwrl(SimpleProtein tempProt) {
 		//TODO process SCWRL file with SFCHECK
 	}
 
+
+	public void deleteChains() {
+		if (!params.isDebug()){
+			for (File deleteCandidate: toDelete){
+				deleteCandidate.delete();
+			}
+		}
+	}
 
 
 }

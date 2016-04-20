@@ -1,21 +1,20 @@
 package ModellingTool;
 
 import ModellingUtilities.molecularElements.SimpleProtein;
+import ScoreUtilities.SFCheckIntegration.SFCheckThread;
+import ScoreUtilities.scwrlIntegration.SCWRLrunner;
+import UtilExceptions.MissingChainID;
 
 import javax.swing.*;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Vector;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.*;
 
 
 /**
@@ -45,7 +44,7 @@ public class MainMenu extends JPanel implements ActionListener {
 	private JTextPane limitNumberOfThreadsTextPane;
 	private JButton executeButton;
 	private JTable chainListTable;
-
+	private int threads;
 	private JCheckBox saveDefaultsCheckBox;
 
 	private JFileChooser fc;
@@ -112,7 +111,8 @@ public class MainMenu extends JPanel implements ActionListener {
 		chainListTable = new JTable(new ChainListTableModel());
 
 		//thread count spinner
-		SpinnerNumberModel model1 = new SpinnerNumberModel(50, 0, 100, 5);
+		SpinnerNumberModel model1 = new SpinnerNumberModel(Runtime.getRuntime().availableProcessors()/2, 0, Runtime.getRuntime().availableProcessors
+				(), 1);
 		threadLimit = new JSpinner(model1);
 
 	}
@@ -184,59 +184,169 @@ public class MainMenu extends JPanel implements ActionListener {
 
 
 		} else if (e.getSource() == executeButton) {
-			params.setHetAtmProcess(keepHetAtm.isSelected());
-			params.setDebug(debug.isSelected());
-			params.setThreadLimit((Integer) threadLimit.getValue());
-			params.setSaveDefaults(saveDefaultsCheckBox.isSelected());
-
-			if (saveDefaultsCheckBox.isSelected()) {
-				params.setProperty("Save Defaults", String.valueOf(true));
-				File configFile = new File("config.xml");
-				OutputStream outputStream = null;
-				try {
-					outputStream = new FileOutputStream(configFile);
-					params.storeToXML(outputStream, "Modeling Tool default settings");
-					outputStream.close();
-					System.out.println("Saved values to \"config.xml\" param file.");
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-
-
-			} else {
-				File configFile = new File("config.xml");
-				configFile.delete();
-			}
-
-			TableModel chainlist = chainListTable.getModel();
-			LinkedList<Character> chainsToStrip = new LinkedList<>();
-			LinkedList<Character> homologues = new LinkedList<>();
-			Character chainsToProcess = null;
-			for (int i = 0; i < chainlist.getRowCount(); i++) {
-				if (chainlist.getValueAt(i, 2).equals(true)) {
-					chainsToProcess = (Character) chainlist.getValueAt(i, 0);
-
-				}
-				if (chainlist.getValueAt(i, 3).equals(true)) {
-					chainsToStrip.add((Character) chainlist.getValueAt(i, 0));
-				}
-				if (chainlist.getValueAt(i, 4).equals(true)) {
-					homologues.add((Character) chainlist.getValueAt(i, 0));
-				}
-			}
-			params.setChainsToStrip(chainsToStrip.toArray(new Character[chainsToStrip.size()]));
-			params.setSymmetricHomologues(homologues.toArray(new Character[homologues.size()]));
-			params.setChainToProcess(chainsToProcess);
-			params.setDebug(debug.isSelected());
-
-
-			int cores = Runtime.getRuntime().availableProcessors();
-			ExecutorService executor = Executors.newFixedThreadPool(params.getThreadLimit() / cores * 100);
-			Runnable worker = new WorkerThread(params, executor);
-			executor.execute(worker);
+			startProgramMainThread();
 
 		}
 		updateFields();
+
+	}
+
+	private void startProgramMainThread() {
+		params.setHetAtmProcess(keepHetAtm.isSelected());
+		params.setDebug(debug.isSelected());
+		params.setThreadLimit((Integer) threadLimit.getValue());
+		params.setSaveDefaults(saveDefaultsCheckBox.isSelected());
+
+		if (saveDefaultsCheckBox.isSelected()) {
+			params.setProperty("Save Defaults", String.valueOf(true));
+			File configFile = new File("config.xml");
+			OutputStream outputStream = null;
+			try {
+				outputStream = new FileOutputStream(configFile);
+				params.storeToXML(outputStream, "Modeling Tool default settings");
+				outputStream.close();
+				System.out.println("Saved values to \"config.xml\" param file.");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+
+
+		} else {
+			File configFile = new File("config.xml");
+			configFile.delete();
+		}
+
+		TableModel chainlist = chainListTable.getModel();
+		LinkedList<Character> chainsToStrip = new LinkedList<>();
+		LinkedList<Character> homologues = new LinkedList<>();
+		Character chainsToProcess = null;
+		for (int i = 0; i < chainlist.getRowCount(); i++) {
+			if (chainlist.getValueAt(i, 2).equals(true)) {
+				chainsToProcess = (Character) chainlist.getValueAt(i, 0);
+
+			}
+			if (chainlist.getValueAt(i, 3).equals(true)) {
+				chainsToStrip.add((Character) chainlist.getValueAt(i, 0));
+			}
+			if (chainlist.getValueAt(i, 4).equals(true)) {
+				homologues.add((Character) chainlist.getValueAt(i, 0));
+			}
+		}
+		params.setChainsToStrip(chainsToStrip.toArray(new Character[chainsToStrip.size()]));
+		params.setSymmetricHomologues(homologues.toArray(new Character[homologues.size()]));
+		params.setChainToProcess(chainsToProcess);
+		params.setDebug(debug.isSelected());
+
+
+		threads = params.getThreadLimit();
+		ExecutorService executor = Executors.newFixedThreadPool(threads-1);
+		ExecutorService executorSF = Executors.newFixedThreadPool(1);
+		CRYS_Score crysScore;
+		List<List<SCWRLrunner>> SCWRLruns;
+		List<SFCheckThread> SFCheckRuns = null;
+		List<List<Future<String[]>>> SCWRLexecutionList = new LinkedList<>();
+		List<String[]> SFCheckResultSet = new LinkedList<>();
+		try {
+			crysScore = new CRYS_Score(params);
+			SCWRLruns = crysScore.iterateAndGenScwrl();
+
+			for (List<SCWRLrunner> SCWRLTasks : SCWRLruns) {
+				List<Future<String[]>> oneBatch = new LinkedList<>();
+				for (SCWRLrunner singleRun : SCWRLTasks) {
+					oneBatch.add(executor.submit(singleRun));
+				}
+				SCWRLexecutionList.add(oneBatch);
+			}
+
+			printStatus(SCWRLexecutionList);
+			crysScore.deleteChains();
+			int numOfFiles = 0;
+			for (List list : SCWRLexecutionList){
+				numOfFiles+= list.size();
+			}
+			while (numOfFiles > 0){
+				for (List<Future<String[]>> list : SCWRLexecutionList){
+					for (Future<String[]> SCWRLthread : list){
+						if (SCWRLthread.isDone() && !SCWRLthread.isCancelled()){
+							numOfFiles--;
+							SCWRLthread.cancel(true);
+							SFCheckResultSet.add(executorSF.submit(new SFCheckThread(new File(SCWRLthread.get()[0]),params)).get());
+						}
+					}
+				}
+			}
+//			SFCheckRuns = crysScore.processSCWRLfolder();
+//			System.out.println("Running SFCheck on files");
+//
+//			for (SFCheckThread sfThread : SFCheckRuns){
+//
+//				Future<File> sfExec = executor.submit(sfThread);
+//				SFCheckResultSet.add(sfExec.get());
+//			}
+
+
+
+
+			executor.shutdown();
+		} catch (IOException | MissingChainID e) {
+			System.err.println(e.getMessage());
+			System.out.println("There was a problem processing one of the files.");
+		} catch (InterruptedException | ExecutionException | TimeoutException e) {
+			System.err.println("Running SCWRL on iteration PDBs failed somehow.");
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+			executor.shutdownNow();
+		}
+
+	}
+
+	private void printStatus(List<List<Future<String[]>>> SCWRLexecutions) throws InterruptedException, TimeoutException, ExecutionException {
+		long startTime = System.currentTimeMillis();
+		float tempTime = 0;
+
+		System.out.println("******************************************************************");
+		System.out.println("            Processing SCWRL input folder \n");
+		System.out.println("******************************************************************");
+
+
+		int numOfFiles = 0;
+		for (List list : SCWRLexecutions){
+			numOfFiles+= list.size();
+		}
+
+		int blockSize = (int) (numOfFiles / (Math.ceil(Math.log10(numOfFiles))));
+		int filesScwrled = 0;
+
+		while (filesScwrled != numOfFiles) {
+			for (List<Future<String[]>> execution : SCWRLexecutions)
+			for (Future<String[]> SCWRLtask : execution) {
+				if (SCWRLtask.isDone() && !SCWRLtask.isCancelled()) {
+					filesScwrled++;
+					SCWRLtask.cancel(true);
+					System.err.println(Arrays.toString(SCWRLtask.get()));
+				}
+				if (filesScwrled % blockSize == 0) {
+					tempTime = System.currentTimeMillis();
+					float elapsed = (tempTime - startTime) / 1000f;
+					System.out.println("Processed " + filesScwrled + " files out of " + numOfFiles + "\nthis batch took: " +
+							String.valueOf(elapsed));
+					System.out.println("Should probably take about " + ((numOfFiles - filesScwrled) / blockSize * elapsed) + " Seconds");
+				}
+			}
+
+			if ((tempTime - startTime) / 1000f > TimeUnit.MINUTES.toSeconds(120)){
+				System.err.println("SCWRL execution is taking way too long for some reason");
+				throw new TimeoutException("SCWRL execution is taking way too long for some reason");
+			}
+		}
+
+
+		long stopTime = System.currentTimeMillis();
+		float elapsedTime = (stopTime - startTime) / 1000f;
+		System.out.println("******************************************************************");
+		System.out.println("Generated: " + numOfFiles + " Files in: " + elapsedTime + " seconds");
+		System.out.println("******************************************************************");
+		System.out.println("SCWRL execution terminated!");
 
 	}
 
@@ -284,7 +394,7 @@ public class MainMenu extends JPanel implements ActionListener {
 
 
 	public static void main(String[] args) throws FileNotFoundException {
-		// get number of cores
+		// get number of threads
 		int cores = Runtime.getRuntime().availableProcessors();
 		params = new RunParameters();
 		//Schedule a job for the event dispatch thread:
@@ -296,7 +406,6 @@ public class MainMenu extends JPanel implements ActionListener {
 				createAndShowGUI();
 			}
 		});
-
 
 
 	}

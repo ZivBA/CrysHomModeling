@@ -24,7 +24,7 @@ public class WorkerThread implements Runnable {
 		try {
 			crysScore = new CRYS_Score(params);
 //			crysScore.getAcidDist();
-			crysScore.scoreProtein(executor);
+			crysScore.iterateAndGenScwrl();
 
 		} catch (IOException | MissingChainID e) {
 			System.err.println(e.getMessage());

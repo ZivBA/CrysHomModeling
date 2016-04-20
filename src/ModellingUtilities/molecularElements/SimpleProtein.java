@@ -141,7 +141,7 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 
 
 		// write Crystalographic header line
-		FW.write(crysHeader);
+		FW.write(crysHeader+"\n");
 		// write structural atoms
 		for (ProtChain chain : protChains) {
 			for (AminoAcid acid : chain) {
@@ -154,11 +154,11 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 		//write HeteroAtoms and footer tags.
 		if (keepHetAtm) {
 			for (String line : hetAtm) {
-				FW.write(line);
+				FW.write(line+"\n");
 			}
 		}
 		for (String line : footers) {
-			FW.write(line);
+			FW.write(line+"\n");
 		}
 		FW.close();
 	}

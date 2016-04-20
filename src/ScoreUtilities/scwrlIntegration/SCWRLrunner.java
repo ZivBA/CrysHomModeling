@@ -3,11 +3,12 @@ package ScoreUtilities.scwrlIntegration;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Created by zivben on 06/08/15.
  */
-public class SCWRLrunner implements Runnable{
+public class SCWRLrunner implements Callable<String[]> {
 
 	File scwrlExe;
 	File input;
@@ -30,8 +31,10 @@ public class SCWRLrunner implements Runnable{
 
 	}
 
+
+
 	@Override
-	public void run() {
+	public String[] call() throws Exception {
 		try {
 			Process process = Runtime.getRuntime().exec(scwrlExe.getAbsolutePath() +
 					" -i " + input.getAbsolutePath() +
@@ -40,15 +43,18 @@ public class SCWRLrunner implements Runnable{
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-			List stdOutput = new ArrayList();
+			List<String> stdOutput = new ArrayList<>();
+			stdOutput.add(output.getAbsolutePath());
 			String line;
 			while ((line = br.readLine()) != null) {
 				stdOutput.add(line);
 			}
-			runLog = (String[]) stdOutput.toArray(new String[stdOutput.size()]);
+			runLog = stdOutput.toArray(new String[stdOutput.size()]);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		return runLog;
 	}
 }
