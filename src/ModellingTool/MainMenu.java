@@ -11,9 +11,13 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.*;
 
 
@@ -23,8 +27,6 @@ import java.util.concurrent.*;
  */
 public class MainMenu extends JPanel implements ActionListener {
 
-
-	private static PrintStream printStream;
 
 	public static RunParameters params;
 	static private final String newline = "\n";
@@ -44,7 +46,6 @@ public class MainMenu extends JPanel implements ActionListener {
 	private JTextPane limitNumberOfThreadsTextPane;
 	private JButton executeButton;
 	private JTable chainListTable;
-	private int threads;
 	private JCheckBox saveDefaultsCheckBox;
 
 	private JFileChooser fc;
@@ -53,6 +54,24 @@ public class MainMenu extends JPanel implements ActionListener {
 	private JScrollPane chainsListContainer;
 
 	private JScrollPane filesContainer;
+	private JProgressBar scwrlProgress;
+	private JProgressBar sfchkProgress;
+
+	protected static Integer scwrlProgressCounter = 0;
+	protected static int sfckProgressCounter = 0;
+	int filesScwrled = 0;
+	int filesSfchecked = 0;
+	int totalNumberOfFilesToProcess = 0;
+	public static ConcurrentLinkedQueue<File> filesToSFcheck;
+
+
+	static protected CRYS_Score crysScore;
+	protected List<List<SCWRLrunner>> SCWRLruns;
+	protected final List<List<Future<String[]>>> SCWRLexecutionList = new LinkedList<>();
+	public static List<String[]> SFCheckResultSet = new LinkedList<>();
+	//	protected static SwingWorkerExecutors executors;
+	private ExecutorService executorSC;
+	private static ExecutorService executorSF;
 
 	public MainMenu() {
 		super(new BorderLayout());
@@ -66,26 +85,29 @@ public class MainMenu extends JPanel implements ActionListener {
 		PDBButton.addActionListener(this);
 		executeButton.addActionListener(this);
 		debug.addActionListener(this);
+
+
 		//redirect standard output to onscreen log.
-		printStream = new PrintStream(new CustomOutputStream(log));
+		PrintStream printStream = new PrintStream(new CustomOutputStream(log));
 
 
 		Runtime.getRuntime().addShutdownHook(new ShutDownHook());
 		updateFields();
-		if (debug.isSelected()) {
-			System.setErr(printStream);
-			System.setOut(printStream);
-		} else {
-			System.setOut(printStream);
-		}
+		//		if (debug.isSelected()) {
+		//			System.setErr(printStream);
+		//			System.setOut(printStream);
+		//		} else {
+		//			System.setOut(printStream);
+		//		}
+		filesToSFcheck = new ConcurrentLinkedQueue<>();
 
 	}
 
 
 	private static void createAndShowGUI() {
 
-		MainMenu menu = new MainMenu();
 		JFrame frame = new JFrame("Crystallography Modeling Tool V0.√(π)");
+		MainMenu menu = new MainMenu();
 		frame.setContentPane(menu.JPanelMain);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.pack();
@@ -111,9 +133,11 @@ public class MainMenu extends JPanel implements ActionListener {
 		chainListTable = new JTable(new ChainListTableModel());
 
 		//thread count spinner
-		SpinnerNumberModel model1 = new SpinnerNumberModel(Runtime.getRuntime().availableProcessors()/2, 0, Runtime.getRuntime().availableProcessors
-				(), 1);
+		SpinnerNumberModel model1 = new SpinnerNumberModel(Runtime.getRuntime().availableProcessors() / 2, 0, Runtime.getRuntime()
+				.availableProcessors
+						(), 1);
 		threadLimit = new JSpinner(model1);
+
 
 	}
 
@@ -191,11 +215,16 @@ public class MainMenu extends JPanel implements ActionListener {
 
 	}
 
-	private void startProgramMainThread() {
+	public void startProgramMainThread() {
+
 		params.setHetAtmProcess(keepHetAtm.isSelected());
 		params.setDebug(debug.isSelected());
 		params.setThreadLimit((Integer) threadLimit.getValue());
 		params.setSaveDefaults(saveDefaultsCheckBox.isSelected());
+		scwrlProgress.setValue(0);
+		sfchkProgress.setValue(0);
+		scwrlProgressCounter = 0;
+		sfckProgressCounter = 0;
 
 		if (saveDefaultsCheckBox.isSelected()) {
 			params.setProperty("Save Defaults", String.valueOf(true));
@@ -238,67 +267,64 @@ public class MainMenu extends JPanel implements ActionListener {
 		params.setDebug(debug.isSelected());
 
 
-		threads = params.getThreadLimit();
-		ExecutorService executor = Executors.newFixedThreadPool(threads-1);
-		ExecutorService executorSF = Executors.newFixedThreadPool(1);
-		CRYS_Score crysScore;
-		List<List<SCWRLrunner>> SCWRLruns;
-		List<SFCheckThread> SFCheckRuns = null;
-		List<List<Future<String[]>>> SCWRLexecutionList = new LinkedList<>();
-		List<String[]> SFCheckResultSet = new LinkedList<>();
+		int threads = params.getThreadLimit();
+		executorSC = Executors.newFixedThreadPool(threads - 1);
+		executorSF = Executors.newFixedThreadPool(1);
+
+
+		//		ExecutorService executor = Executors.newFixedThreadPool(threads-1);
+		//		ExecutorService executorSF = Executors.newFixedThreadPool(1);
+
+
+		crysScore = new CRYS_Score(params);
+		totalNumberOfFilesToProcess = crysScore.getExpectedTotalNumberOfFiles();
+		scwrlProgress.setMaximum(totalNumberOfFilesToProcess);
+		sfchkProgress.setMaximum(totalNumberOfFilesToProcess);
+
+
 		try {
-			crysScore = new CRYS_Score(params);
+
 			SCWRLruns = crysScore.iterateAndGenScwrl();
-
 			for (List<SCWRLrunner> SCWRLTasks : SCWRLruns) {
-				List<Future<String[]>> oneBatch = new LinkedList<>();
 				for (SCWRLrunner singleRun : SCWRLTasks) {
-					oneBatch.add(executor.submit(singleRun));
-				}
-				SCWRLexecutionList.add(oneBatch);
-			}
+					singleRun.addPropertyChangeListener(new PropertyChangeListener() {
+						@Override
+						public void propertyChange(PropertyChangeEvent e) {
+							if (e.getPropertyName().equals("progress")) {
+								scwrlProgressCounter++;
+								if (scwrlProgressCounter%100 == 0){
+									System.out.println("Processed another 100 SCWRLS");
+								}
+								scwrlProgress.setValue(scwrlProgressCounter);
+								checkSCWRLfile();
+							}
 
-			printStatus(SCWRLexecutionList);
-			crysScore.deleteChains();
-			int numOfFiles = 0;
-			for (List list : SCWRLexecutionList){
-				numOfFiles+= list.size();
-			}
-			while (numOfFiles > 0){
-				for (List<Future<String[]>> list : SCWRLexecutionList){
-					for (Future<String[]> SCWRLthread : list){
-						if (SCWRLthread.isDone() && !SCWRLthread.isCancelled()){
-							numOfFiles--;
-							SCWRLthread.cancel(true);
-							SFCheckResultSet.add(executorSF.submit(new SFCheckThread(new File(SCWRLthread.get()[0]),params)).get());
 						}
-					}
+					});
+					executorSC.submit(singleRun);
 				}
 			}
-//			SFCheckRuns = crysScore.processSCWRLfolder();
-//			System.out.println("Running SFCheck on files");
-//
-//			for (SFCheckThread sfThread : SFCheckRuns){
-//
-//				Future<File> sfExec = executor.submit(sfThread);
-//				SFCheckResultSet.add(sfExec.get());
-//			}
 
 
+			//			SFCheckRuns = crysScore.processSCWRLfolder();
+			//			System.out.println("Running SFCheck on files");
+			//
+			//			for (SFCheckThread sfThread : SFCheckRuns){
+			//
+			//				Future<File> sfExec = executor.submit(sfThread);
+			//				SFCheckResultSet.add(sfExec.get());
+			//			}
 
 
-			executor.shutdown();
+			//						executors.shutdown();
 		} catch (IOException | MissingChainID e) {
 			System.err.println(e.getMessage());
 			System.out.println("There was a problem processing one of the files.");
-		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			System.err.println("Running SCWRL on iteration PDBs failed somehow.");
-			System.err.println(e.getMessage());
-			e.printStackTrace();
-			executor.shutdownNow();
 		}
 
+
 	}
+
 
 	private void printStatus(List<List<Future<String[]>>> SCWRLexecutions) throws InterruptedException, TimeoutException, ExecutionException {
 		long startTime = System.currentTimeMillis();
@@ -310,8 +336,8 @@ public class MainMenu extends JPanel implements ActionListener {
 
 
 		int numOfFiles = 0;
-		for (List list : SCWRLexecutions){
-			numOfFiles+= list.size();
+		for (List<Future<String[]>> list : SCWRLexecutions) {
+			numOfFiles += list.size();
 		}
 
 		int blockSize = (int) (numOfFiles / (Math.ceil(Math.log10(numOfFiles))));
@@ -319,22 +345,22 @@ public class MainMenu extends JPanel implements ActionListener {
 
 		while (filesScwrled != numOfFiles) {
 			for (List<Future<String[]>> execution : SCWRLexecutions)
-			for (Future<String[]> SCWRLtask : execution) {
-				if (SCWRLtask.isDone() && !SCWRLtask.isCancelled()) {
-					filesScwrled++;
-					SCWRLtask.cancel(true);
-					System.err.println(Arrays.toString(SCWRLtask.get()));
+				for (Future<String[]> SCWRLtask : execution) {
+					if (SCWRLtask.isDone() && !SCWRLtask.isCancelled()) {
+						filesScwrled++;
+						SCWRLtask.cancel(true);
+						System.err.println(Arrays.toString(SCWRLtask.get()));
+					}
+					if (filesScwrled % blockSize == 0) {
+						tempTime = System.currentTimeMillis();
+						float elapsed = (tempTime - startTime) / 1000f;
+						System.out.println("Processed " + filesScwrled + " files out of " + numOfFiles + "\nthis batch took: " +
+								String.valueOf(elapsed));
+						System.out.println("Should probably take about " + ((numOfFiles - filesScwrled) / blockSize * elapsed) + " Seconds");
+					}
 				}
-				if (filesScwrled % blockSize == 0) {
-					tempTime = System.currentTimeMillis();
-					float elapsed = (tempTime - startTime) / 1000f;
-					System.out.println("Processed " + filesScwrled + " files out of " + numOfFiles + "\nthis batch took: " +
-							String.valueOf(elapsed));
-					System.out.println("Should probably take about " + ((numOfFiles - filesScwrled) / blockSize * elapsed) + " Seconds");
-				}
-			}
 
-			if ((tempTime - startTime) / 1000f > TimeUnit.MINUTES.toSeconds(120)){
+			if ((tempTime - startTime) / 1000f > TimeUnit.MINUTES.toSeconds(120)) {
 				System.err.println("SCWRL execution is taking way too long for some reason");
 				throw new TimeoutException("SCWRL execution is taking way too long for some reason");
 			}
@@ -392,6 +418,17 @@ public class MainMenu extends JPanel implements ActionListener {
 		}
 	}
 
+	//	public void propertyChange(PropertyChangeEvent evt) {
+	//		if ("progress" == evt.getPropertyName()) {
+	//			int progress = (Integer) evt.getNewValue();
+	//			sfchkProgress.setValue(progress);
+	//		}
+	//		if ("scwrlProgressCounter" == evt.getPropertyName()) {
+	//			int progress = (Integer) evt.getNewValue();
+	//			scwrlProgress.setValue(progress);
+	//		}
+	//	}
+
 
 	public static void main(String[] args) throws FileNotFoundException {
 		// get number of threads
@@ -410,6 +447,39 @@ public class MainMenu extends JPanel implements ActionListener {
 
 	}
 
+	public void checkSCWRLfile() {
+		try {
+			SFCheckThread sfThread = new SFCheckThread(filesToSFcheck.poll(), params);
+			sfThread.addPropertyChangeListener(new PropertyChangeListener() {
+				@Override
+				public void propertyChange(PropertyChangeEvent e) {
+					if (e.getPropertyName().equals("progress")) {
+						sfckProgressCounter++;
+						if (sfckProgressCounter%100 == 0){
+							System.out.println("Processed another 100 SFCHECKS");
+						}
+						sfchkProgress.setValue(scwrlProgressCounter);
+						checkIfLastSFCHECK();
+
+					}
+
+				}
+			});
+			executorSF.submit(sfThread);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void checkIfLastSFCHECK() {
+		if (sfckProgressCounter == scwrlProgressCounter && sfckProgressCounter != 1) {
+			crysScore.processSFCheckResults(SFCheckResultSet);
+			log.append("Finished Processing Results, You may exit!");
+
+		}
+
+	}
+
 
 	private class ShutDownHook extends Thread {
 		public void run() {
@@ -419,6 +489,91 @@ public class MainMenu extends JPanel implements ActionListener {
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
 			}
+			crysScore.deleteChains();
 		}
 	}
+
+	//	class processingTask extends SwingWorker<List<String[]>, Void> {
+	//
+	//		List<String> filesToSf = new ArrayList<>();
+	//		public processingTask() {
+	//			super();
+	//			setProgress(0);
+	//		}
+	//
+	//		@Override
+	//		protected List<String[]> doInBackground() throws Exception {
+	//
+	//			if (SCWRLexecutionList.size() == 0) {
+	//				filesToSf = crysScore.getScwrledFiles();
+	//			} else {
+	//				for (List<Future<String[]>> list : SCWRLexecutionList) {
+	//					filesScwrled += list.size();
+	//				}
+	//			}
+	//
+	//			int blockSize = (int) (filesScwrled / (Math.ceil(Math.log10(filesScwrled))));
+	//			int origNumFiles = filesScwrled;
+	//			while (filesScwrled < origNumFiles) {
+	//				for (List<Future<String[]>> list : SCWRLexecutionList) {
+	//					for (Future<String[]> SCWRLthread : list) {
+	//						if (SCWRLthread.isDone() && !SCWRLthread.isCancelled()) {
+	//							filesScwrled++;
+	//							SCWRLthread.cancel(true);
+	//							try {
+	//								filesToSf.add(SCWRLthread.get()[0]);
+	//							} catch (InterruptedException e) {
+	//								e.printStackTrace();
+	//							} catch (ExecutionException e) {
+	//								e.printStackTrace();
+	//							}
+	//							if (filesScwrled % blockSize == 0) {
+	//								scwrlProgressCounter = (int) (100 - ((float) filesScwrled / origNumFiles * 100f));
+	//								setProgress(Math.min(scwrlProgressCounter, 100));
+	//
+	//							}
+	//
+	//						}
+	//					}
+	//				}
+	//				for (String fileToSf : filesToSf) {
+	//					try {
+	//						SFCheckResultSet.add(executors.submitSF(new SFCheckThread(new File(fileToSf), params)));
+	//						filesSfchecked++;
+	//					} catch (ExecutionException e) {
+	//						e.printStackTrace();
+	//					} catch (InterruptedException e) {
+	//						e.printStackTrace();
+	//					} catch (IOException e) {
+	//						e.printStackTrace();
+	//					}
+	//					filesToSf.remove(fileToSf);
+	//
+	//				}
+	//
+	//
+	//			}
+	//			while (filesSfchecked != origNumFiles) {
+	//				if (filesSfchecked % blockSize == 0) {
+	//					sfckProgressCounter = (int) (100 - ((float) filesSfchecked / origNumFiles * 100));
+	//					setProgress(Math.min(sfckProgressCounter, 100));
+	//
+	//				}
+	//			}
+	//			return SFCheckResultSet;
+	//		}
+	//
+	//		@Override
+	//		protected void done() {
+	//			scwrlProgress.setValue(100);
+	//			sfchkProgress.setValue(100);
+	//			try {
+	//				crysScore.processSFCheckResults(get());
+	//			} catch (Exception e) {
+	//				e.printStackTrace();
+	//			}
+	//
+	//
+	//		}
+	//	}
 }

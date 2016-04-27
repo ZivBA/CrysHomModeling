@@ -18,8 +18,11 @@ import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static ScoreUtilities.ScoringGeneralHelpers.csvToMatrix;
+import static ScoreUtilities.ScoringGeneralHelpers.writeMatrixToCSV;
 
 /**
  * Created by zivben on 09/04/16.
@@ -33,13 +36,20 @@ public class CRYS_Score {
 	public ArrayList<String> logFile = new ArrayList<>();
 	public ArrayList<File> toDelete = new ArrayList<>();
 	private List<Integer[]> originalPos;
-	File scwrlOutput;
+	private File scwrlOutput;
+
+	public int getExpectedTotalNumberOfFiles() {
+		return expectedTotalNumberOfFiles;
+	}
+
+	private int expectedTotalNumberOfFiles;
 
 	public CRYS_Score(RunParameters params) {
 		this.params = params;
 		try {
 			this.myProt = new SimpleProtein(params.getPDBsrc(), params);
 			requestedChain = params.getChainToProcess();
+			expectedTotalNumberOfFiles = myProt.getChain(requestedChain).getLength()*20;
 			//TODO new MAP object
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
@@ -134,7 +144,6 @@ public class CRYS_Score {
 
 		} catch (Exception e) {
 			System.out.println("Existing CSVs not found or malformed, processing from scratch.");
-			;
 			return false;
 		}
 
@@ -201,9 +210,79 @@ public class CRYS_Score {
 		if (!params.isDebug()){
 			for (File deleteCandidate: toDelete){
 				deleteCandidate.delete();
+
+				try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(deleteCandidate.toPath())) {
+					for (Path path : directoryStream) {
+						if (!path.getFileName().toString().endsWith("_SCWRLed.pdb")) {
+							path.toFile().delete();
+						}
+					}
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
 			}
 		}
 	}
 
 
+	public void processSFCheckResults(List<String[]> sfCheckResultSet) {
+		int chainLength = myProt.getChain(requestedChain).getLength();
+		int bias = myProt.getChain(requestedChain).getSequenceBias();
+		File resultCSV = null;
+		try {
+			File tempCSVfolder = ScoringGeneralHelpers.makeFolder(new File(myProt.getSource().getParent() + File.separator + "tempCSVs"));
+			resultCSV = new File(tempCSVfolder.getAbsolutePath() + File.separator + myProt.getFileName()
+					+ "_" + requestedChain + "_resultMatrix.csv");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+
+		Pattern p = Pattern.compile(".*?(?:_(\\d+)_).*?_([A-Z]+)_.*",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+		Matcher m = p.matcher("");
+
+		System.out.println("Processing Results");
+		proteinIntensityValueMatrix = new double[20][chainLength];
+		for (String[] line : sfCheckResultSet){
+			m.reset(line[0]);
+			m.matches();
+			int position = 0;
+			int resNum = 0;
+			try {
+				position = Integer.parseInt(m.group(1))-bias;
+				resNum = ProteinActions.acidToIndex(m.group(2));
+			} catch (Exception e) {
+				System.out.println("Problem matching string: "+line[0]);
+				e.printStackTrace();
+			}
+			proteinIntensityValueMatrix[resNum][position] = Double.parseDouble(line[1]);
+		}
+
+		if (resultCSV!= null){
+			try {
+				writeMatrixToCSV(resultCSV,proteinIntensityValueMatrix);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+		System.out.println("hello!");
+
+	}
+
+	public List<String> getScwrledFiles() throws IOException {
+		List<String> filesToScwrl = new ArrayList<>();
+
+		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(scwrlOutput.toPath())) {
+			for (Path path : directoryStream) {
+				if (!path.getFileName().toString().endsWith("_SCWRLed.pdb")) {
+					filesToScwrl.add(path.toString());
+				}
+			}
+		} catch (IOException ex) {
+			throw ex;
+		}
+		return filesToScwrl;
+	}
 }

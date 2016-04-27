@@ -5,6 +5,7 @@ import ModellingUtilities.molecularElements.SimpleProtein;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -165,5 +166,21 @@ public class ScoringGeneralHelpers {
 			return null;
 		}
 		return resultMatrix;
+	}
+
+	public static  void writeMatrixToCSV(File outputCSV, double[][] matrix) throws IOException {
+		FileWriter FW = new FileWriter(outputCSV);
+		for (int i = 0; i < matrix[0].length; i++) {
+			String row = "";
+			for (int j = 0; j < matrix.length; j++) {
+				row += matrix[j][i];
+				if (j != matrix.length - 1) {
+					row += ", ";
+				}
+			}
+			row += "\n";
+			FW.write(row);
+		}
+		FW.close();
 	}
 }

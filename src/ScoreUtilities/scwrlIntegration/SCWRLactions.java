@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static ScoreUtilities.ScoringGeneralHelpers.*;
+import static ScoreUtilities.ScoringGeneralHelpers.SCWRL_PATH;
 
 /**
  * Created by zivben on 06/08/15.
@@ -40,10 +40,10 @@ public class SCWRLactions {
 
 		for (File fileName : fileNames) {
 			File SCWRLFile = new File(fileName.getAbsolutePath().replace(".pdb", "_SCWRLed.pdb"));
-			if (!SCWRLFile.exists()) {
+//			if (!SCWRLFile.exists()) {
 				SCWRLrunner oneRun = new SCWRLrunner(SCWRL_PATH,fileName,SCWRLFile);
 				SCWRLtasks.add(oneRun);
-			}
+//			}
 		}
 
 		return SCWRLtasks;

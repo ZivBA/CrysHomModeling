@@ -97,7 +97,7 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 				chains.get(chainCounter).add(lineInFile);
 				chainCounter++;
 				chains.add(new ArrayList<String>());
-			} else if (lineInFile.matches("(" + HETATM + ").*")) {
+			} else if (lineInFile.matches("(" + HETATM + ").*") && !lineInFile.contains("HOH")) {
 				heteroAtoms.add(lineInFile);
 			} else if (lineInFile.matches("(" + FOOTER_TAGS + ").*")) {
 				footerAtms.add(lineInFile);

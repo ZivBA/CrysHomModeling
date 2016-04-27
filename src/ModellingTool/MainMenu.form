@@ -1,55 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ModellingTool.MainMenu">
-  <grid id="27dc6" binding="JPanelMain" layout-manager="GridLayoutManager" row-count="11" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="JPanelMain" layout-manager="GridLayoutManager" row-count="12" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="800" height="600"/>
+      <xy x="20" y="20" width="1024" height="768"/>
     </constraints>
     <properties>
       <maximumSize width="-1" height="-1"/>
-      <minimumSize width="800" height="600"/>
+      <minimumSize width="1024" height="768"/>
       <name value="JPanelMain"/>
-      <preferredSize width="800" height="600"/>
+      <preferredSize width="1024" height="768"/>
     </properties>
     <border type="none"/>
     <children>
-      <component id="d2241" class="javax.swing.JTextPane" binding="crystallographyModelingToolV0TextPane" default-binding="true">
-        <constraints>
-          <grid row="0" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="40"/>
-          </grid>
-        </constraints>
-        <properties>
-          <editable value="false"/>
-          <enabled value="true"/>
-          <text value="Crystallography Modeling Tool V0.1"/>
-        </properties>
-      </component>
-      <component id="55340" class="javax.swing.JTextPane" binding="pleasePointToSCWRLTextPane" default-binding="true">
-        <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="581" height="35"/>
-          </grid>
-        </constraints>
-        <properties>
-          <editable value="false"/>
-          <text value="Please point to SCWRL and SFCheck executables. &#10;If no SFCheck path is chosen, the supplied version will be used."/>
-        </properties>
-      </component>
-      <component id="6a05e" class="javax.swing.JTextPane" binding="pleaseChooseTheSourceTextPane" default-binding="true">
-        <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="581" height="88"/>
-          </grid>
-        </constraints>
-        <properties>
-          <editable value="false"/>
-          <text value="Please Choose the source map file and PDB"/>
-        </properties>
-      </component>
       <component id="3e918" class="javax.swing.JTextPane" binding="selectWhichChainsAreTextPane" default-binding="true">
         <constraints>
-          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="7" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="581" height="50"/>
           </grid>
         </constraints>
@@ -60,7 +26,7 @@
       </component>
       <scrollpane id="cb43d" binding="logPane">
         <constraints>
-          <grid row="7" column="0" row-span="4" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="8" column="0" row-span="4" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <minimum-size width="-1" height="100"/>
             <preferred-size width="581" height="100"/>
             <maximum-size width="-1" height="100"/>
@@ -85,86 +51,14 @@
           </component>
         </children>
       </scrollpane>
-      <component id="f11af" class="javax.swing.JTextPane" binding="limitNumberOfThreadsTextPane" default-binding="true">
-        <constraints>
-          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-            <preferred-size width="581" height="42"/>
-          </grid>
-        </constraints>
-        <properties>
-          <editable value="false"/>
-          <text value="Limit number of threads (default is 50% system processors)"/>
-        </properties>
-      </component>
-      <grid id="946b" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
-        <constraints>
-          <grid row="1" column="1" row-span="2" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <minimum-size width="200" height="-1"/>
-            <maximum-size width="200" height="-1"/>
-          </grid>
-        </constraints>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <component id="16968" class="javax.swing.JButton" binding="SCWRLExecutableButton" default-binding="true">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                <minimum-size width="170" height="-1"/>
-                <preferred-size width="170" height="-1"/>
-                <maximum-size width="170" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <text value="SCWRL Executable"/>
-            </properties>
-          </component>
-          <component id="d2926" class="javax.swing.JButton" binding="SFCheckExecutableButton" default-binding="true">
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                <minimum-size width="170" height="-1"/>
-                <preferred-size width="170" height="-1"/>
-                <maximum-size width="170" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <text value="SFCheck Executable"/>
-            </properties>
-          </component>
-          <component id="5d15c" class="javax.swing.JButton" binding="mapButton" default-binding="true">
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                <minimum-size width="170" height="-1"/>
-                <preferred-size width="170" height="-1"/>
-                <maximum-size width="170" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <text value="Map"/>
-            </properties>
-          </component>
-          <component id="39f6a" class="javax.swing.JButton" binding="PDBButton" default-binding="true">
-            <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                <minimum-size width="170" height="-1"/>
-                <preferred-size width="170" height="-1"/>
-                <maximum-size width="170" height="-1"/>
-              </grid>
-            </constraints>
-            <properties>
-              <text value="PDB"/>
-            </properties>
-          </component>
-        </children>
-      </grid>
       <vspacer id="77dfd">
         <constraints>
-          <grid row="4" column="0" row-span="1" col-span="2" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="0" row-span="1" col-span="3" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
       <component id="ca5b5" class="javax.swing.JCheckBox" binding="saveDefaultsCheckBox" default-binding="true">
         <constraints>
-          <grid row="8" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="9" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Save defaults"/>
@@ -172,7 +66,7 @@
       </component>
       <scrollpane id="6411f" binding="chainsListContainer">
         <constraints>
-          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="6" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <clientProperties>
@@ -186,9 +80,36 @@
           </component>
         </children>
       </scrollpane>
+      <component id="f3283" class="javax.swing.JCheckBox" binding="debug">
+        <constraints>
+          <grid row="11" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Debug"/>
+        </properties>
+      </component>
+      <component id="cf794" class="javax.swing.JCheckBox" binding="keepHetAtm">
+        <constraints>
+          <grid row="10" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Keep Het-Atm"/>
+        </properties>
+      </component>
+      <component id="b2405" class="javax.swing.JButton" binding="executeButton" default-binding="true">
+        <constraints>
+          <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="170" height="-1"/>
+            <maximum-size width="170" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <text value="Execute!"/>
+        </properties>
+      </component>
       <scrollpane id="10b61" binding="filesContainer">
         <constraints>
-          <grid row="5" column="1" row-span="2" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -206,43 +127,152 @@
           </component>
         </children>
       </scrollpane>
-      <component id="f3283" class="javax.swing.JCheckBox" binding="debug">
+      <grid id="75246" layout-manager="GridLayoutManager" row-count="7" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="10" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Debug"/>
-        </properties>
-      </component>
-      <component id="cf794" class="javax.swing.JCheckBox" binding="keepHetAtm">
-        <constraints>
-          <grid row="9" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-        </constraints>
-        <properties>
-          <text value="Keep Het-Atm"/>
-        </properties>
-      </component>
-      <component id="ba25b" class="javax.swing.JSpinner" binding="threadLimit" custom-create="true">
-        <constraints>
-          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false">
-            <minimum-size width="170" height="-1"/>
-            <preferred-size width="170" height="-1"/>
-            <maximum-size width="170" height="-1"/>
+          <grid row="0" column="0" row-span="4" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <minimum-size width="300" height="-1"/>
           </grid>
         </constraints>
         <properties/>
-      </component>
-      <component id="b2405" class="javax.swing.JButton" binding="executeButton" default-binding="true">
-        <constraints>
-          <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
-            <preferred-size width="170" height="-1"/>
-            <maximum-size width="170" height="-1"/>
-          </grid>
-        </constraints>
-        <properties>
-          <text value="Execute!"/>
-        </properties>
-      </component>
+        <border type="none"/>
+        <children>
+          <component id="aea7b" class="javax.swing.JButton" binding="SCWRLExecutableButton" default-binding="true">
+            <constraints>
+              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="200" height="-1"/>
+                <preferred-size width="200" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="SCWRL Executable"/>
+            </properties>
+          </component>
+          <component id="7fb52" class="javax.swing.JButton" binding="SFCheckExecutableButton" default-binding="true">
+            <constraints>
+              <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="200" height="-1"/>
+                <preferred-size width="200" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="SFCheck Executable"/>
+            </properties>
+          </component>
+          <component id="64e07" class="javax.swing.JButton" binding="mapButton" default-binding="true">
+            <constraints>
+              <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="200" height="-1"/>
+                <preferred-size width="200" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="Map"/>
+            </properties>
+          </component>
+          <component id="ce85b" class="javax.swing.JButton" binding="PDBButton" default-binding="true">
+            <constraints>
+              <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="200" height="-1"/>
+                <preferred-size width="200" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="PDB"/>
+            </properties>
+          </component>
+          <component id="ba25b" class="javax.swing.JSpinner" binding="threadLimit" custom-create="true">
+            <constraints>
+              <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="200" height="-1"/>
+                <preferred-size width="200" height="-1"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="2c42f" class="javax.swing.JProgressBar" binding="sfchkProgress">
+            <constraints>
+              <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="200" height="-1"/>
+                <preferred-size width="200" height="-1"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="809c5" class="javax.swing.JProgressBar" binding="scwrlProgress">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="200" height="-1"/>
+                <preferred-size width="200" height="-1"/>
+              </grid>
+            </constraints>
+            <properties/>
+          </component>
+          <component id="e47fc" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="70" height="-1"/>
+                <preferred-size width="70" height="20"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="SFCheck"/>
+            </properties>
+          </component>
+          <component id="dbadd" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="70" height="-1"/>
+                <preferred-size width="70" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <text value="SCWRLS"/>
+            </properties>
+          </component>
+          <component id="6a05e" class="javax.swing.JTextPane" binding="pleaseChooseTheSourceTextPane" default-binding="true">
+            <constraints>
+              <grid row="4" column="0" row-span="2" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <editable value="false"/>
+              <text value="Please Choose the source map file and PDB"/>
+            </properties>
+          </component>
+          <component id="55340" class="javax.swing.JTextPane" binding="pleasePointToSCWRLTextPane" default-binding="true">
+            <constraints>
+              <grid row="2" column="0" row-span="2" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="1" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <editable value="false"/>
+              <text value="Please point to SCWRL and SFCheck executables. &#10;If no SFCheck path is chosen, the supplied version will be used."/>
+            </properties>
+          </component>
+          <component id="d2241" class="javax.swing.JTextPane" binding="crystallographyModelingToolV0TextPane" default-binding="true">
+            <constraints>
+              <grid row="0" column="0" row-span="2" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="290" height="82"/>
+              </grid>
+            </constraints>
+            <properties>
+              <editable value="false"/>
+              <enabled value="true"/>
+              <text value="Crystallography Modeling Tool V0.1"/>
+            </properties>
+          </component>
+          <component id="f11af" class="javax.swing.JTextPane" binding="limitNumberOfThreadsTextPane" default-binding="true">
+            <constraints>
+              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <editable value="false"/>
+              <text value="Limit number of threads (default is 50% system processors)"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
     </children>
   </grid>
 </form>
