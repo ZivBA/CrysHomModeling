@@ -18,9 +18,6 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 
 	private File source;
 	private String fileName;
-	private char[] symmetricHomologues;
-	private char[] chainsToStrip;
-	private char chainToProcess;
 	private boolean keepHetAtm;
 
 	private List<Integer[]> protOriginalPositions = new ArrayList<>();
@@ -30,10 +27,6 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 	private List<String> footers;   // array of the remaining footer tags.
 	private int numChains;
 	public int[][] acidDist;
-
-	public void setKeepHetAtm(boolean keepHetAtm) {
-		this.keepHetAtm = keepHetAtm;
-	}
 
 	/**
 	 * constructor for SimpleProtein from PDB file.</br>
@@ -114,6 +107,7 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 		hetAtm = heteroAtoms;
 		footers = footerAtms;
 		numChains = chainCounter;
+		saveOriginalPositions();
 
 	}
 
@@ -223,6 +217,33 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 		return acidDist;
 	}
 
+
+	public void replaceTempValue(SimpleProtein srcProt) {
+		String format = "%6.2f";
+		for (ProtChain chain : this){
+			for (AminoAcid acid : chain){
+				for (SimpleAtom atom : acid){
+					String tempOrg = atom.originalString;
+
+					if (atom.isBackBone) {
+						atom.tempFactor = srcProt.getChain(chain.getChainID()).getAminoAcidAt(acid.getPosition()).getAtom(atom).tempFactor;
+						String tempFactorString = String.format(format, atom.tempFactor);
+						atom.originalString = tempOrg.substring(0,RES_TEMP_START) + tempFactorString + tempOrg.substring(RES_TEMP_END+1,tempOrg.length());
+					}
+					else{
+						atom.tempFactor = srcProt.getChain(chain.getChainID()).getAminoAcidAt(acid.getPosition()).getCAtempFactor();
+						String tempFctrString = String.format(format, atom.tempFactor);
+						atom.originalString = tempOrg.substring(0,RES_TEMP_START) + tempFctrString + tempOrg.substring(RES_TEMP_END+1,tempOrg.length
+								());
+					}
+				}
+
+			}
+		}
+	}
+
+
+
 	/**
 	 * helper class to bulk residues together in respective chains.
 	 * also performs the actual processing from string array to molecular elements.
@@ -237,7 +258,6 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 		public double[][] backBoneZvalueMatrix;     // ZValues for BB atoms
 		public double[] backBoneZvalue;             // zvalues of the BB atoms in the original protein
 
-		private int sequenceBias;                   // diff between seq ID of first atom and '0'
 		public Integer[] originalPositions;         // acid ID of the original AAcids in the protein
 
 		public double[] medianTrue = new double[20];
@@ -247,6 +267,8 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 
 
 		private List<AminoAcid> residues = new ArrayList<>();
+		public double[] allMedian;
+		public double[][] newZvalue;
 
 		/**
 		 * constructor creating a chain from a list of strings (assume all strings are for a single chain)
@@ -280,18 +302,19 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 			residues.add(new AminoAcid(tempAtomList));
 
 			chainID = residues.get(0).getChainID();
-			try {
-				this.sequenceBias = residues.get(0).getSeqNum();
-			} catch (IndexOutOfBoundsException e) {
-				System.out.println("Possible empty PDB file at:\n" + source.toString());
-			}
+
 			//intensity values and z values for residues
 			resIntensityValueMatrix = new double[20][residues.size()];
 			trueZvalues = new double[residues.size()];
+			newZvalue = new double[20][residues.size()];
 			//intensity values and z values for backbone
 			backBoneIntensityValueMatrix = new double[20][residues.size()];
 			backBoneZvalue = new double[residues.size()];
 
+			Collections.sort(residues, new ResidueComparator());
+			for (int i=0; i<residues.size(); i++){
+				residues.get(i).setPosition(i);
+			}
 
 
 		}
@@ -308,14 +331,7 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 			residues.add(res);
 		}
 
-		@Override
-		public Iterator<AminoAcid> iterator() {
-			return residues.iterator();
-		}
 
-		public int getSequenceBias() {
-			return sequenceBias;
-		}
 
 		public Integer[] getOriginalPositions() {
 			return originalPositions;
@@ -329,8 +345,22 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 			return residues.size();
 		}
 
-		public AminoAcid getAminoAcidAt(int seqNum) {
-			return residues.get(seqNum);
+		public AminoAcid getAminoAcidAt(int position) {
+			return residues.get(position);
+		}
+		@Override
+		public Iterator<AminoAcid> iterator() {
+			return residues.iterator();
 		}
 	}
+
+	public class ResidueComparator implements Comparator<AminoAcid> {
+
+		@Override
+		public int compare(AminoAcid res1, AminoAcid res2) {
+			return (res1.getSeqNum() - res2.getSeqNum());
+		}
+	}
+
+
 }

@@ -3,16 +3,20 @@ package ModellingTool;
 import ModellingUtilities.molecularElements.SimpleProtein;
 import ScoreUtilities.ScoringGeneralHelpers;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Properties;
 
 /**
  * Created by zivben on 22/03/16.
  */
 public class RunParameters extends Properties{
-	public static final String SFCHECK_PATH = "SFCheck Executable", SCWRLEXE = "SCWRL Executable", PDBSRC = "PDB Source File";
-	public static final String HETATM = "Process Het-Atm",MAPSRC = "Map Source File", DEBUG="Debug Flag", THREADS = "Max threads ratio",
+	 static final String SFCHECK_PATH = "SFCheck Executable", SCWRLEXE = "SCWRL Executable", PDBSRC = "PDB Source File";
+	 static final String HETATM = "Process Het-Atm",MAPSRC = "Map Source File", DEBUG="Debug Flag", THREADS = "Max threads ratio",
 			DEFAULT="Save Defaults";
+	static final String FULL_FASTA = "thread against all available FASTA sequences, or just input sequence";
 	private File SCWRLexe;
 
 	private File SFChkexe;
@@ -32,6 +36,7 @@ public class RunParameters extends Properties{
 	private int threadLimit;
 
 	SimpleProtein sourceProt;
+	private boolean fullFastaThreading;
 
 	public RunParameters() throws FileNotFoundException {
 
@@ -66,6 +71,9 @@ public class RunParameters extends Properties{
 
 			setHetAtmProcess(Boolean.parseBoolean(this.getProperty(HETATM)));
 			setThreadLimit(Integer.valueOf(this.getProperty(THREADS)));
+			setDebug(Boolean.parseBoolean(this.getProperty(DEBUG)));
+			setSaveDefaults(Boolean.parseBoolean(this.getProperty(DEFAULT)));
+			setThreadingSelection(Boolean.parseBoolean(this.getProperty(FULL_FASTA)));
 
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -186,5 +194,14 @@ public class RunParameters extends Properties{
 
 	public File getScwrlOutputFolder() {
 		return scwrlOutputFolder;
+	}
+
+	public void setThreadingSelection(boolean threadingSelection) {
+		this.fullFastaThreading = threadingSelection;
+		this.setProperty(FULL_FASTA, String.valueOf(fullFastaThreading));
+	}
+
+	public boolean getFullFasta() {
+		return fullFastaThreading;
 	}
 }

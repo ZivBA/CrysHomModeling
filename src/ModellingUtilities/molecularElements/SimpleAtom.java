@@ -9,7 +9,7 @@ public class SimpleAtom {
 
 	protected String name;
 	protected String originalString;
-	protected int number;
+	protected int serialNumber;
 	protected String aAcidName;
 	protected char chain;
 	protected int aAcidSequence;
@@ -23,14 +23,14 @@ public class SimpleAtom {
 
 		originalString = atom;
 		name = atom.substring(ATOM_NAME_START, ATOM_NAME_END + 1);
-		number = Integer.parseInt(atom.substring(ATOM_NUM_START, ATOM_NUM_END + 1).trim());
+		serialNumber = Integer.parseInt(atom.substring(ATOM_NUM_START, ATOM_NUM_END + 1).trim());
 		aAcidName = atom.substring(RES_NAME_START, RES_NAME_END + 1);
 		chain = atom.charAt(CHAIN_ID);
 		aAcidSequence = Integer.parseInt(atom.substring(RES_SEQ_START, RES_SEQ_END + 1).trim());
 		try {
 			tempFactor = Double.parseDouble(atom.substring(RES_TEMP_START, RES_TEMP_END));
 		} catch (NullPointerException | NumberFormatException e){
-			System.err.println("No Temperture factor data for some atoms, using C-Alpha value instead");
+//			if (debug) System.err.println("No Temperture factor data for some atoms, using C-Alpha value instead");
 			tempFactor = Double.MIN_VALUE;
 		}
 		atomCoords = parseCoords(atom.substring(30, 54));
@@ -79,7 +79,7 @@ public class SimpleAtom {
 	}
 
 	public int getPos() {
-		return number;
+		return serialNumber;
 	}
 
 	public boolean isBackbone() {

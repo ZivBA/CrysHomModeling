@@ -80,12 +80,12 @@ public class ProteinActions {
 			for (String newAcid : aAcids) {
 				aminoAcid.substituteWith(newAcid);
 				for (int i=0; i<homologChains.length; i++){
-					sourceProtein.getChain(homologChains[i]).getAminoAcidAt(aminoAcid.getSeqNum()-chainToProcess.getSequenceBias()).substituteWith(newAcid);
+					sourceProtein.getChain(homologChains[i]).getAminoAcidAt(aminoAcid.getPosition()).substituteWith(newAcid);
 				}
 
 				// write new processed file
 				File fileWithNewRes = new File(ChainFolder.getAbsolutePath() + File.separator + sourceProtein
-						.getFileName() + "_res_" + aminoAcid.getSeqNum() + "_to_" + newAcid + PDB_EXTENSION);
+						.getFileName() + "_res_" + aminoAcid.getPosition() + "_to_" + newAcid + PDB_EXTENSION);
 
 				if (params.isDebug()) {
 					System.out.println("Generating permutation: " + fileWithNewRes.getName());
@@ -98,6 +98,13 @@ public class ProteinActions {
 
 				//reset to ALA
 				aminoAcid.substituteWith("ALA");
+				aminoAcid.strip();
+				for (int i=0; i<homologChains.length; i++){
+					sourceProtein.getChain(homologChains[i]).getAminoAcidAt(aminoAcid.getPosition()).substituteWith("ALA");
+					sourceProtein.getChain(homologChains[i]).getAminoAcidAt(aminoAcid.getPosition()).strip();
+
+				}
+
 
 			}
 
@@ -129,8 +136,7 @@ public class ProteinActions {
 					aminoAcid.substituteWith(acid);
 					// write new processed file
 					File fileWithNewRes = new File(outputFolder.getAbsolutePath() + File.separator + prot
-							.getFileName() + "_res_" + aminoAcid.getSeqNum() + "_to_" + acid +
-							PDB_EXTENSION);
+							.getFileName() + "_res_" + aminoAcid.getPosition() + "_to_" + acid +PDB_EXTENSION);
 
 					prot.writePDB(fileWithNewRes);
 

@@ -21,6 +21,7 @@ import static ScoreUtilities.ScoringGeneralHelpers.SCWRL_PATH;
 public class SCWRLactions {
 	/**
 	 * iterate all files in folder and scwrl them.
+	 *
 	 * @param tempFolder
 	 */
 	public static List<SCWRLrunner> genSCWRLforFolder(File tempFolder) throws IOException {
@@ -40,10 +41,10 @@ public class SCWRLactions {
 
 		for (File fileName : fileNames) {
 			File SCWRLFile = new File(fileName.getAbsolutePath().replace(".pdb", "_SCWRLed.pdb"));
-//			if (!SCWRLFile.exists()) {
-				SCWRLrunner oneRun = new SCWRLrunner(SCWRL_PATH,fileName,SCWRLFile);
-				SCWRLtasks.add(oneRun);
-//			}
+
+			SCWRLrunner oneRun = new SCWRLrunner(SCWRL_PATH, fileName, SCWRLFile);
+			SCWRLtasks.add(oneRun);
+
 		}
 
 		return SCWRLtasks;

@@ -2,6 +2,7 @@ package ScoreUtilities.SFCheckIntegration;
 
 import ModellingTool.MainMenu;
 import ModellingTool.RunParameters;
+import ModellingUtilities.molecularElements.SimpleProtein;
 
 import javax.swing.*;
 import java.io.*;
@@ -26,9 +27,13 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 	private File trueOutput;
 	private File protToProcess;
 	private boolean fakeRun = false;
-	private static File sfCheckScript = new File("/home/zivben/IdeaProjects/CrysHomModeller/paramSFcheck.btc");
 
 	public SFCheckThread(File tempProt, RunParameters params) throws IOException {
+		SimpleProtein srcProt = new SimpleProtein(params.getPDBsrc(),params);
+		SimpleProtein newProt = new SimpleProtein(tempProt,params);
+		newProt.replaceTempValue(srcProt);
+		newProt.writePDB(tempProt);
+
 		SFCheckExe = params.getSFChkexe();
 		outputFolder = new File(params.getScwrlOutputFolder().getAbsolutePath() + params.getChainToProcess() + "sfcheck_LogFiles");
 		outputFolder = makeSubFolderAt(params.getScwrlOutputFolder().getParentFile(), "sfcheck_LogFiles");
@@ -84,10 +89,9 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 			catch (IOException ex){
 				ex.printStackTrace();
 			}
-
+			setProgress(100);
 			return new String[]{protToProcess.getName(),result};
 		}
-
 
 
 		Process process = null;

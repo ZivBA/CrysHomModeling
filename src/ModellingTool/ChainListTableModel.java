@@ -1,7 +1,5 @@
 package ModellingTool;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 import javax.swing.table.DefaultTableModel;
 import java.util.Vector;
 
@@ -49,7 +47,7 @@ public class ChainListTableModel extends DefaultTableModel {
 		if (aValue instanceof Boolean && (column == 2) ) {
 			System.err.println("chain: " + this.getValueAt(row, 0) + " processing set to:" + aValue);
 			Vector rowData = (Vector) getDataVector().get(row);
-			rowData.set(2, (boolean) aValue);
+			rowData.set(2, aValue);
 			if ((Boolean)aValue) {
 				for (int i = 0; i < this.getRowCount(); i++) {
 					if (i != row) {
@@ -61,12 +59,12 @@ public class ChainListTableModel extends DefaultTableModel {
 		} else if (aValue instanceof Boolean && (column == 3) ) {
 			System.err.println("column: "+column+ "set to:" + aValue);
 			Vector rowData = (Vector) getDataVector().get(row);
-			rowData.set(3, (boolean) aValue);
+			rowData.set(3, aValue);
 			fireTableCellUpdated(row, column);
 		} else if (aValue instanceof Boolean && (column == 4) ) {
 			System.err.println("column: "+column+ "set to:" + aValue);
 			Vector rowData = (Vector) getDataVector().get(row);
-			rowData.set(4, (boolean) aValue);
+			rowData.set(4, aValue);
 			fireTableCellUpdated(row, column);
 		}
 	}

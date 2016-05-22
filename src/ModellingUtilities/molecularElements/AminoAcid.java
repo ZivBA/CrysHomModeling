@@ -14,7 +14,10 @@ public class AminoAcid implements Iterable<SimpleAtom>{
 	private char singleLetterName;
 	private char chainID;
 	private int seqNum;
+	private int position;
 	private double acidScore;
+
+	private Double CATemp;
 
 	/**
 	 * constructor for AminoAcid object, gets a string list (such as from PDB file).
@@ -32,9 +35,9 @@ public class AminoAcid implements Iterable<SimpleAtom>{
 		chainID = atoms[0].chain;
 		seqNum = atoms[0].aAcidSequence;
 
-		Double CATemp = Double.MIN_VALUE;
+		CATemp = Double.MIN_VALUE;
 		for (int i=0; i<atoms.length; i++){
-			if (atoms[i].getName().equals("CA")){
+			if (atoms[i].getName().equals(" CA ")){
 				CATemp = atoms[i].tempFactor;
 			}
 			if (atoms[i].tempFactor==Double.MIN_VALUE){
@@ -87,7 +90,6 @@ public class AminoAcid implements Iterable<SimpleAtom>{
 		try {
 			name = newAcid;
 			for (SimpleAtom atom : atoms) {
-				curAtom = atom.getOriginalString();
 				atom.setaAcidName(newAcid);
 			}
 		}catch (NullPointerException e){
@@ -107,4 +109,25 @@ public class AminoAcid implements Iterable<SimpleAtom>{
 	public char getSingleLetter() {
 		return singleLetterName;
 	}
+
+	public double getCAtempFactor() {
+		return CATemp;
+	}
+
+	public SimpleAtom getAtom(SimpleAtom reqAtom) {
+		for (SimpleAtom atom : this){
+			if (atom.getName().equals(reqAtom.getName())){
+				return atom;
+			}
+		}
+		return null;
+	}
+	public int getPosition() {
+		return position;
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
+	}
+
 }
