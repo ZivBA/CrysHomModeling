@@ -137,6 +137,7 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 		try{
 			if (get().length!=0){
 				MainMenu.SFCheckResultSet.add(get());
+				MainMenu.sfckProgressCounter++;
 			}
 		} catch (Exception e){
 			e.printStackTrace();

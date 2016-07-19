@@ -68,7 +68,7 @@ public class MainMenu extends JPanel implements ActionListener {
 	FASTAinput fastaDialog;
 
 	protected static Integer scwrlProgressCounter = 0;
-	protected static int sfckProgressCounter = 0;
+	public static int sfckProgressCounter = 0;
 
 	int totalNumberOfFilesToProcess = 0;
 	public static ConcurrentLinkedQueue<File> filesToSFcheck;
@@ -424,7 +424,6 @@ public class MainMenu extends JPanel implements ActionListener {
 				@Override
 				public void propertyChange(PropertyChangeEvent e) {
 					if (e.getPropertyName().equals("progress")) {
-						sfckProgressCounter++;
 						sfchkProgress.setValue(scwrlProgressCounter);
 						checkIfLastSFCHECK();
 

@@ -143,6 +143,7 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 					FW.write(atom.getOriginalString() + "\n");
 				}
 			}
+			FW.write("TER \n");
 
 		}
 		//write HeteroAtoms and footer tags.

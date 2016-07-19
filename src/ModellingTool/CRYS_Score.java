@@ -412,7 +412,7 @@ public class CRYS_Score {
 			for (int j = 0; j < chain.resIntensityValueMatrix[i].length; j++) {
 				tempStD[i] += ((chain.resIntensityValueMatrix[i][j] - tempAvg[i]) * (chain.resIntensityValueMatrix[i][j] - tempAvg[i]));
 			}
-			tempStD[i] = (double) Math.round((Math.sqrt(tempStD[i] / chain.resIntensityValueMatrix[i].length)) * 10000000d) / 10000000d;
+			tempStD[i] = (double) Math.round((Math.sqrt(tempStD[i] / (double) chain.resIntensityValueMatrix[i].length)) * 10000d) / 10000d ;
 		}
 
 
@@ -420,11 +420,11 @@ public class CRYS_Score {
 		for (int i = 0; i < chain.resIntensityValueMatrix.length; i++) {
 			for (int j = 0; j < chain.resIntensityValueMatrix[i].length; j++) {
 
-				if (tempStD[i] < (0.000009d)) {
+				if (tempStD[i] < (0.00009d)) {
 					chain.allZvalueMatrix[i][j] = 0.0d;
 				} else {
 					Double tmpScore = (double) Math.round(
-							(((chain.resIntensityValueMatrix[i][j]) - chain.allMedian[i]) / tempStD[i]) * 10000000d) / 10000000d;
+							(((chain.resIntensityValueMatrix[i][j]) - chain.allMedian[i]) / tempStD[i]) *10000d  ) / 10000d;
 					if (tmpScore.isNaN()) {
 						tmpScore = 0.0;
 					}
