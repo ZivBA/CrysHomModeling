@@ -7,11 +7,11 @@ import meshi.molecularElements.AtomList;
 
 
 public class DisConstEnergyElement extends EnergyElement {
-    protected double weight;
-    protected Distance distance;
-    protected double targetDis;
-    protected Atom atom1;
-    protected Atom atom2;
+    private double weight;
+    private Distance distance;
+    private double targetDis;
+    private Atom atom1;
+    private Atom atom2;
     
     public DisConstEnergyElement() {}
     

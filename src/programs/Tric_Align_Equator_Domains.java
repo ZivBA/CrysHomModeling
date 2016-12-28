@@ -12,7 +12,7 @@ import java.io.FileWriter;
 import java.util.Vector;
 
 
-public class Tric_Align_Equator_Domains extends MeshiProgram implements Residues {
+class Tric_Align_Equator_Domains extends MeshiProgram implements Residues {
    
     private static String protMoveFile = null;
  
@@ -61,8 +61,7 @@ public class Tric_Align_Equator_Domains extends MeshiProgram implements Residues
 			{93,109},
 			{119,135}};
 	
-	int[][] statRange = ThermoA;
-	int[][] moveRange;
+	    int[][] moveRange;
 	switch (unitLetter) {
 	case 'A': 
 		moveRange = TCPA;
@@ -99,30 +98,30 @@ public class Tric_Align_Equator_Domains extends MeshiProgram implements Residues
 	}
 
 
-	Vector<double[]> statArray = new Vector<double[]>();
-	Vector<double[]> moveArray = new Vector<double[]>();
+	Vector<double[]> statArray = new Vector<>();
+	Vector<double[]> moveArray = new Vector<>();
 	int countingRefAtoms = 0;
-	for (int rangeC=0 ; rangeC<moveRange.length ; rangeC++) {
-		for (int resC=moveRange[rangeC][0] ; resC<=moveRange[rangeC][1] ; resC++) {
-			double[] tmpXYZ_move = new double[3];
-			Atom atom_move = move.residue(resC).ca();
-			tmpXYZ_move[0] =atom_move.x();
-			tmpXYZ_move[1] =atom_move.y();
-			tmpXYZ_move[2] =atom_move.z();
-			moveArray.add(tmpXYZ_move);
-			countingRefAtoms++;
-		}
-	}
-	for (int rangeC=0 ; rangeC<statRange.length ; rangeC++) {
-		for (int resC=statRange[rangeC][0] ; resC<=statRange[rangeC][1] ; resC++) {
-			double[] tmpXYZ_stat = new double[3];
-			Atom atom_stat = stat.residue(resC).ca();
-			tmpXYZ_stat[0] =atom_stat.x();
-			tmpXYZ_stat[1] =atom_stat.y();
-			tmpXYZ_stat[2] =atom_stat.z();
-			statArray.add(tmpXYZ_stat);
-		}
-	}
+	    for (int[] aMoveRange : moveRange) {
+		    for (int resC = aMoveRange[0]; resC <= aMoveRange[1]; resC++) {
+			    double[] tmpXYZ_move = new double[3];
+			    Atom atom_move = move.residue(resC).ca();
+			    tmpXYZ_move[0] = atom_move.x();
+			    tmpXYZ_move[1] = atom_move.y();
+			    tmpXYZ_move[2] = atom_move.z();
+			    moveArray.add(tmpXYZ_move);
+			    countingRefAtoms++;
+		    }
+	    }
+	    for (int[] aThermoA : ThermoA) {
+		    for (int resC = aThermoA[0]; resC <= aThermoA[1]; resC++) {
+			    double[] tmpXYZ_stat = new double[3];
+			    Atom atom_stat = stat.residue(resC).ca();
+			    tmpXYZ_stat[0] = atom_stat.x();
+			    tmpXYZ_stat[1] = atom_stat.y();
+			    tmpXYZ_stat[2] = atom_stat.z();
+			    statArray.add(tmpXYZ_stat);
+		    }
+	    }
 
 	for (int atomC=0 ; atomC<move.atoms().size() ; atomC++) {
 		double[] tmpXYZ_move = new double[3];
@@ -190,7 +189,7 @@ public class Tric_Align_Equator_Domains extends MeshiProgram implements Residues
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 

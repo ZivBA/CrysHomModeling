@@ -7,17 +7,17 @@ import static ScoreUtilities.ScoringGeneralHelpers.*;
  */
 public class SimpleAtom {
 
-	protected String name;
-	protected String originalString;
-	protected int serialNumber;
-	protected String aAcidName;
-	protected char chain;
-	protected int aAcidSequence;
-	protected float[] atomCoords;
-	protected double tempFactor;
+	private final String name;
+	String originalString;
+	private final int serialNumber;
+	private String aAcidName;
+	final char chain;
+	final int aAcidSequence;
+	private final float[] atomCoords;
+	double tempFactor;
 
-	protected double atomScore;
-	protected boolean isBackBone;
+	private double atomScore;
+	final boolean isBackBone;
 
 	public SimpleAtom(String atom) {
 

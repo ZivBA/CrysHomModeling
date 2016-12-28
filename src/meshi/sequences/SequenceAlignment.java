@@ -18,7 +18,7 @@ public class SequenceAlignment extends Alignment{
 	    add(new SequenceAlignmentColumn((ResidueAlignmentColumn) resColumns.next()));
 	comments.add(residueAlignment.comments);
     }
-    public SequenceAlignment(Sequence sequence1, Sequence sequence2) {
+    protected SequenceAlignment(Sequence sequence1, Sequence sequence2) {
 	this();
 	SequenceList sequenceList = new SequenceList();
 	sequenceList.add(sequence1);
@@ -28,7 +28,7 @@ public class SequenceAlignment extends Alignment{
 	comments.add(temp.comments);
     }
 			
-    public SequenceAlignment(SequenceList sequenceList) { 
+    private SequenceAlignment(SequenceList sequenceList) {
 	this();
 	int numberOfSequences = sequenceList.size();
 	boolean done = false;
@@ -76,7 +76,7 @@ public class SequenceAlignment extends Alignment{
 	return true;
     }
                    
-    public boolean isExactMachWithGaps() {
+    boolean isExactMachWithGaps() {
 	for (Iterator columns = iterator(); columns.hasNext();)
 	    if (! ((SequenceAlignmentColumn) columns.next()).isExactMachWithGaps()) return false;
 	return true;
@@ -84,8 +84,7 @@ public class SequenceAlignment extends Alignment{
 
     public static SequenceAlignment identityAlignment(Sequence sequence1, Sequence sequence2) {
 	DpMatrix matrix = new DpMatrix(sequence1, sequence2, new Identity(-0.2));
-	SequenceAlignment out = matrix.backTrack();
-	return out;
+	    return matrix.backTrack();
     }
 	
     public double score() {
@@ -94,6 +93,6 @@ public class SequenceAlignment extends Alignment{
     }
 
     public void setScore(double score) {
-	this.score = new Double(score);
+	this.score = score;
     }
 }

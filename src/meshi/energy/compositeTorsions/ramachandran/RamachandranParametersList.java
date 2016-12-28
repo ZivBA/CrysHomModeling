@@ -30,7 +30,7 @@ public class RamachandranParametersList extends ParametersList
 			add( createParameters( aac ) );		
 	}
 	
-	public Parameters createParameters( int residueType ) {
+	private Parameters createParameters(int residueType) {
 		return new RamachandranParameters( residueType, spl );
 	}
 

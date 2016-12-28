@@ -1,8 +1,8 @@
 package meshi.applications.prediction.analysis;
 import java.util.Comparator;
 
-public class ModelDataComparator implements Comparator {
-    private String key;
+class ModelDataComparator implements Comparator {
+    private final String key;
     public ModelDataComparator(String key) {
 	this.key = key;
     }

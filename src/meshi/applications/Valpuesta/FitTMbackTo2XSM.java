@@ -11,10 +11,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 
-public class FitTMbackTo2XSM extends MeshiProgram implements Residues,AtomTypes {
+class FitTMbackTo2XSM extends MeshiProgram implements Residues,AtomTypes {
 
 	public static void main(String[] args) {
-		init(args);
+		init();
 
 		String outfile = "2XSM_as_1Q3R.pdb";
 		String chains="ABCDEFGHIJKLMNOP";
@@ -37,7 +37,7 @@ public class FitTMbackTo2XSM extends MeshiProgram implements Residues,AtomTypes 
 	}
 
 
-	protected static AtomList alignTMback(String let) {
+	private static AtomList alignTMback(String let) {
 		AtomList ref = (new AtomList("2XSM_allALA.pdb")).chainFilter(let);
 		boolean doEQ=true;
 		boolean doMI=true;
@@ -111,7 +111,7 @@ public class FitTMbackTo2XSM extends MeshiProgram implements Residues,AtomTypes 
 	}
 
 	
-	protected static void init(String[] args) {
+	private static void init() {
 		int zvl = ALA; // force the reading of "meshi.parameters.Residues"
 		zvl = ACA;// force the reading of "meshi.parameters.AtomTypes"
 		initRandom(333);

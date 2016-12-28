@@ -8,7 +8,7 @@ public class CNtwoDistances{
     private static final int TWO_DISTANCE_CAPACITY = 4;
 
 
-    protected  CNtwoDistances() {}
+    CNtwoDistances() {}
 
     protected  CNtwoDistances (Distance dis1, Distance dis2) {
     this.dis1 = dis1;
@@ -16,7 +16,7 @@ public class CNtwoDistances{
     counter = 2;
     }
 
-    protected  int setDistance(Distance distance){
+    int setDistance(Distance distance){
         if (counter == 0) {
             dis1 = distance;
             if (dis2 != null) throw new RuntimeException("Wrong order");
@@ -31,7 +31,7 @@ public class CNtwoDistances{
         return counter;
      }
 
-    protected  void deleteDistance(Distance distance){
+    void deleteDistance(){
         if (counter == 0)
            throw new RuntimeException("try to delete from Empty Element");
         if (counter == 1)
@@ -50,10 +50,10 @@ public class CNtwoDistances{
         }
      }
 
-    protected Distance distance1(){return dis1;}
-    protected Distance distance2(){return dis2;}
-    protected Byte counter(){return counter;}
-    protected boolean isInDM (){return (counter == 2);}
+    Distance distance1(){return dis1;}
+    Distance distance2(){return dis2;}
+    Byte counter(){return counter;}
+    boolean isInDM(){return (counter == 2);}
 
  /*
   public AtomList setAtoms(){

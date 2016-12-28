@@ -1,7 +1,7 @@
 package meshi.util;
 
 public class AttributesRack{
-    public static final int MAX_ATTRIBUTES = 10;
+    private static final int MAX_ATTRIBUTES = 10;
     private final Object[] internalArray = new Object[MAX_ATTRIBUTES];
     public void addAttribute(MeshiAttribute attribute){
 	int key = attribute.key();

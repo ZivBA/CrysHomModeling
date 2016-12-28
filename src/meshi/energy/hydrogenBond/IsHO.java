@@ -19,10 +19,9 @@ import java.util.Arrays;
  */
 
 public class IsHO implements Filter,AtomTypes {
-    static int[] sortBB_Hydrogens, sortBB_Oxygens;
-    // to speedup the check:
-    static int[] atoms; //holds the atoms list of the protein and for each one of them keeps an index to pint out if it is a hydrogen that bonded to  backbond Nytrogen  (1) 
-                        // backbond oxygen (2) or else (0)
+    private static int[] sortBB_Hydrogens;
+	private static int[] sortBB_Oxygens;
+	// backbond oxygen (2) or else (0)
 
     //create a new SORT copy of BB_HYDROGENS & BB_OXYGENS that are defined in interface AtomType
     public IsHO(){
@@ -32,11 +31,9 @@ public class IsHO implements Filter,AtomTypes {
     private static void sortArrays(){
         if(sortBB_Hydrogens == null){
             sortBB_Hydrogens = new int[BB_HYDROGENS.length];
-            for(int i = 0;i<BB_HYDROGENS.length;i++)
-                sortBB_Hydrogens[i] = BB_HYDROGENS[i];
+	        System.arraycopy(BB_HYDROGENS, 0, sortBB_Hydrogens, 0, BB_HYDROGENS.length);
             sortBB_Oxygens = new int[BB_OXYGENS.length];
-            for(int i = 0;i<BB_OXYGENS.length;i++)
-                sortBB_Oxygens[i] = BB_OXYGENS[i];
+	        System.arraycopy(BB_OXYGENS, 0, sortBB_Oxygens, 0, BB_OXYGENS.length);
             Arrays.sort(sortBB_Hydrogens);
             Arrays.sort(sortBB_Oxygens);
         }
@@ -44,7 +41,7 @@ public class IsHO implements Filter,AtomTypes {
     
     public IsHO(Atom[] a){
         sortArrays();
-        atoms = new int[a.length];
+	    int[] atoms = new int[a.length];
     	for(int i=0;i<a.length;i++){
     		if(isH(a[i]))
     			atoms[i]=1;

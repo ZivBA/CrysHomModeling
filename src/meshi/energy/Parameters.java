@@ -9,14 +9,14 @@ public class Parameters {
     /** 
      * Converts a string to an int.
      **/
-    public static int toInt(String s) {
-	return Integer.valueOf(s.trim()).intValue();
+    protected static int toInt(String s) {
+	return Integer.valueOf(s.trim());
     }
     /** 
      * Converts a string to a double.
      **/
-    public static double toDouble(String s) {
-	return Double.valueOf(s.trim()).doubleValue();
+    protected static double toDouble(String s) {
+	return Double.valueOf(s.trim());
     }
 }
     

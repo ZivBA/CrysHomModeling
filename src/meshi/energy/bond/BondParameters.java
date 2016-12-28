@@ -31,13 +31,13 @@ public class BondParameters extends Parameters implements Comparable{
      * Atom type of the first atom.
      * The convention is that it is the smaller atom type in the pair.
      **/
-    public final int type1;
+    private final int type1;
 
     /**
      * Atom type of the second atom.
      * The convention is that it is the larger atom type in the pair.
      **/
-     public final int type2;
+     private final int type2;
 
     /**
      * Auxiliary constructor.
@@ -54,7 +54,7 @@ public class BondParameters extends Parameters implements Comparable{
     /**
      * A helper constructor for ( BondParameters(String line) ).
      **/
-    public BondParameters(StringTokenizer line) {
+    private BondParameters(StringTokenizer line) {
 	this(Atom.type(line.nextToken()), // type1
 	     Atom.type(line.nextToken()), // type2
 	     toDouble(line.nextToken()), // targetDistance
@@ -64,8 +64,8 @@ public class BondParameters extends Parameters implements Comparable{
     /**
      * A helper constructor for ( BondParameters(String line) ).
      **/
-    public BondParameters(int type1, int type2, 
-			  double  targetDistance, double forceConstant) {
+    private BondParameters(int type1, int type2,
+                           double targetDistance, double forceConstant) {
 	if (type1 < type2) {
 	    this.type1 = type1;
 	    this.type2 = type2;

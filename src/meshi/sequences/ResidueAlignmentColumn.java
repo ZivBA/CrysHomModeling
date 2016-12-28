@@ -8,7 +8,7 @@ import meshi.molecularElements.Residue;
  **/ 
 
 public class ResidueAlignmentColumn extends AlignmentColumn {
-    protected ResidueAlignmentColumn(int numberOfRows){
+    ResidueAlignmentColumn(int numberOfRows){
 	super(numberOfRows);
     }
 

@@ -21,7 +21,7 @@ import meshi.util.mathTools.HB_Sigma;
 public class DahiyatHydrogenBondListNoDuplications extends
 		DahiyatHydrogenBondList implements Residues {
 
-    protected Atom[] lutSameGroup; // If i is the atom number of an atom in the funcional group of ASP GLU or ARG, then lutSameGroup[i] is a pointer to the other atom in the functional group. It is null for all other atoms.     
+    private Atom[] lutSameGroup; // If i is the atom number of an atom in the funcional group of ASP GLU or ARG, then lutSameGroup[i] is a pointer to the other atom in the functional group. It is null for all other atoms.
 
 	
 	public DahiyatHydrogenBondListNoDuplications() {

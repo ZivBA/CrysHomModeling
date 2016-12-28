@@ -23,7 +23,7 @@ public abstract class EnergyCreator implements MeshiPotential, KeyWords {
      * The keyword for the energy term. All commands relevant to this energy terms will sart with this word.
      **/ 
     protected Key key;
-    protected boolean weightWasSet = false;
+    private boolean weightWasSet = false;
     
     /**
      * A list of the parameters needed for this energy term.
@@ -40,8 +40,8 @@ public abstract class EnergyCreator implements MeshiPotential, KeyWords {
     /**
      * Constructs an energy creator object. The key parameter will serve as a 
      * keyword that identify relevant commands in the commands list.
-     **/ 
-    public  EnergyCreator(Key key){
+     **/
+    protected EnergyCreator(Key key){
 	this.key = key;
     }
 
@@ -49,7 +49,7 @@ public abstract class EnergyCreator implements MeshiPotential, KeyWords {
     /**
      * Construct a somewhat degenerate creator object that cannot read commands from the commands list.
      **/
-    public  EnergyCreator(double weight){
+    protected EnergyCreator(double weight){
 	this.weight = weight;
 	weightWasSet = true;
     }
@@ -74,7 +74,7 @@ public abstract class EnergyCreator implements MeshiPotential, KeyWords {
        return parametersDirectory; 
    }
   
-   protected static void getParametersDirectory(CommandList commands){ 
+   private static void getParametersDirectory(CommandList commands){
        Command command = commands.firstWord(PARAMETERS_DIRECTORY); 
 	parametersDirectory = command.secondWord(); 
     } 
@@ -113,7 +113,7 @@ public abstract class EnergyCreator implements MeshiPotential, KeyWords {
      * Picking the relevant objects.
      **/
     protected static class  HaveParametersFilter implements Filter { 
-	ParametersList parametersList; 
+	final ParametersList parametersList;
 	public HaveParametersFilter(ParametersList parametersList){ 
 	    this.parametersList=parametersList; 
 	} 

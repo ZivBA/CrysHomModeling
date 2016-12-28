@@ -6,21 +6,22 @@ import meshi.molecularElements.Atom;
 
 
 public  class SoftExcludedVolEnergyElement extends NonBondedEnergyElement {
-	protected DistanceMatrix distanceMatrix;
-	protected Atom atom1, atom2;
-	protected Distance distance;
-	int type;
-	protected double sigma,C;
+	private Atom atom1;
+	private Atom atom2;
+	private Distance distance;
+	private int type;
+	private double sigma;
+	private double C;
 	protected boolean frozen;
 	protected double dEdD;
 	protected double dEdX;
 	protected double dEdY;
 	protected double dEdZ;
-	protected double energy;
-	protected double weight;
-	protected double rMax;
-	protected SoftExcludedVolParametersList parametersList;
-	protected int fragStart=100000000,fragEnd=1000000000;
+	private double weight;
+	private double rMax;
+	private SoftExcludedVolParametersList parametersList;
+	private int fragStart=100000000;
+	private int fragEnd=1000000000;
 
 	public  SoftExcludedVolEnergyElement() {}
 	public  SoftExcludedVolEnergyElement(SoftExcludedVolParametersList parametersList, DistanceMatrix distanceMatrix,
@@ -28,7 +29,7 @@ public  class SoftExcludedVolEnergyElement extends NonBondedEnergyElement {
 		this.parametersList = parametersList;
 		this.type = type;
 		this.weight = weight;
-		this.distanceMatrix = distanceMatrix;
+		DistanceMatrix distanceMatrix1 = distanceMatrix;
 		this.rMax = DistanceMatrix.rMax();
 		//----------------------
 	}
@@ -66,6 +67,7 @@ public  class SoftExcludedVolEnergyElement extends NonBondedEnergyElement {
 		double localSigma=sigma;
 		double dis = -1;
 		dis = distance.distance();
+		double energy;
 		if (dis>localSigma) {
 			energy = 0;
 		}
@@ -283,6 +285,6 @@ public  class SoftExcludedVolEnergyElement extends NonBondedEnergyElement {
 				"atom2 = "+atom2); 
 		double dis = distance.distance();
 		return ("SoftExcludedVolumeEnergyElement sigma = "+sigma+" Distance = "+
-				dFormatSrt.f(dis)+" rMax = "+rMax+"\n"+atom1.verbose(1)+"\n"+atom2.verbose(1));
+				dFormatSrt.f(dis)+" rMax = "+rMax+"\n"+atom1.verbose()+"\n"+atom2.verbose());
 	}
 }

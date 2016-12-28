@@ -14,28 +14,27 @@ public class MySequenceList extends Vector<MySequence> {
         String[] lines = File2StringArray.f2a(fileName);
         String title = null;
         String seq = "";
-        for (int c=0 ; c<lines.length ; c++) {
-        	if (!lines[c].startsWith("#")) {  // Skipping comments
-        		if (lines[c].startsWith(">")) { // found a title
-        			if (title != null) {
-        				add(new MySequence(title, seq));
-        				title = null;
-        			}
-        			title = lines[c].substring(1).trim();
-        			seq = "";
-        		}
-        		else { // lengthening the sequence
-        			seq += processLine(lines[c]);
-        		}
-        	}
-        }
+	    for (String line : lines) {
+		    if (!line.startsWith("#")) {  // Skipping comments
+			    if (line.startsWith(">")) { // found a title
+				    if (title != null) {
+					    add(new MySequence(title, seq));
+					    title = null;
+				    }
+				    title = line.substring(1).trim();
+				    seq = "";
+			    } else { // lengthening the sequence
+				    seq += processLine(line);
+			    }
+		    }
+	    }
         // Adding the last sequence
         if (title!=null) {
         	add(new MySequence(title, seq));
         }      
     }
 	
-	public String processLine(String rawString) {
+	private String processLine(String rawString) {
 		return rawString.trim();		
 	}
 	
@@ -50,7 +49,7 @@ public class MySequenceList extends Vector<MySequence> {
      * and found[X][1] is the begining residue in the sequence (1-based).  
      **/
     public int[][] findInSequences(String querySeq) {
-    	LinkedList<int[]> found = new LinkedList<int[]>();
+    	LinkedList<int[]> found = new LinkedList<>();
     	for (int c=0 ; c<size() ; c++) {
     		MySequence mySeq = get(c);
     		int fromIndex = -1;

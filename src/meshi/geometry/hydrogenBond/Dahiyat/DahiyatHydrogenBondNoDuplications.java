@@ -43,7 +43,7 @@ public class DahiyatHydrogenBondNoDuplications extends DahiyatHydrogenBond imple
 		return super.hbVal();
 	}
 	
-	protected void setDuplicationWeight(double setTo) {
+	void setDuplicationWeight(double setTo) {
 		duplicationWeight = setTo;
 	}
 

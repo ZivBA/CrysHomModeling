@@ -3,7 +3,7 @@ package meshi.applications.TriC.yeast;
 import meshi.applications.TriC.TricYeastAlignment;
 import meshi.molecularElements.AtomList;
 
-public class FindContactsForFigure {
+class FindContactsForFigure {
 
 	/**
 	 * @param args
@@ -26,7 +26,7 @@ public class FindContactsForFigure {
 	/**
 	 * The output is a boolean[2000] array (I assume that the desired chains is not more 1999 residues). True is interfacing.
 	 */
-	public static boolean[] interfacingResidues(AtomList list, String desiredChain) {
+	private static boolean[] interfacingResidues(AtomList list, String desiredChain) {
 		double CONTACT_TH = 3.8;
 		boolean[] out = new boolean[2000];
 		for (int c=0 ; c<2000 ; c++) {

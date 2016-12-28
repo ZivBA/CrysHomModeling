@@ -25,9 +25,9 @@ import java.util.StringTokenizer;
 
 public abstract class AbstractROT1Parameters {
 
-	protected double[][] solvEne = null; 
+	private double[][] solvEne = null;
 	
-	public AbstractROT1Parameters(String parameterFileName) {
+	AbstractROT1Parameters(String parameterFileName) {
 		readSolvEne(parameterFileName);
 	}
 		
@@ -64,7 +64,7 @@ public abstract class AbstractROT1Parameters {
 				(dis.atom1().residueNumber() < (dis.atom2().residueNumber() + 2)));
 	}
 	
-	protected void readSolvEne(String filename) {
+	private void readSolvEne(String filename) {
 		if ((new File(filename)).exists()) 
 			System.out.println("Reading Parameter file: " + filename);
 		else
@@ -75,7 +75,7 @@ public abstract class AbstractROT1Parameters {
 			StringTokenizer st = new StringTokenizer(strArray[c]);
 			solvEne[c] = new double[st.countTokens()];
 			for (int d=0; st.hasMoreTokens() ; d++)
-				solvEne[c][d] = (new Double(st.nextToken())).doubleValue();
+				solvEne[c][d] = new Double(st.nextToken());
 		}
 	}
 

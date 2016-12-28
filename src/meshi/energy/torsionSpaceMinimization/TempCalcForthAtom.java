@@ -3,13 +3,13 @@ package meshi.energy.torsionSpaceMinimization;
 import meshi.geometry.ViewAt;
 import meshi.molecularElements.Atom;
 
-public class TempCalcForthAtom {
+class TempCalcForthAtom {
 	
 	// Auxilary arrays
-	private double[] moveTo = new double[4];
-    double[][] M = new double[4][4] ;
-    double[][] invM = new double[4][4] ;
-	private double[] xyza = new double[4];
+	private final double[] moveTo = new double[4];
+    private final double[][] M = new double[4][4] ;
+    private final double[][] invM = new double[4][4] ;
+	private final double[] xyza = new double[4];
 	
 	
 	public double[] getCoors(double bond,double angle,double tor,Atom A1,Atom A2,Atom A3) {

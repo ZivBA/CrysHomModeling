@@ -13,25 +13,22 @@ import meshi.util.filters.Filter;
 import java.util.Arrays;
 
 public class IsCN implements Filter,AtomTypes{
-    static int[] sortBB_Nitrogens, sortBB_Carbons;
-    // to speedup the check:
-    static int[] atoms;
-
-    //create a new SORT copy of BB_NITROGENS & BB_CARBONS that are defined in interface AtomType
+    private static int[] sortBB_Nitrogens;
+	private static int[] sortBB_Carbons;
+	
+	//create a new SORT copy of BB_NITROGENS & BB_CARBONS that are defined in interface AtomType
     public IsCN(){
         sortBB_Nitrogens = new int[BB_NITROGENS.length];
-        for(int i = 0;i<BB_NITROGENS.length;i++)
-            sortBB_Nitrogens[i] = BB_NITROGENS[i];
+	    System.arraycopy(BB_NITROGENS, 0, sortBB_Nitrogens, 0, BB_NITROGENS.length);
         sortBB_Carbons = new int[BB_CARBONS.length];
-        for(int i = 0;i<BB_CARBONS.length;i++)
-            sortBB_Carbons[i] = BB_CARBONS[i];
+	    System.arraycopy(BB_CARBONS, 0, sortBB_Carbons, 0, BB_CARBONS.length);
         Arrays.sort(sortBB_Nitrogens);
         Arrays.sort(sortBB_Carbons);
     }
     
     public IsCN(Atom[] a){
         this();
-    	atoms = new int[a.length];
+	    int[] atoms = new int[a.length];
     	for(int i=0;i<a.length;i++){
     		if(isC(a[i]))
     			atoms[i]=1;
@@ -42,13 +39,11 @@ public class IsCN implements Filter,AtomTypes{
     }
 
     public static boolean isC(Atom atom){
-        boolean ans = (Arrays.binarySearch(sortBB_Carbons,atom.type) >= 0);
-        return ans;
+	    return (Arrays.binarySearch(sortBB_Carbons,atom.type) >= 0);
     }
 
     public static  boolean isN(Atom atom){
-        boolean ans = (Arrays.binarySearch(sortBB_Nitrogens,atom.type) >= 0);
-        return ans;
+	    return (Arrays.binarySearch(sortBB_Nitrogens,atom.type) >= 0);
     }
 
 

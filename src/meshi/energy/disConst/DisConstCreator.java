@@ -17,7 +17,7 @@ public class DisConstCreator extends EnergyCreator  implements KeyWords {
 
 	private double numConstPerAtom = 2;
 	private double maxDisForConst = 6; //Ang
-	Filter filter = null;
+	private Filter filter = null;
 	public DisConstCreator() {
 		super(1.0);
 	}

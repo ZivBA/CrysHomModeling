@@ -8,7 +8,7 @@ import meshi.util.MeshiProgram;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class RandomRotTrans extends MeshiProgram implements Residues {
+class RandomRotTrans extends MeshiProgram implements Residues {
    
 	private static String initialStruct = null;
 
@@ -74,8 +74,8 @@ public class RandomRotTrans extends MeshiProgram implements Residues {
     
     
     
-    static void transAndRot(AtomList unitB, double cmx, double cmy, double cmz,
-    		double moveX, double moveY, double moveZ, double rotX, double rotY, double rotZ) {
+    private static void transAndRot(AtomList unitB, double cmx, double cmy, double cmz,
+                                    double moveX, double moveY, double moveZ, double rotX, double rotY, double rotZ) {
     	for (int c=0 ; c<unitB.size() ; c++) {
     		unitB.atomAt(c).setX(unitB.atomAt(c).x() - cmx);
     		unitB.atomAt(c).setY(unitB.atomAt(c).y() - cmy);
@@ -104,7 +104,7 @@ public class RandomRotTrans extends MeshiProgram implements Residues {
     	}    	
     }
     
-	static void printToFile(int structureCounter, AtomList unitA, AtomList unitB) {
+	private static void printToFile(int structureCounter, AtomList unitA, AtomList unitB) {
 		try{
 			// Writing the separated complex to disk
 			BufferedWriter bw = new BufferedWriter(new FileWriter(outputPrefix + "." + structureCounter + ".pdb"));
@@ -133,7 +133,7 @@ public class RandomRotTrans extends MeshiProgram implements Residues {
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 

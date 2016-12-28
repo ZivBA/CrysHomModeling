@@ -2,11 +2,11 @@ package meshi.sequences;
 import java.util.Iterator;
 
 public class ResidueSequence extends Sequence {
-    public static final ResidueSequenceCharFilter residueCharFilter =  new ResidueSequenceCharFilter();
-    public ResidueSequence() {
+    private static final ResidueSequenceCharFilter residueCharFilter =  new ResidueSequenceCharFilter();
+    protected ResidueSequence() {
 	super(residueCharFilter);
     }
-    public ResidueSequence(String comment) {
+    private ResidueSequence(String comment) {
 	super(comment,residueCharFilter);
     }
     public ResidueSequence(String sequence, String comment) {
@@ -30,7 +30,7 @@ public class ResidueSequence extends Sequence {
 	        }
 	}
 	else {
-		char c = weirdChar.charValue();
+		char c = weirdChar;
 		if ("acdefghiklmnopqrstvwy".indexOf(c) >=0) {//Some sites do that, sorry.
 			int index = sequence.indexOf(c);
 			Sequence temp = new Sequence(sequence.substring(0,index),
@@ -49,7 +49,7 @@ public class ResidueSequence extends Sequence {
 	    add(columns.next());
     }
 
-    public ResidueSequence(FastaList fastaList) {	
+    protected ResidueSequence(FastaList fastaList) {
 	super((Sequence) fastaList.elementAt(0), residueCharFilter);
 	if (fastaList.size() != 1) throw new RuntimeException("fastaList size = "+ fastaList.size());
     }
@@ -61,7 +61,7 @@ public class ResidueSequence extends Sequence {
 
     private static class ResidueSequenceCharFilter extends SequenceCharFilter {
 	public boolean accept(Object obj) {
-	    Character c = ((Character) obj).charValue();
+	    Character c = (Character) obj;
 		return "XACDEFGHIKLMNOPQRSTVWY-".indexOf(c) >= 0;
 	}
     }

@@ -52,7 +52,7 @@ public class HbondsPunishHOCAngleEnergyElement extends AbstractPunishAngleEnergy
     public void updateTheirdAtom(){
            updateTheirdAtom(weight);
     }
-       public void updateTheirdAtom(double weight){
+       protected void updateTheirdAtom(double weight){
            if (! theirdAtom.frozen()) {
                theirdAtom.addToFx(-1 * deDxTheidAtom * weight); // force = -derivative
                theirdAtom.addToFy(-1 * deDyTheidAtom * weight); // force = -derivative

@@ -18,18 +18,21 @@ private Atom A, B, C, E;
 private Distance distance;
 private double energy, energyDis, energyTorAng;
 
-protected static final double MINdisCA = 4.5, MAXdisCA = 7.0, slope = 1; //parameters for Distance term
-private final double angleNoDef = 6*Math.PI/180.0, slopeAng = 0.5; //parameters for Angle Term
-protected static final double Q_H = -0.6; // common coefficient
+private static final double MINdisCA = 4.5;
+	private static final double MAXdisCA = 7.0;
+	private static final double slope = 1; //parameters for Distance term
+	private static final double Q_H = -0.6; // common coefficient
 
-private CAlphaPlaneDistance distanceElement;
-private CAlphaPlaneTorsion torsionElement;
+private final CAlphaPlaneDistance distanceElement;
+private final CAlphaPlaneTorsion torsionElement;
 //private DistanceMatrix distanceMatrix;
 private ResidueList residues;
   
 public CAlphaPlaneEnergyElement (double weight, DistanceMatrix distanceMatrix,  ResidueList residues) {
     distanceElement = new CAlphaPlaneDistance(MINdisCA, MAXdisCA, slope);
-    torsionElement = new CAlphaPlaneTorsion(angleNoDef, slopeAng, distanceMatrix);
+	double slopeAng = 0.5;
+	double angleNoDef = 6 * Math.PI / 180.0;
+	torsionElement = new CAlphaPlaneTorsion(angleNoDef, slopeAng, distanceMatrix);
     if (DistanceMatrix.rMax() <  MAXdisCA)
         throw new RuntimeException("The current value of distanceMatrix.rMax = "+ DistanceMatrix.rMax()+
                 " is too small for cAlphaPlane." +
@@ -39,7 +42,7 @@ public CAlphaPlaneEnergyElement (double weight, DistanceMatrix distanceMatrix,  
     this. residues = residues;
 }
 
-    protected boolean set(Distance distance){
+    boolean set(Distance distance){
     double distanceVal = distance.distance();
     if ((distanceVal < MINdisCA) || (distanceVal >  MAXdisCA)) return false;
         this.distance = distance;
@@ -68,7 +71,7 @@ public CAlphaPlaneEnergyElement (double weight, DistanceMatrix distanceMatrix,  
    }
  
 
-protected void updateAtoms(){
+private void updateAtoms(){
 double koef = Q_H*weight;        
 double deDx, deDy, deDz;
    if (! A.frozen()) {         

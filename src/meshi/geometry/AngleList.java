@@ -16,13 +16,13 @@ public class AngleList extends MeshiList implements Updateable {
     /**
      * An empty Angle list
      **/
-    public AngleList() {
+    private AngleList() {
         this(new IsAngle());
     }
     /**
      * An empty AngleList
      **/
-     protected AngleList(Filter filter) {
+    private AngleList(Filter filter) {
         super(filter);
     }
 	
@@ -50,7 +50,7 @@ public class AngleList extends MeshiList implements Updateable {
 				       "numberOfUpdates = "+numberOfUpdates+" this.numberOfUpdates = "+this.numberOfUpdates);
     }
 
-    public Angle angleAt(int i) { return (Angle) elementAt(i);}
+    private Angle angleAt(int i) { return (Angle) elementAt(i);}
     
     /**
      * Returns a sub-list containing angles that have a known name
@@ -64,7 +64,7 @@ public class AngleList extends MeshiList implements Updateable {
 	return out;
     }    
     
-    public boolean isNamed(Angle angle) {
+    private boolean isNamed(Angle angle) {
 	    return angle.getAngleName().compareTo("") != 0;
     }    
     

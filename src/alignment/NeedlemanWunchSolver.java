@@ -1,11 +1,11 @@
 package alignment;
 
 
-public class NeedlemanWunchSolver {
+class NeedlemanWunchSolver {
 
-	protected Sequence seq1;
-	protected Sequence seq2;
-	protected ScoringScheme scoring;
+	private final Sequence seq1;
+	private final Sequence seq2;
+	private final ScoringScheme scoring;
 	private double[][] Smatrix;
 	private int[][] Dmatrix;
 	
@@ -16,12 +16,30 @@ public class NeedlemanWunchSolver {
 		compute();
 	}
 
+	public void printSmatrix() {
+		for (int i=0; i<Smatrix.length ; i++) {
+			for (int j=0; j<Smatrix[i].length ; j++) {
+				System.out.print(Math.round(Smatrix[i][j]*100)/100.0 + " ");
+			}
+			System.out.println();
+		}
+	}
+	
+	public void printDmatrix() {
+		for (int i=0; i<Dmatrix.length ; i++) {
+			for (int j=0; j<Dmatrix[i].length ; j++) {
+				System.out.print(Math.round(Dmatrix[i][j]*100)/100.0 + " ");
+			}
+			System.out.println();
+		}
+	}
 	
 	public void printAlignment() {
+		System.out.println(logAlignment());
+	}
+	private String logAlignment() {
 		AlignmentReturnStructure bestAlign = backtrack(Smatrix.length-1, Smatrix[0].length-1);
-		System.out.println(
-				"Score: " + alignmentScore() + "  Matches: " + bestAlign.matches + "\n" + bestAlign.S1 + "\n" +
-						bestAlign.S2);
+		return("Score: " + alignmentScore() + "  Matches: " + bestAlign.matches + "\n" + bestAlign.S1 + "\n" + bestAlign.S2);
 	}
 
 	public double alignmentScore() {
@@ -41,18 +59,16 @@ public class NeedlemanWunchSolver {
 			Dmatrix[0][c] = -1;
 		}
 		for (int c=0; c<ColMaxPenaltyScore.length ; c++) {
-			Smatrix[c][0] = 0.0;
+			Smatrix[c][0] = -0.0*c;
 			ColMaxPenaltyScore[c] = Double.NEGATIVE_INFINITY;
 			Dmatrix[c][0] = 1;
 		}
 
 		// Computing the rest of the matrix
 		for (int i=1; i<=seq2.length() ; i++) {
-			if (true) {
-				System.out.print("");
-			}
 			for (int j=1 ; j<=seq1.length() ; j++) {
-				double diagScore = scoring.score(seq1.get(j-1) , seq2.get(i-1));
+				double diagScore = Math.max(scoring.score(seq1.get(j-1) , seq2.get(i-1)) ,
+						Math.max(seq1.get(j-1).gapOpeningScore()+seq1.get(j-1).gapAligningScore() , seq2.get(i-1).gapOpeningScore()+seq2.get(i-1).gapAligningScore())); // Positive gap-penalty correction
 				Smatrix[i][j]=Smatrix[i-1][j-1]+diagScore;
 				Dmatrix[i][j]=0;					
 				// gap along the row
@@ -97,6 +113,11 @@ public class NeedlemanWunchSolver {
 						RowMaxPenaltyScore[j] = extendedGapScore;
 					}
 				}
+				// This part is only possible in positive gap-penalty option.
+				if (Dmatrix[i][j]==0) {
+					Smatrix[i][j]=Smatrix[i-1][j-1]+scoring.score(seq1.get(j-1) , seq2.get(i-1));
+				}
+				// End of positive gap-penalty correction
 			} // of j
 		}  // of i		
 	} // Of compute
@@ -143,13 +164,6 @@ public class NeedlemanWunchSolver {
 		out.S2 = S2;
 		out.matches = matches;
 		return out;
-	}
-
-	public String logAlignment() {
-
-		AlignmentReturnStructure bestAlign = backtrack(Smatrix.length-1, Smatrix[0].length-1);
-		return "Score: " + alignmentScore() + "  Matches: " + bestAlign.matches + "\n" + bestAlign.S1 + "\n" +
-						bestAlign.S2+"\n";
 	}
 
 	public class AlignmentReturnStructure {

@@ -106,7 +106,7 @@ public class SolvateDistanceAttribute  implements MeshiAttribute {
      public double dsigmPHBa2dy4;
      public double dsigmPHBa2dz4;
 
-	private final void resetHBSigmVals() {
+	private void resetHBSigmVals() {
    		sigmHBa1 = 0.0;
    		dsigmHBa1dx1 = 0.0;
    		dsigmHBa1dy1 = 0.0;

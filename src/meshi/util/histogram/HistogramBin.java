@@ -1,10 +1,10 @@
 package meshi.util.histogram;	
 public class HistogramBin implements Comparable{
-    private double centerValue;
-    private int position;
+    private final double centerValue;
+    private final int position;
     private int numberOfOccurrences;
     private double fractionOfOccurrences;
-    private Histogram histogram;
+    private final Histogram histogram;
 
     public HistogramBin(double center, int pos) {
         this(center, pos, null);

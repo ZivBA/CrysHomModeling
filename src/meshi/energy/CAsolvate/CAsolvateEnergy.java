@@ -60,11 +60,12 @@ public final class CAsolvateEnergy extends CooperativeEnergyTerm {
      **/       
      private int[] lut; 	// The look-up table (lut) converts the atom internal number (field of Atom) to its index in the atom list given to the constructor.      
      private int atomListSize;
-     private double Rad; 
-     private double MaxCANeighbors; 
-     private double cEnd,p1,p2,valAtp1=0.98,valAtp2=0.02;
-     
-    public CAsolvateEnergy() {}
+	private double MaxCANeighbors;
+     private double cEnd;
+	private double p1;
+	private double p2;
+	
+	public CAsolvateEnergy() {}
     
 /**
  * The constructor parameters:
@@ -87,8 +88,7 @@ public final class CAsolvateEnergy extends CooperativeEnergyTerm {
 	int maxAtomNum=-1;
 	comment = "Undefined Solvation";
 	atomListSize = atomList.size();
-	this.Rad = Rad;
-	this.MaxCANeighbors = MaxCANeighbors;
+	    this.MaxCANeighbors = MaxCANeighbors;
 	if (Rad*1.05 > DistanceMatrix.rMax())
 	    throw new RuntimeException("This solvatation term can only work if the rMax in " +
 				       "the distance matrix is larger than (Rad*1.05):" + (Rad*1.05));
@@ -135,7 +135,7 @@ public final class CAsolvateEnergy extends CooperativeEnergyTerm {
     	return evaluate(false);
     }
 
-    public final double evaluate(boolean updateAtoms) {
+    private double evaluate(boolean updateAtoms) {
 	if (! on) return 0.0;
 	double energy = 0;
 	double envior;
@@ -230,13 +230,15 @@ public final class CAsolvateEnergy extends CooperativeEnergyTerm {
      * atom2 in the Distance - dis. The results are updated in the fields of the 
      * CAsolvateDistanceAttribute of dis.
      **/ 
-    private final void updateSigmVals(Distance dis) {
+    private void updateSigmVals(Distance dis) {
     	CAsolvateDistanceAttribute sigmaValues =
     		(CAsolvateDistanceAttribute) dis.getAttribute(CAsolvateDistanceAttribute.SOLVATE_CA_ATTRIBUTE);
        	
     	// Calculating the carbon sigmoids 
     	// ---------------------------------------
-   			Sigma.sigma(dis.distance(), cEnd, p1, p2, valAtp1, valAtp2);
+	    double valAtp2 = 0.02;
+	    double valAtp1 = 0.98;
+	    Sigma.sigma(dis.distance(), cEnd, p1, p2, valAtp1, valAtp2);
     		sigmaValues.sigmCa1 = Sigma.s;
     		sigmaValues.dsigmCa1dx1 = Sigma.s_tag*dis.dDistanceDx();
   		  	sigmaValues.dsigmCa1dy1 = Sigma.s_tag*dis.dDistanceDy();

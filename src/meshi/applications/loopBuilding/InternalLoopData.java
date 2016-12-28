@@ -1,10 +1,10 @@
 package meshi.applications.loopBuilding;
 
-public class InternalLoopData {
-		protected double evEnergy;
-		protected double propEnergy;
-		protected double bbHBenergy;
-		protected double RMS;
+class InternalLoopData {
+		double evEnergy;
+		double propEnergy;
+		double bbHBenergy;
+		double RMS;
 
 		public InternalLoopData() {}
 

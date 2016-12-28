@@ -24,13 +24,13 @@ public class DistanceList extends SortableMeshiList {
         }
     }
 
-    private IsDistance filter = new IsDistance();
+    private final IsDistance filter = new IsDistance();
 
     public boolean selectionAdd(Object object){
       return this.selectionAdd(object,filter);
      }
 
-     public boolean selectionAdd(Object object, Filter filter){
+     protected boolean selectionAdd(Object object, Filter filter){
         if (filter.accept(object)) {
             fastAdd(object);
             return true;

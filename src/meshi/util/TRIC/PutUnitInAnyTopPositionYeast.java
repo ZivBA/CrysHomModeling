@@ -17,8 +17,8 @@ public class PutUnitInAnyTopPositionYeast extends MeshiProgram implements Residu
      * are figured out. Themosome A unit is I, and Thermosome B unit is J, and the 1Q3R is K. 
      * The units of the of Tric are just A,B,G,D,E,H,Q,Z. 
      */
-    public static void alignByEquatorialDomains(AtomList statProt, char statProtChainID,
-    		AtomList moveProt, char moveProtChainID) {
+    private static void alignByEquatorialDomains(AtomList statProt, char statProtChainID,
+                                                 AtomList moveProt, char moveProtChainID) {
     	// The ranges:
     	int[][] Q3R = {{25,35},
     			{98,114},
@@ -114,30 +114,30 @@ public class PutUnitInAnyTopPositionYeast extends MeshiProgram implements Residu
     	}
 
     	
-    	Vector<double[]> statArray = new Vector<double[]>();
-    	Vector<double[]> moveArray = new Vector<double[]>();
+    	Vector<double[]> statArray = new Vector<>();
+    	Vector<double[]> moveArray = new Vector<>();
     	int countingRefAtoms = 0;
-    	for (int rangeC=0 ; rangeC<moveRange.length ; rangeC++) {
-    		for (int resC=moveRange[rangeC][0] ; resC<=moveRange[rangeC][1] ; resC++) {
-    			double[] tmpXYZ_move = new double[3];
-    			Atom atom_move = moveProt.findAtomInList("CA", resC);
-    			tmpXYZ_move[0] =atom_move.x();
-    			tmpXYZ_move[1] =atom_move.y();
-    			tmpXYZ_move[2] =atom_move.z();
-    			moveArray.add(tmpXYZ_move);
-    			countingRefAtoms++;
-    		}
-    	}
-    	for (int rangeC=0 ; rangeC<statRange.length ; rangeC++) {
-    		for (int resC=statRange[rangeC][0] ; resC<=statRange[rangeC][1] ; resC++) {
-    			double[] tmpXYZ_stat = new double[3];
-    			Atom atom_stat = statProt.findAtomInList("CA", resC);
-    			tmpXYZ_stat[0] =atom_stat.x();
-    			tmpXYZ_stat[1] =atom_stat.y();
-    			tmpXYZ_stat[2] =atom_stat.z();
-    			statArray.add(tmpXYZ_stat);
-    		}
-    	}
+	    for (int[] aMoveRange : moveRange) {
+		    for (int resC = aMoveRange[0]; resC <= aMoveRange[1]; resC++) {
+			    double[] tmpXYZ_move = new double[3];
+			    Atom atom_move = moveProt.findAtomInList("CA", resC);
+			    tmpXYZ_move[0] = atom_move.x();
+			    tmpXYZ_move[1] = atom_move.y();
+			    tmpXYZ_move[2] = atom_move.z();
+			    moveArray.add(tmpXYZ_move);
+			    countingRefAtoms++;
+		    }
+	    }
+	    for (int[] aStatRange : statRange) {
+		    for (int resC = aStatRange[0]; resC <= aStatRange[1]; resC++) {
+			    double[] tmpXYZ_stat = new double[3];
+			    Atom atom_stat = statProt.findAtomInList("CA", resC);
+			    tmpXYZ_stat[0] = atom_stat.x();
+			    tmpXYZ_stat[1] = atom_stat.y();
+			    tmpXYZ_stat[2] = atom_stat.z();
+			    statArray.add(tmpXYZ_stat);
+		    }
+	    }
 
     	for (int atomC=0 ; atomC<moveProt.size() ; atomC++) {
     		double[] tmpXYZ_move = new double[3];
@@ -187,7 +187,7 @@ public class PutUnitInAnyTopPositionYeast extends MeshiProgram implements Residu
      * returns an AtomList of the unit in that position.
      * 
      **/
-    public static AtomList putAnyUnitInAnyPosition(String chainID, int pos) {
+    private static AtomList putAnyUnitInAnyPosition(String chainID, int pos) {
     	if (pos>0) { // upper ring
 			AtomList stat = new AtomList("pos_"+pos+".pdb");
 			AtomList move = null;

@@ -43,7 +43,7 @@ public class DistanceConstrainsEnergy extends SimpleEnergyTerm{
 	}
     }
  
-    public  EnergyElement createElement(Object obj, Parameters parameters) {
+    protected EnergyElement createElement(Object obj, Parameters parameters) {
 	AtomPair constrainedAtoms = (AtomPair) obj;
 	return new DistanceConstrainElement( constrainedAtoms.atom1(), constrainedAtoms.atom2(), 
 				      (DistanceConstrainParameters) parameters,this.weight);

@@ -23,8 +23,8 @@ public class HydrogenBondsEnergy extends NonBondedEnergyTerm implements AtomType
     // */
     //protected DistanceMatrix distanceMatrix;
     //protected Distance elementsList;
-    protected HBondList hBondList;
-    protected HydrogenBondsEnergyElement energyElement;
+    private HBondList hBondList;
+    private HydrogenBondsEnergyElement energyElement;
     private HydrogenBondsParametersList parametersList;
    // private DistanceList specialDisatnces = null;
     /**
@@ -64,15 +64,15 @@ public class HydrogenBondsEnergy extends NonBondedEnergyTerm implements AtomType
         this.parametersList = parametersList;
     }
 
-   public HydrogenBondsEnergy (DistanceMatrix distanceMatrix,
-                                HydrogenBondsParametersList parametersList,
-                                double weight,
-                                HBondList hBondList,
-                                DistanceList specialDistances){
-       this(distanceMatrix,parametersList,weight ,hBondList );
-    //   this.specialDisatnces = specialDistances ;
-
-   }
+//   public HydrogenBondsEnergy (DistanceMatrix distanceMatrix,
+//                                HydrogenBondsParametersList parametersList,
+//                                double weight,
+//                                HBondList hBondList,
+//                                DistanceList specialDistances){
+//       this(distanceMatrix,parametersList,weight ,hBondList );
+//    //   this.specialDisatnces = specialDistances ;
+//
+//   }
 
 
     //-------------------------------------- methods ---------------------------------------

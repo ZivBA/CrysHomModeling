@@ -101,11 +101,11 @@ public class DistanceMatrix extends MeshiProgram implements Residues, Updateable
 
 
     /*------------------------------------------ object variables --------------------------------------------*/
-    public static final double DEFAULT_RMAX = 5.5;
-    public static final double DEFAULT_BUFFER = 1;
-    public static final int DEFAULT_BONDED_LIST_DEPTH = 5;
+    private static final double DEFAULT_RMAX = 5.5;
+    private static final double DEFAULT_BUFFER = 1;
+    private static final int DEFAULT_BONDED_LIST_DEPTH = 5;
     private Indicator  indicatorToUpdateHB;
-    private Distance infiniteDistance = new Distance();
+    private final Distance infiniteDistance = new Distance();
     public Distance infiniteDistance() {return infiniteDistance;}
 
     /**
@@ -126,32 +126,32 @@ public class DistanceMatrix extends MeshiProgram implements Residues, Updateable
     /**
      * Maximal distance for nonzero interactions.
      **/
-    protected static double rMax;
-    protected static double rMax2;
-    protected static double edge;
+    private static double rMax;
+    static double rMax2;
+    private static double edge;
     private static Double DEFAULT_EDGE(double rMax, double buffer){return rMax+2.0*buffer/3.0;}
     
     /**
      * rMax+buffer
      **/
-    protected static double rMaxPlusBuffer;
+    private static double rMaxPlusBuffer;
 
     /**
      * (rMax+buffer)^2
      **/
-    protected static double rMaxPlusBuffer2;
+    static double rMaxPlusBuffer2;
 
-    protected double buffer;
+    private double buffer;
 
     /**
      * (buffer/3)^2
      **/
-    protected static double bufferOneThirdSqr;
+    static double bufferOneThirdSqr;
 
     /**
      * Atom pairs with inter-atomic distances below rMax (and some of the pairs below rMax+buffer). 
      **/
-    protected DistanceList nonBondedList = new DistanceList();
+    private final DistanceList nonBondedList = new DistanceList();
     
 //    protected DistanceList newNonBondedList = new DistanceList();
 
@@ -163,21 +163,20 @@ public class DistanceMatrix extends MeshiProgram implements Residues, Updateable
      * - Distances of good hydrogen bonds candidate that were added in the current update opperation
      * - Applicable distances between nonBonded C-N candidate that were added in the current update opperation
      */
-   protected ListOfDistanceLists energyTermsDistanceLists;
+    private ListOfDistanceLists energyTermsDistanceLists;
         public ListOfDistanceLists energyTermsDistanceLists(){return energyTermsDistanceLists;}
 
     /**
      * Atom pairs with inter-atomic distances that are always relatively small.
      **/
 
-    protected DistanceList bondedList;
+    private DistanceList bondedList;
 
     private int newConstant = 0;
-    private boolean nonBondedFlag = true;
-    // private AtomPairList addToBondedList;
-    protected int bondedListDepth;
+	// private AtomPairList addToBondedList;
+	private int bondedListDepth;
     private int numberOfUpdates = 0;
-    protected boolean debug = false;
+    private boolean debug = false;
     /**
      * Enter DistanceMatrix debug mode.
      **/
@@ -248,8 +247,8 @@ public class DistanceMatrix extends MeshiProgram implements Residues, Updateable
                   DEFAULT_EDGE(rMax,buffer), // edge of Grid
                   bondedListDepth);
     }
-   public DistanceMatrix(AtomList atomList, double rMax, double buffer, double edge,
-                         int bondedListDepth) {
+   private DistanceMatrix(AtomList atomList, double rMax, double buffer, double edge,
+                          int bondedListDepth) {
     // Setting the contants used for calculating the reported distance.
     this.atomList = atomList;
     atomList.renumber();
@@ -321,8 +320,8 @@ public class DistanceMatrix extends MeshiProgram implements Residues, Updateable
     private void update()  throws UpdateableException {
 	if (terminator.dead()) throw new RuntimeException(terminator.message());
 	int length = matrix.length;
-	for (int iRow = 0; iRow <length; iRow++)
-	    matrix[iRow].update();
+	    for (MatrixRow aMatrix : matrix)
+		    aMatrix.update();
 	int size = atomList.size();
 
         if (! grid.build()) throw new UpdateableException();
@@ -369,7 +368,7 @@ public class DistanceMatrix extends MeshiProgram implements Residues, Updateable
     }
     }
 
-    public void testNonBondedList() {
+    private void testNonBondedList() {
         Distance nonBonded, distance, distanceInMatrix;
         Iterator nonBondedDistances = nonBondedList.iterator();
 
@@ -507,20 +506,20 @@ public class DistanceMatrix extends MeshiProgram implements Residues, Updateable
      **/
     public int nonBondedListSize() {return nonBondedList.size();}
 
-    public static DistanceList getBondedList(Object[] atomArray, int depth, MatrixRow[] matrix ) {
+    private static DistanceList getBondedList(Object[] atomArray, int depth, MatrixRow[] matrix) {
     AtomList bonded;
     Atom atom, bondedAtom;
     Iterator bondedAtoms;
     DistanceList out;
     int length = atomArray.length;
     AtomPairList tempList = new AtomPairList();
-    for (int iatom = 0; iatom < length; iatom++) {
-        atom = (Atom) atomArray[iatom];
-        bonded = getBonded(atom, depth);
-        bondedAtoms = bonded.iterator();
-        while ((bondedAtom = (Atom) bondedAtoms.next()) != null)
-        tempList.fastAdd(new AtomPair(atom, bondedAtom));
-    }
+        for (Object anAtomArray : atomArray) {
+            atom = (Atom) anAtomArray;
+            bonded = getBonded(atom, depth);
+            bondedAtoms = bonded.iterator();
+            while ((bondedAtom = (Atom) bondedAtoms.next()) != null)
+                tempList.fastAdd(new AtomPair(atom, bondedAtom));
+        }
     tempList.sort();
     // This instantiate the Distance objects associated with bonded atom pairs.
     // These pairs will be ignored during the non-bonded list update.
@@ -552,12 +551,12 @@ public class DistanceMatrix extends MeshiProgram implements Residues, Updateable
     }
 
 
-    public static AtomList getBonded(Atom atom, int depth) {
+    private static AtomList getBonded(Atom atom, int depth) {
     AtomList out = new AtomList();
     getBonded(atom, depth, out,atom.number());
     return out;
     }
-    public static void  getBonded(Atom atom, int depth, AtomList out, int rootNumber) {
+    private static void  getBonded(Atom atom, int depth, AtomList out, int rootNumber) {
     if (depth == 0) return;
     Iterator atoms = atom.bonded().iterator();
     Atom bondedAtom;
@@ -569,7 +568,9 @@ public class DistanceMatrix extends MeshiProgram implements Residues, Updateable
     }
 
     }
-    public void doNotUpdateNonBondedList() {nonBondedFlag = false;}
+    public void doNotUpdateNonBondedList() {
+	    boolean nonBondedFlag = false;
+    }
 
 
     public static double rMax() {return rMax;}
@@ -586,7 +587,7 @@ public class DistanceMatrix extends MeshiProgram implements Residues, Updateable
 
 
     private class RowIterator  implements Iterator {
-    int size;
+    final int size;
     int current;
 
     public RowIterator() {
@@ -610,8 +611,7 @@ public class DistanceMatrix extends MeshiProgram implements Residues, Updateable
     private static class NonBondedFilter implements Filter {
         public boolean accept(Object obj) {
         Distance distance = (Distance) obj;
-        boolean out = (distance.distance2 < rMax2) & (!distance.bonded());
-        return out;
+	        return (distance.distance2 < rMax2) & (!distance.bonded());
     }
     }
 

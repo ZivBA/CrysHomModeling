@@ -1,6 +1,6 @@
 package meshi.util.clustering;
 
-public class TestClustering {
+class TestClustering {
 
 	public static void main(String[] args) {
 		double[][] p = {{0,2},

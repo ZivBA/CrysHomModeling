@@ -18,14 +18,12 @@ import java.util.StringTokenizer;
  *{Starting angle value of the COIL secondary structure}
  *{Finish angle value of the COIL secondary structure}
  **/
- 
- public class AlphaAngleParameters extends Parameters {
 
-    public String aaLetter;
-    public double weightAA;   
-    public double startAlphaALL;
-    public double endAlphaALL;
-    public double startAlphaHELIX;
+class AlphaAngleParameters extends Parameters {
+
+    public final String aaLetter;
+    public final double weightAA;
+	public double startAlphaHELIX;
     public double endAlphaHELIX;
     public double startAlphaSHEET;
     public double endAlphaSHEET;
@@ -37,31 +35,31 @@ import java.util.StringTokenizer;
     	StringTokenizer stok;
        	stok = new StringTokenizer(line);
         aaLetter = stok.nextToken().trim();
-        weightAA = Double.valueOf(stok.nextToken()).doubleValue();
+        weightAA = Double.valueOf(stok.nextToken());
         if (weightAA < 0.0)
-            throw new RuntimeException("Weight must be non-negative\n");      	
-        startAlphaALL = Double.valueOf(stok.nextToken()).doubleValue();
+            throw new RuntimeException("Weight must be non-negative\n");
+	    double startAlphaALL = Double.valueOf(stok.nextToken());
         if ((startAlphaALL < 0.0) || (startAlphaALL > Math.PI))
-            throw new RuntimeException("Wrong values in the parameters file\n");      	
-        endAlphaALL = Double.valueOf(stok.nextToken()).doubleValue();
+            throw new RuntimeException("Wrong values in the parameters file\n");
+	    double endAlphaALL = Double.valueOf(stok.nextToken());
         if ((endAlphaALL < 0.0) || (endAlphaALL > Math.PI) || (endAlphaALL < startAlphaALL))
             throw new RuntimeException("Wrong values in the parameters file\n");      	
-        startAlphaHELIX = Double.valueOf(stok.nextToken()).doubleValue();
+        startAlphaHELIX = Double.valueOf(stok.nextToken());
         if ((startAlphaHELIX < 0.0) || (startAlphaHELIX > Math.PI))
             throw new RuntimeException("Wrong values in the parameters file\n");      	
-        endAlphaHELIX = Double.valueOf(stok.nextToken()).doubleValue();
+        endAlphaHELIX = Double.valueOf(stok.nextToken());
         if ((endAlphaHELIX < 0.0) || (endAlphaHELIX > Math.PI) || (endAlphaHELIX < startAlphaHELIX))
             throw new RuntimeException("Wrong values in the parameters file\n");      	
-        startAlphaSHEET = Double.valueOf(stok.nextToken()).doubleValue();
+        startAlphaSHEET = Double.valueOf(stok.nextToken());
         if ((startAlphaSHEET < 0.0) || (startAlphaSHEET > Math.PI))
             throw new RuntimeException("Wrong values in the parameters file\n");      	
-        endAlphaSHEET = Double.valueOf(stok.nextToken()).doubleValue();
+        endAlphaSHEET = Double.valueOf(stok.nextToken());
         if ((endAlphaSHEET < 0.0) || (endAlphaSHEET > Math.PI) || (endAlphaSHEET < startAlphaSHEET))
             throw new RuntimeException("Wrong values in the parameters file\n");      	
-        startAlphaCOIL = Double.valueOf(stok.nextToken()).doubleValue();
+        startAlphaCOIL = Double.valueOf(stok.nextToken());
         if ((startAlphaCOIL < 0.0) || (startAlphaCOIL > Math.PI))
             throw new RuntimeException("Wrong values in the parameters file\n");      	
-        endAlphaCOIL = Double.valueOf(stok.nextToken()).doubleValue();
+        endAlphaCOIL = Double.valueOf(stok.nextToken());
         if ((endAlphaCOIL < 0.0) || (endAlphaCOIL > Math.PI) || (endAlphaCOIL < startAlphaCOIL))
             throw new RuntimeException("Wrong values in the parameters file\n");      	    	
     }

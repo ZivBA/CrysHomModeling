@@ -17,14 +17,13 @@ public class Alignment extends MeshiList {
      * A comment is associated with each protein.
      **/
     public final StringList comments;
-    private Filter filter;
-    /**
+	
+	/**
      * The filter determine the type of the alignment (sequence, residue or atom).
      **/
-    public Alignment(Filter filter) {
+	Alignment(Filter filter) {
 	super(filter);
-	this.filter = filter;
-	comments = new StringList();
+		comments = new StringList();
     }
     
     public AlignmentColumn columnAt(int index) {

@@ -48,16 +48,16 @@ import meshi.energy.TotalEnergy;
 
 public class WolfConditionLineSearch extends LineSearch {
 
-    private double maxNumEvaluations;
-    private double extendAlphaFactor;
-    private double c1,c2;
-    private final double interSafeGuardFactor = 20;
-	private double interSafeGuard;
-    private double oldE,newE;
-    private double[][] coordinates;	
+    private final double maxNumEvaluations;
+    private final double extendAlphaFactor;
+    private final double c1;
+	private final double c2;
+	private final double interSafeGuard;
+    private double oldE;
+	private final double[][] coordinates;
     private int firstRun;
     private double alphaI,alphaI1,alphaFinal;
-	private int n; // number of variables
+	private final int n; // number of variables
 	private double e0,eI,eI1; //Energy values along Pk
 	private double grad0,gradI,gradI1; //gradients along Pk
 	private int numAlphaEvaluations,stop;
@@ -72,13 +72,14 @@ public class WolfConditionLineSearch extends LineSearch {
 		this.c2 = c2;
 		this.maxNumEvaluations = maxNumEvaluations;
 		this.extendAlphaFactor = extendAlphaFactor;
-		interSafeGuard = extendAlphaFactor/interSafeGuardFactor;
+		double interSafeGuardFactor = 20;
+		interSafeGuard = extendAlphaFactor/ interSafeGuardFactor;
 		coordinates = energy.coordinates();
 		n = coordinates.length;
 		Reset();
 	}
 	
-	public void Reset() {
+	private void Reset() {
 		firstRun = 1;
 		alphaI1 = 1.0;
 	}
@@ -93,7 +94,7 @@ public class WolfConditionLineSearch extends LineSearch {
         	throw new LineSearchException(0,"\n\nThe input array to the function 'findStepLength' has the same pointer as the 'coordinate' array in energy. \n" +
                     "It should be a different array.\n");
         //Initializing the run
-        newE = energy.getLastEnergy();
+		double newE = energy.getLastEnergy();
         grad0 = 0; // calculating the gradient at a=0
         for (i=0 ; i<n ; i++)
         	grad0 -= inputCoordinates[i][1]*coordinates[i][1];
@@ -111,7 +112,7 @@ public class WolfConditionLineSearch extends LineSearch {
         	firstRun = 0;
     	}
         else {
-        	alphaI1 = 2.02*(newE-oldE)/grad0;
+        	alphaI1 = 2.02*(newE -oldE)/grad0;
         	if (alphaI1>1)
         		alphaI1 = 1;
         }

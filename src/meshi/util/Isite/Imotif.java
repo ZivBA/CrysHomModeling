@@ -3,14 +3,13 @@ package meshi.util.Isite;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-public class Imotif {
+class Imotif {
 	
 	private int clusterID = -1;
 	private int motifLength = -1; // The profile is always 2*overhang positions more
 	private int overhang = -1;
 	private double mdaCut = -1;
 	private double dmeCut = -1;
-	private double pseudoCount = -1;
 	private double confidenceFitParam1 = -1;
 	private double confidenceFitParam2 = -1;
 	private double zScoreParam1 = -1;
@@ -39,7 +38,7 @@ public class Imotif {
 		dmeCut = Double.parseDouble(st.nextToken());
 		st = new StringTokenizer(libString.get(5)); // Parsing Pseudo Counts  
 		st.nextToken();
-		pseudoCount = Double.parseDouble(st.nextToken());
+		double pseudoCount = Double.parseDouble(st.nextToken());
 //		st = new StringTokenizer(libString.get(6)); // Parsing confidence params  
 //		st.nextToken();
 //		confidenceFitParam1 = Double.parseDouble(st.nextToken());

@@ -6,18 +6,18 @@ import java.util.Formatter;
 
 
 public class MeshiLog extends StringList {
-    public final int LINE_LENGTH = 240; 
-    public final String KEY = "MESHILOG"; 
-    public final int FIELD_LENGTH = 10;
-    public final int FIELDS_LENGTH = 6;
+	private final int FIELD_LENGTH = 10;
+    private final int FIELDS_LENGTH = 6;
 
     public MeshiLog() { 
 	super(); 
     } 
 
-    public void add(String log, String key) {
-	String formatString = KEY+" "+key+" %s";
-	int effectiveLineLength = LINE_LENGTH - KEY.length() - key.length()-7;
+    protected void add(String log, String key) {
+	    String KEY = "MESHILOG";
+	    String formatString = KEY +" "+key+" %s";
+	    int LINE_LENGTH = 240;
+	    int effectiveLineLength = LINE_LENGTH - KEY.length() - key.length()-7;
 	String line;
 	while (log.length() > 0) { 
 	    if (log.length() < effectiveLineLength) {
@@ -41,21 +41,21 @@ public class MeshiLog extends StringList {
 
 
 
-    public String field(String s) {
+    protected String field(String s) {
 	    return field(s,FIELD_LENGTH);
     }
-    public String field(double d) {
+    protected String field(double d) {
 	    return field(d,FIELD_LENGTH);
     }
-    public String fields(String s) {
+    protected String fields(String s) {
 	    return field(s,FIELDS_LENGTH);
     }
-    public String fields(double d) {
+    protected String fields(double d) {
             return field(d,FIELDS_LENGTH);
 
     }
 
-    public String field(String s,int length) {
+    private String field(String s, int length) {
 	String out;
 	if (s.length() <= length-1) {
 	    out = s;
@@ -66,14 +66,14 @@ public class MeshiLog extends StringList {
 	return out;
     }
 
-    public String field(double d, int length) {
+    private String field(double d, int length) {
 	String fmt;
 	if (length == FIELD_LENGTH)  
 	      fmt = "%-"+(length-1)+".2f";
 	else 
    	      fmt = "%-"+(length-1)+".3f";
 	String dString = (new Formatter()).format(fmt, d).toString();
-	if ((dString.indexOf(".") == -1) &
+	if ((!dString.contains(".")) &
 	    (dString.length() >= length)) {
 	    String dummy = "";
 	    for (int i = 0; i < (length-1); i++) dummy += "*";

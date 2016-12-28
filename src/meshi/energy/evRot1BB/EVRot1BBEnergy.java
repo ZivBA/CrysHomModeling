@@ -16,7 +16,7 @@ import java.util.Iterator;
 
 public final class EVRot1BBEnergy extends CooperativeEnergyTerm implements AtomTypes, Rot1Arrays {
 	
-	final static double ALPHA = 0.01;
+	private final static double ALPHA = 0.01;
 
     /** 
      * These are fields for temporary array results that are needed in the evaluation stage.
@@ -99,7 +99,7 @@ public final class EVRot1BBEnergy extends CooperativeEnergyTerm implements AtomT
     	return evaluate(false);
     }
 
-    public final double evaluate(boolean updateAtoms) {
+    private double evaluate(boolean updateAtoms) {
 	if (! on) return 0.0;
 	double energy = 0;
 	double atomEnergy=0; 
@@ -211,7 +211,7 @@ oneOverSTDs[atom.residueNumber()][0] , maximalZ));
      * atom2 in the Distance - dis. The results are updated in the fields of the 
      * EVRot1BBDistanceAttribute of dis - sigmaValues.
      **/ 
-    private final void updateSigmVals(Distance dis) {
+    private void updateSigmVals(Distance dis) {
     	EVRot1BBDistanceAttribute sigmaValues =
     		(EVRot1BBDistanceAttribute) dis.getAttribute(EVRot1BBDistanceAttribute.EV_ROT1_ATTRIBUTE);
        	

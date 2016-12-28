@@ -12,11 +12,9 @@ public class AminoAcid implements Iterable<SimpleAtom>{
 	private SimpleAtom[] atoms;
 	private String name;
 	private char singleLetterName;
-	private char chainID;
 	private int seqNum;
 	private int position;
-	private double acidScore;
-
+	
 	private Double CATemp;
 
 	/**
@@ -32,22 +30,21 @@ public class AminoAcid implements Iterable<SimpleAtom>{
 		}
 		name = atoms[0].getaAcidName();
 		singleLetterName = ProteinActions.resToSingleLetter(name);
-		chainID = atoms[0].chain;
+		char chainID = atoms[0].chain;
 		seqNum = atoms[0].aAcidSequence;
 
 		CATemp = Double.MIN_VALUE;
-		for (int i=0; i<atoms.length; i++){
-			if (atoms[i].getName().equals(" CA ")){
-				CATemp = atoms[i].tempFactor;
+		for (SimpleAtom atom : atoms) {
+			if (atom.getName().equals(" CA ")) {
+				CATemp = atom.tempFactor;
 			}
-			if (atoms[i].tempFactor==Double.MIN_VALUE){
-				atoms[i].tempFactor=CATemp;
+			if (atom.tempFactor == Double.MIN_VALUE) {
+				atom.tempFactor = CATemp;
 			}
 		}
 	}
 
 	public void setAcidScore(double acidScore) {
-		this.acidScore = acidScore;
 	}
 
 	public int getSeqNum() {

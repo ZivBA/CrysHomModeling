@@ -10,13 +10,13 @@ import meshi.parameters.AtomTypes;
 import meshi.parameters.Residues;
 import meshi.util.MeshiProgram;
 
-public class FindContacts  extends MeshiProgram implements Residues,AtomTypes {
+class FindContacts  extends MeshiProgram implements Residues,AtomTypes {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		init(args);
+		init();
 		TricYeastAlignment alignmentYeast = new TricYeastAlignment();
 		TricAlignment alignmentBov = new TricAlignment();
 		VectorOfOrganisms vec = new VectorOfOrganisms();
@@ -148,8 +148,8 @@ public class FindContacts  extends MeshiProgram implements Residues,AtomTypes {
 	}
 	
 	
-	public static void findContacts(String pdbComplex, 
-		double[][] SBs, double[][] HBs, double[][] BBs, double[][] CCs) {
+	private static void findContacts(String pdbComplex,
+	                                 double[][] SBs, double[][] HBs, double[][] BBs, double[][] CCs) {
 		double SB_HB_th = 3.1;
 		double C_C_th = 4.0;
 		for (int c=0 ; c<1000 ; c++) {
@@ -233,7 +233,7 @@ public class FindContacts  extends MeshiProgram implements Residues,AtomTypes {
 	}
 	
 	
-	protected static void init(String[] args) {
+	private static void init() {
 		int zvl = ALA; // force the reading of "meshi.parameters.Residues"
 		zvl = ACA;// force the reading of "meshi.parameters.AtomTypes"
 		initRandom(333);

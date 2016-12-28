@@ -7,7 +7,7 @@ import meshi.util.file.MeshiWriter;
 
 import java.io.IOException;
 
-public class ParseParticlToDomains {
+class ParseParticlToDomains {
 
 	public ParseParticlToDomains() {}
 
@@ -171,25 +171,21 @@ public class ParseParticlToDomains {
 	}
 
 	
-	protected static AtomList filterDomainAccordingTo1Q3R(AtomList fullList, char subunit , char domain) {
+	private static AtomList filterDomainAccordingTo1Q3R(AtomList fullList, char subunit, char domain) {
 		int[][] parsingQ3R; 
 		TricYeastAlignment alignments = new TricYeastAlignment();
 		switch (domain) {
     	case 'B': // Both Equatorial and Middle
-    		int[][] newParse1 = {{18,217} , {369,523}};
-    		parsingQ3R = newParse1;
+		    parsingQ3R = new int[][]{{18,217} , {369,523}};
     		break;
     	case 'E': // Equatorial 
-    		int[][] newParse2 = {{18,149} , {404,523}};
-    		parsingQ3R = newParse2;
+		    parsingQ3R = new int[][]{{18,149} , {404,523}};
     		break;
     	case 'M': // Middle 
-    		int[][] newParse3 = {{150,217} , {369,403}};
-    		parsingQ3R = newParse3;
+		    parsingQ3R = new int[][]{{150,217} , {369,403}};
     		break;
     	case 'A': // Apical 
-    		int[][] newParse4 = {{218,368}};
-    		parsingQ3R = newParse4;
+		    parsingQ3R = new int[][]{{218,368}};
     		break;
     	default:
     		throw new RuntimeException("Invalid domain letter {E,A}");
@@ -208,12 +204,12 @@ public class ParseParticlToDomains {
 	}
 	
 	
-	protected static AtomList filterDomain(AtomList fullList, int[][] parsing) {
+	private static AtomList filterDomain(AtomList fullList, int[][] parsing) {
 		AtomList newList = new AtomList();
 		for (int c=0 ; c<fullList.size() ; c++) {
 			int resNum = fullList.atomAt(c).residueNumber();
-			for (int segID=0 ; segID<parsing.length ; segID++ ) {
-				if ((resNum>=parsing[segID][0]) & (resNum<=parsing[segID][1])) {
+			for (int[] aParsing : parsing) {
+				if ((resNum >= aParsing[0]) & (resNum <= aParsing[1])) {
 					newList.add(fullList.atomAt(c));
 				}
 			}

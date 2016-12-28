@@ -1,7 +1,6 @@
 package meshi.energy.compositeTorsions.smoothRotamerLibrary;
 
 import meshi.energy.compositeTorsions.ResidueTorsions;
-import meshi.energy.compositeTorsions.SplinedPolynomialsLoader;
 
 /** Smooth rotamer library parameters for amino acids with no
  * sidechain torsion angles: ALA, GLY.
@@ -13,7 +12,7 @@ public class SmoothRotamerLibraryParametersChi0 extends
 		SmoothRotamerLibraryParameters {
 
 	public SmoothRotamerLibraryParametersChi0(
-			int residueType, SplinedPolynomialsLoader spl ) {
+			int residueType) {
 		super( residueType );
 		
 		polynomials = null;

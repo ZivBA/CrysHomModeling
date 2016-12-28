@@ -9,7 +9,7 @@ import meshi.util.filters.Filter;
 
 public class ExcludedVolCreator extends EnergyCreator  implements KeyWords {
 
-    private double Rfac;
+    private final double Rfac;
     private Filter filter = null;
  
     public ExcludedVolCreator(double weight,double Rfac) {

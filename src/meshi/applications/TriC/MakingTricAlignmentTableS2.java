@@ -2,7 +2,7 @@ package meshi.applications.TriC;
 
 import meshi.util.file.File2StringArray;
 
-public class MakingTricAlignmentTableS2 {
+class MakingTricAlignmentTableS2 {
 
 	public static void main(String[] args) {
 		String[] clustal = File2StringArray.f2a("C:\\Users\\Nir\\TRiC\\Organisms\\Alignment_for_Fig_S2");

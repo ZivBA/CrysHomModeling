@@ -56,12 +56,10 @@ import java.io.File;
  *
  **/
 
-public class RefinePairsKB01like extends MeshiProgram implements Residues, AtomTypes {
+class RefinePairsKB01like extends MeshiProgram implements Residues, AtomTypes {
 
 	private static CommandList commands;
-	private static String commandsFileName = null;
-	private static String corpusFileName = null;	
-	private static String modelsFileName = null;  
+	private static String modelsFileName = null;
 	private static String refFileName = null;  
 	private static String outputFileName = null;  
 	private static String letters = null;
@@ -297,16 +295,16 @@ public class RefinePairsKB01like extends MeshiProgram implements Residues, AtomT
 				"Usage java -Xmx300m RefineForKB01 <commands file name> <frag corpus file name> <file with list of initial pdbs> <file with list of reference pdbs> <file with list of output names>\n" + 
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-		commandsFileName = getOrderedArgument(args);
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
-		System.out.println("# commandsFileName = "+commandsFileName);
+		System.out.println("# commandsFileName = "+ commandsFileName);
 
 		commands = new CommandList(commandsFileName);
-
-		corpusFileName = getOrderedArgument(args);
+		
+		String corpusFileName = getOrderedArgument(args);
 		if (corpusFileName == null) throw new RuntimeException(errorMessage);
-		System.out.println("# Frag corpus file name is "+corpusFileName);
+		System.out.println("# Frag corpus file name is "+ corpusFileName);
 
 		modelsFileName = getOrderedArgument(args);
 		if (modelsFileName == null) throw new RuntimeException(errorMessage);

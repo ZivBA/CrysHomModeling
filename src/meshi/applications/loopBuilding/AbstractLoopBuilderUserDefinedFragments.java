@@ -18,18 +18,17 @@ import java.util.Vector;
  */
 
 public abstract class AbstractLoopBuilderUserDefinedFragments extends AbstractLoopBuilder {
-
-	protected final double EV_CUTOFF_FACTOR=1.5; // The building tree is pruned if the EV is above this value * loop length 
-	private double tetherToTemplate = -1; // If this is set to anything larger than 0, then the fragment elongation will not proceed if the inserted fragment CA's are more than this values from theirs initial-structure counterparts. 
+	
+	private double tetherToTemplate = -1; // If this is set to anything larger than 0, then the fragment elongation will not proceed if the inserted fragment CA's are more than this values from theirs initial-structure counterparts.
 	private double tetherToTemplateSquared = -1; // The square of the above.
 
-	protected Vector<int[]> fragsDescription; 
-	protected double rmsCutOff = -1;
-	protected double EV_CUTOFF = 0.0;
-	protected long EVaccepted = 0;
-	protected long EVrejected = 0;
-	protected long TETHERaccepted = 0;
-	protected long TETHERrejected = 0;
+	final Vector<int[]> fragsDescription;
+	private double rmsCutOff = -1;
+	double EV_CUTOFF = 0.0;
+	long EVaccepted = 0;
+	long EVrejected = 0;
+	long TETHERaccepted = 0;
+	long TETHERrejected = 0;
 	private Atom[] templateCAs = null;
 	private Atom[] modelCAs = null;
 	
@@ -45,15 +44,16 @@ public abstract class AbstractLoopBuilderUserDefinedFragments extends AbstractLo
 	 *   <-999, >999 , like above but interfacing a fixed frags on the other side. The frag index is found by (X-1000) or (-1000-X) depending on the sign. 
 	 * 
 	 */
-	public AbstractLoopBuilderUserDefinedFragments(CommandList commands,
-			String writePath, Corpus corpus, Protein prot, Protein ref,
-			int resStart, int resEnd,
-			double similarityMatchCO, double rmsCutOff, Vector<int[]> fragsDescription) {
+	AbstractLoopBuilderUserDefinedFragments(CommandList commands,
+	                                        String writePath, Corpus corpus, Protein prot, Protein ref,
+	                                        int resStart, int resEnd,
+	                                        double similarityMatchCO, double rmsCutOff, Vector<int[]> fragsDescription) {
 		super(commands, writePath, corpus, prot, ref, resStart, resEnd,
 				similarityMatchCO);
 		this.fragsDescription = fragsDescription;
 		this.rmsCutOff = rmsCutOff;
-		EV_CUTOFF = EV_CUTOFF_FACTOR*(resEnd-resStart+1);
+		double EV_CUTOFF_FACTOR = 1.5;
+		EV_CUTOFF = EV_CUTOFF_FACTOR *(resEnd-resStart+1);
 		System.out.println("EV_CUTOFF: " + EV_CUTOFF);	
 		setTemplateTetherStructure();
 	}
@@ -103,16 +103,15 @@ public abstract class AbstractLoopBuilderUserDefinedFragments extends AbstractLo
 				libStarts[c] = fragsDescription.get(c)[0]-resStart;
 				libEnds[c] = libStarts[c] + (FRAGSIZE-1);
 				libManners[c] = -1;
-				if (true) { // To print
-					System.out.println("FRAGSIZE " + FRAGSIZE);
-					for (int d=0; d< Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
-							fragsDescription.get(c)[0] + (FRAGSIZE - 1)).length ; d++)
-						System.out.print(Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
-								fragsDescription.get(c)[0] + (FRAGSIZE - 1))[d]+ " ");
-					System.out.println();
-					System.out.println(libStarts[c] + "   SSS   " + libEnds[c]);
-					System.out.println("variable Lib Size is:" + libs[c].libSize());
-				}
+				// To print
+				System.out.println("FRAGSIZE " + FRAGSIZE);
+				for (int d=0; d< Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
+						fragsDescription.get(c)[0] + (FRAGSIZE - 1)).length ; d++)
+					System.out.print(Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
+							fragsDescription.get(c)[0] + (FRAGSIZE - 1))[d]+ " ");
+				System.out.println();
+				System.out.println(libStarts[c] + "   SSS   " + libEnds[c]);
+				System.out.println("variable Lib Size is:" + libs[c].libSize());
 			}
 			if (fragsDescription.get(c)[2]>999) {
 				int FRAGSIZE = fragsDescription.get(c)[1]-fragsDescription.get(c)[0]+1+overlapStalk;
@@ -123,16 +122,15 @@ public abstract class AbstractLoopBuilderUserDefinedFragments extends AbstractLo
 				libStarts[c] = fragsDescription.get(c)[0] - overlapStalk - resStart;
 				libEnds[c] = libStarts[c] + (FRAGSIZE-1);
 				libManners[c] = 1;
-				if (true) { // To print
-					System.out.println("FRAGSIZE " + FRAGSIZE);
-					for (int d=0; d< Protein.getSeqOfProt(prot, fragsDescription.get(c)[1] - (FRAGSIZE - 1),
-							fragsDescription.get(c)[1] + extensionThreading).length ; d++)
-						System.out.print(Protein.getSeqOfProt(prot, fragsDescription.get(c)[1] - (FRAGSIZE - 1),
-								fragsDescription.get(c)[1] + extensionThreading)[d]+ " ");
-					System.out.println();
-					System.out.println(libStarts[c] + "   SSS   " + libEnds[c]);
-					System.out.println("variable Lib Size is:" + libs[c].libSize());
-				}
+				// To print
+				System.out.println("FRAGSIZE " + FRAGSIZE);
+				for (int d=0; d< Protein.getSeqOfProt(prot, fragsDescription.get(c)[1] - (FRAGSIZE - 1),
+						fragsDescription.get(c)[1] + extensionThreading).length ; d++)
+					System.out.print(Protein.getSeqOfProt(prot, fragsDescription.get(c)[1] - (FRAGSIZE - 1),
+							fragsDescription.get(c)[1] + extensionThreading)[d]+ " ");
+				System.out.println();
+				System.out.println(libStarts[c] + "   SSS   " + libEnds[c]);
+				System.out.println("variable Lib Size is:" + libs[c].libSize());
 			}
 			if (fragsDescription.get(c)[2]==-1) {
 				int FRAGSIZE = fragsDescription.get(c)[1]-fragsDescription.get(c)[0]+1;
@@ -143,16 +141,15 @@ public abstract class AbstractLoopBuilderUserDefinedFragments extends AbstractLo
 				libStarts[c] = fragsDescription.get(c)[0] - resStart;
 				libEnds[c] = libStarts[c] + (FRAGSIZE-1);
 				libManners[c] = -1;
-				if (true) { // To print
-					System.out.println("FRAGSIZE " + FRAGSIZE);
-					for (int d=0; d< Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
-							fragsDescription.get(c)[0] + (FRAGSIZE - 1) + extensionThreading).length ; d++)
-						System.out.print(Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
-								fragsDescription.get(c)[0] + (FRAGSIZE - 1) + extensionThreading)[d]+ " ");
-					System.out.println();
-					System.out.println(libStarts[c] + "   SSS   " + libEnds[c]);
-					System.out.println("variable Lib Size is:" + libs[c].libSize());
-				}
+				// To print
+				System.out.println("FRAGSIZE " + FRAGSIZE);
+				for (int d=0; d< Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
+						fragsDescription.get(c)[0] + (FRAGSIZE - 1) + extensionThreading).length ; d++)
+					System.out.print(Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
+							fragsDescription.get(c)[0] + (FRAGSIZE - 1) + extensionThreading)[d]+ " ");
+				System.out.println();
+				System.out.println(libStarts[c] + "   SSS   " + libEnds[c]);
+				System.out.println("variable Lib Size is:" + libs[c].libSize());
 			}
 			if (fragsDescription.get(c)[2]==1) {
 				int FRAGSIZE = fragsDescription.get(c)[1]-fragsDescription.get(c)[0]+1;
@@ -163,16 +160,15 @@ public abstract class AbstractLoopBuilderUserDefinedFragments extends AbstractLo
 				libStarts[c] = fragsDescription.get(c)[0] - resStart;
 				libEnds[c] = libStarts[c] + (FRAGSIZE-1);
 				libManners[c] = 1;
-				if (true) { // To print
-					System.out.println("FRAGSIZE " + FRAGSIZE);
-					for (int d=0; d< Protein.getSeqOfProt(prot, fragsDescription.get(c)[1] - (FRAGSIZE - 1) - extensionThreading,
-							fragsDescription.get(c)[1] + extensionThreading).length ; d++)
-						System.out.print(Protein.getSeqOfProt(prot, fragsDescription.get(c)[1] - (FRAGSIZE - 1) - extensionThreading,
-								fragsDescription.get(c)[1] + extensionThreading)[d]+ " ");
-					System.out.println();
-					System.out.println(libStarts[c] + "   SSS   " + libEnds[c]);
-					System.out.println("variable Lib Size is:" + libs[c].libSize());
-				}
+				// To print
+				System.out.println("FRAGSIZE " + FRAGSIZE);
+				for (int d=0; d< Protein.getSeqOfProt(prot, fragsDescription.get(c)[1] - (FRAGSIZE - 1) - extensionThreading,
+						fragsDescription.get(c)[1] + extensionThreading).length ; d++)
+					System.out.print(Protein.getSeqOfProt(prot, fragsDescription.get(c)[1] - (FRAGSIZE - 1) - extensionThreading,
+							fragsDescription.get(c)[1] + extensionThreading)[d]+ " ");
+				System.out.println();
+				System.out.println(libStarts[c] + "   SSS   " + libEnds[c]);
+				System.out.println("variable Lib Size is:" + libs[c].libSize());
 			}
 			if (fragsDescription.get(c)[2]==-2) {
 				int FRAGSIZE = fragsDescription.get(c)[1]-fragsDescription.get(c)[0]+1;
@@ -183,16 +179,15 @@ public abstract class AbstractLoopBuilderUserDefinedFragments extends AbstractLo
 				libStarts[c] = fragsDescription.get(c)[0] - resStart;
 				libEnds[c] = libStarts[c] + (FRAGSIZE-1);
 				libManners[c] = -1;
-				if (true) { // To print
-					System.out.println("FRAGSIZE " + FRAGSIZE);
-					for (int d=0; d< Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
-							fragsDescription.get(c)[0] + (FRAGSIZE - 1) + extensionThreading).length ; d++)
-						System.out.print(Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
-								fragsDescription.get(c)[0] + (FRAGSIZE - 1) + extensionThreading)[d]+ " ");
-					System.out.println();
-					System.out.println(libStarts[c] + "   SSS   " + libEnds[c]);
-					System.out.println("variable Lib Size is:" + libs[c].libSize());
-				}
+				// To print
+				System.out.println("FRAGSIZE " + FRAGSIZE);
+				for (int d=0; d< Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
+						fragsDescription.get(c)[0] + (FRAGSIZE - 1) + extensionThreading).length ; d++)
+					System.out.print(Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
+							fragsDescription.get(c)[0] + (FRAGSIZE - 1) + extensionThreading)[d]+ " ");
+				System.out.println();
+				System.out.println(libStarts[c] + "   SSS   " + libEnds[c]);
+				System.out.println("variable Lib Size is:" + libs[c].libSize());
 			}
 			if (fragsDescription.get(c)[2]==2) {
 				int FRAGSIZE = fragsDescription.get(c)[1]-fragsDescription.get(c)[0]+1;
@@ -203,16 +198,15 @@ public abstract class AbstractLoopBuilderUserDefinedFragments extends AbstractLo
 				libStarts[c] = fragsDescription.get(c)[0] - resStart;
 				libEnds[c] = libStarts[c] + (FRAGSIZE-1);
 				libManners[c] = 1;
-				if (true) { // To print
-					System.out.println("FRAGSIZE " + FRAGSIZE);
-					for (int d=0; d< Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
-							fragsDescription.get(c)[1] + extensionThreading).length ; d++)
-						System.out.print(Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
-								fragsDescription.get(c)[1] + extensionThreading)[d]+ " ");
-					System.out.println();
-					System.out.println(libStarts[c] + "   SSS   " + libEnds[c]);
-					System.out.println("variable Lib Size is:" + libs[c].libSize());
-				}
+				// To print
+				System.out.println("FRAGSIZE " + FRAGSIZE);
+				for (int d=0; d< Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
+						fragsDescription.get(c)[1] + extensionThreading).length ; d++)
+					System.out.print(Protein.getSeqOfProt(prot, fragsDescription.get(c)[0] - extensionThreading,
+							fragsDescription.get(c)[1] + extensionThreading)[d]+ " ");
+				System.out.println();
+				System.out.println(libStarts[c] + "   SSS   " + libEnds[c]);
+				System.out.println("variable Lib Size is:" + libs[c].libSize());
 			}
 
 			

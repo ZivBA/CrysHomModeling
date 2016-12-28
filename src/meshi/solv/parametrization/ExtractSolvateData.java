@@ -33,16 +33,16 @@ import java.text.DecimalFormat;
  * 
  * @author Nir
  */
-public class ExtractSolvateData extends MeshiProgram implements Residues, AtomTypes {
+class ExtractSolvateData extends MeshiProgram implements Residues, AtomTypes {
 
 	// We get these user defined parameters from the command line
 	// ----------------------------------------------------------
 	// The structure database:
-	static String listOfStructures = "C:/Users/Nir/Loop_Building_Project/listPISCES.txt";
+	private static String listOfStructures = "C:/Users/Nir/Loop_Building_Project/listPISCES.txt";
 	// Output file:
-	static String outputFile = "All_Atom_Solvate_Data_5.3"; 
+	private static String outputFile = "All_Atom_Solvate_Data_5.3";
 	// The carbon cutoff (carbon will counted in a sphere with this radius):
-	static double cutoffNeighbor = 5.3;    	
+	private static double cutoffNeighbor = 5.3;
 
 
 	public static void main(String[] args){
@@ -85,8 +85,8 @@ public class ExtractSolvateData extends MeshiProgram implements Residues, AtomTy
 
 		// Going over the models
 		String[] models = File2StringArray.f2a(listOfStructures);
-		for (int i=0 ; i<models.length ; i++) { 		
-			System.out.println("Reading: " + models[i]);
+		for (String model1 : models) {
+			System.out.println("Reading: " + model1);
 
 			/* If you need to add hydrogens to the models you will need the following commented code.
 			 * --------------------------------------------------------------------------------------
@@ -102,46 +102,44 @@ public class ExtractSolvateData extends MeshiProgram implements Residues, AtomTy
 			catch (Exception e) {
 				System.out.print("\nThere was a problem writing the output:\n" + e + "\n\nContinueing...\n\n");
 			}   */
-
+			
 			// Creating the model
-			Protein model = new Protein(new AtomList(models[i]), new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
-			if (model.atoms().CAFilter().size()>min_Prot_Size) {				
+			Protein model = new Protein(new AtomList(model1), new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
+			if (model.atoms().CAFilter().size() > min_Prot_Size) {
 				// Distance matrix and energies
-				DistanceMatrix dm = new DistanceMatrix(model.atoms(), cutoffNeighbor+0.5 , 2.0, 4);
+				DistanceMatrix dm = new DistanceMatrix(model.atoms(), cutoffNeighbor + 0.5, 2.0, 4);
 				energy = new TotalEnergy(model, dm, energyCreators, commands);
 				energy.evaluateAtoms();
 				
 				// Creating the hydrogen bond list object:
 				hbList = new DahiyatHydrogenBondListNoDuplications(dm, model.atoms(), new DahiyatHighAccuracyParamaters());
-
+				
 				// Extracting the solvate data of the protein
 				DistanceList dl = dm.nonBondedList();
-				for (int c=0 ; c<dl.size(); c++) {
+				for (int c = 0; c < dl.size(); c++) {
 					dis = dl.distanceAt(c).distance();
-					if (dis<cutoffNeighbor) {  
+					if (dis < cutoffNeighbor) {
 						atom1 = dl.distanceAt(c).atom1();
 						atom2 = dl.distanceAt(c).atom2();
-						if (atom1.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE)==null) 
+						if (atom1.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE) == null)
 							atom1.addAttribute(new SolvateExtractionAttribute());
-						if (atom2.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE)==null)
+						if (atom2.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE) == null)
 							atom2.addAttribute(new SolvateExtractionAttribute());
 						attribute1 = (SolvateExtractionAttribute) atom1.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE);
 						attribute2 = (SolvateExtractionAttribute) atom2.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE);
-						hb = hbList.findBondByPolars(atom1, atom2); 
-						if (hb!=null) { // Can make SB
-							if ((((atom1.type == KNZ) || (atom1.type == RNH) || (atom1.type == TRN)) && 
-									((atom2.type == DOD) || (atom2.type == EOE) || (atom2.type == TRO)))      || 
-									(((atom2.type == KNZ) || (atom2.type == RNH) || (atom2.type == TRN)) && 
+						hb = hbList.findBondByPolars(atom1, atom2);
+						if (hb != null) { // Can make SB
+							if ((((atom1.type == KNZ) || (atom1.type == RNH) || (atom1.type == TRN)) &&
+									((atom2.type == DOD) || (atom2.type == EOE) || (atom2.type == TRO))) ||
+									(((atom2.type == KNZ) || (atom2.type == RNH) || (atom2.type == TRN)) &&
 											((atom1.type == DOD) || (atom1.type == EOE) || (atom1.type == TRO)))) { // is SB
 								attribute1.addToSumOfSB(hb.hbVal());
 								attribute2.addToSumOfSB(hb.hbVal());
-							}
-							else { // regular HB
+							} else { // regular HB
 								attribute1.addToSumOfHB(hb.hbVal());
 								attribute2.addToSumOfHB(hb.hbVal());
 							}
-						}
-						else {  
+						} else {
 							if (!atom2.isHydrogen)
 								attribute1.addToSumOfNeighbors(1.0);
 							if (!atom1.isHydrogen)
@@ -151,30 +149,28 @@ public class ExtractSolvateData extends MeshiProgram implements Residues, AtomTy
 				}
 				
 				// Excluding clashing residues
-				for (int c=0 ; c<model.atoms().size() ; c++) {
+				for (int c = 0; c < model.atoms().size(); c++) {
 					atom = model.atoms().atomAt(c);
-					if (atom.energy()>max_LJ_energy)
-						for (int cc=0 ; cc<atom.residue().atoms().size(); cc++)
+					if (atom.energy() > max_LJ_energy)
+						for (int cc = 0; cc < atom.residue().atoms().size(); cc++)
 							atom.residue().atoms().atomAt(cc).addEnergy(100.0);
 				}
 				
-
+				
 				// Add the protein's data to the entire database
-				for (int c=0 ; c<model.atoms().size() ; c++) {
+				for (int c = 0; c < model.atoms().size(); c++) {
 					atom = model.atoms().atomAt(c);
 					attribute = (SolvateExtractionAttribute) atom.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE);
-					if (attribute!=null) {
-						if (atom.energy()<max_LJ_energy) {
+					if (attribute != null) {
+						if (atom.energy() < max_LJ_energy) {
 							indNeighbor = findBinIndice(binsNeighbor, attribute.getSumOfNeighbors());
 							indHB = findBinIndice(binsHB, attribute.getSumOfHB());
 							indSB = findBinIndice(binsSB, attribute.getSumOfSB());
 							data[atom.type][indNeighbor][indHB][indSB]++;
-						}
-						else {
+						} else {
 							//System.out.println("Serious clash in: " + atom + "\n");
 						}
-					}
-					else {
+					} else {
 						//System.out.println("No Attribute: " + atom + "\n");
 					}
 				}
@@ -210,7 +206,7 @@ public class ExtractSolvateData extends MeshiProgram implements Residues, AtomTy
 	}
 
 
-	public static int findBinIndice(double[] bins, double value) {
+	private static int findBinIndice(double[] bins, double value) {
 		double minDiff = Double.MAX_VALUE;
 		int minInd = -1;
 		for (int c=0; c<bins.length ; c++) {
@@ -223,7 +219,7 @@ public class ExtractSolvateData extends MeshiProgram implements Residues, AtomTy
 	}
 
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -248,7 +244,7 @@ public class ExtractSolvateData extends MeshiProgram implements Residues, AtomTy
 
 		String cutoffString = getOrderedArgument(args);
 		if (cutoffString== null) throw new RuntimeException(errorMessage);
-		cutoffNeighbor = (new Double(cutoffString)).doubleValue();
+		cutoffNeighbor = new Double(cutoffString);
 		System.out.println("# CNC cutoff value: "+ cutoffNeighbor);
 
 		initRandom(333);

@@ -9,15 +9,14 @@ import meshi.molecularElements.Residue;
 //---------------------------------------------------------------------
 public class PropensityTorsionEnergyElement extends EnergyElement {
 	private Atom atom1,atom2,atom3,atom4,atom5,atmo6,atom7,atom8;
-    private Torsion torsion1,torsion2;
-    private int residueType;
-    private double limit;
-    private double resolution;
-    private double[][][] coef;    
-    private int[] mapping = new int[21];
-    private double[][] mapCoefs;
+    private final Torsion torsion1;
+	private final Torsion torsion2;
+	private final double limit;
+    private final double resolution;
+    private double[][][] coef;
+	private double[][] mapCoefs;
     private double[][] mapCoefsOmni;
-    private double weight;
+    private final double weight;
 
     /*
      *The constructor needs two torsions. 
@@ -30,10 +29,10 @@ public class PropensityTorsionEnergyElement extends EnergyElement {
 	this.weight = weight;
 	this.torsion1 = torsionPair.torsion1();
 	this.torsion2 = torsionPair.torsion2();
-	residueType = Residue.type(torsion2.getTorsionResName());
+	    int residueType = Residue.type(torsion2.getTorsionResName());
 	limit = param.limit;
 	resolution = param.resolution;
-	mapping = param.mapping;
+	    int[] mapping = param.mapping;
 
 	if (! torsion1.getTorsionName().equals(param.torsion1Name))
 	    throw new RuntimeException("\nError: Expected a torsion of type " + param.torsion1Name + 
@@ -64,42 +63,42 @@ public class PropensityTorsionEnergyElement extends EnergyElement {
 	energy = ramach[0] * weight;
 	dEdTorsion1 = -1*ramach[1] * weight;// negating the derivatives for the force calculation
 	dEdTorsion2 = -1*ramach[2] * weight;// negating the derivatives for the force calculation
-	if (torsion1.atom1.frozen() == false) {
+	if (!torsion1.atom1.frozen()) {
 	    torsion1.atom1.addToFx(dEdTorsion1*torsion1.dTorsionDx1());
 	    torsion1.atom1.addToFy(dEdTorsion1*torsion1.dTorsionDy1());
 	    torsion1.atom1.addToFz(dEdTorsion1*torsion1.dTorsionDz1());
 	}
-	if (torsion1.atom2.frozen() == false) {
+	if (!torsion1.atom2.frozen()) {
 	    torsion1.atom2.addToFx(dEdTorsion1*torsion1.dTorsionDx2());
 	    torsion1.atom2.addToFy(dEdTorsion1*torsion1.dTorsionDy2());
 	    torsion1.atom2.addToFz(dEdTorsion1*torsion1.dTorsionDz2());
 	}
-	if (torsion1.atom3.frozen() == false) {
+	if (!torsion1.atom3.frozen()) {
 	    torsion1.atom3.addToFx(dEdTorsion1*torsion1.dTorsionDx3());
 	    torsion1.atom3.addToFy(dEdTorsion1*torsion1.dTorsionDy3());
 	    torsion1.atom3.addToFz(dEdTorsion1*torsion1.dTorsionDz3());
 	}
-	if (torsion1.atom4.frozen() == false) {
+	if (!torsion1.atom4.frozen()) {
 	    torsion1.atom4.addToFx(dEdTorsion1*torsion1.dTorsionDx4());
 	    torsion1.atom4.addToFy(dEdTorsion1*torsion1.dTorsionDy4());
 	    torsion1.atom4.addToFz(dEdTorsion1*torsion1.dTorsionDz4());
 	}	    
-	if (torsion2.atom1.frozen() == false) {
+	if (!torsion2.atom1.frozen()) {
 	    torsion2.atom1.addToFx(dEdTorsion2*torsion2.dTorsionDx1());
 	    torsion2.atom1.addToFy(dEdTorsion2*torsion2.dTorsionDy1());
 	    torsion2.atom1.addToFz(dEdTorsion2*torsion2.dTorsionDz1());
 	}
-	if (torsion2.atom2.frozen() == false) {
+	if (!torsion2.atom2.frozen()) {
 	    torsion2.atom2.addToFx(dEdTorsion2*torsion2.dTorsionDx2());
 	    torsion2.atom2.addToFy(dEdTorsion2*torsion2.dTorsionDy2());
 	    torsion2.atom2.addToFz(dEdTorsion2*torsion2.dTorsionDz2());
 	}
-	if (torsion2.atom3.frozen() == false) {
+	if (!torsion2.atom3.frozen()) {
 	    torsion2.atom3.addToFx(dEdTorsion2*torsion2.dTorsionDx3());
 	    torsion2.atom3.addToFy(dEdTorsion2*torsion2.dTorsionDy3());
 	    torsion2.atom3.addToFz(dEdTorsion2*torsion2.dTorsionDz3());
 	}
-	if (torsion2.atom4.frozen() == false) {
+	if (!torsion2.atom4.frozen()) {
 	    torsion2.atom4.addToFx(dEdTorsion2*torsion2.dTorsionDx4());
 	    torsion2.atom4.addToFy(dEdTorsion2*torsion2.dTorsionDy4());
 	    torsion2.atom4.addToFz(dEdTorsion2*torsion2.dTorsionDz4());
@@ -109,7 +108,7 @@ public class PropensityTorsionEnergyElement extends EnergyElement {
     }
 
 
-    public double[] computePropensityTorsionEnergy(double phi, double psi) {
+    private double[] computePropensityTorsionEnergy(double phi, double psi) {
 	double[] outputVal = {0.0 , 0.0 , 0.0};
 	Long lo;
 	double rh,rs,hh,ss;
@@ -120,7 +119,7 @@ public class PropensityTorsionEnergyElement extends EnergyElement {
 	rh = Math.floor(((phi+limit) - 2*limit*Math.floor((phi+limit)/(2*limit)))/resolution);
 	rs = Math.floor(((psi+limit) - 2*limit*Math.floor((psi+limit)/(2*limit)))/resolution);
 	// The line in 'coefs' that holds polynom coefficients of this rectangle
-	lo = new Long(Math.round((2*limit)/resolution*rh) + Math.round(rs));
+	lo = Math.round((2 * limit) / resolution * rh) + Math.round(rs);
 	ln = lo.intValue();
 	// Offset in that rectangle
 	hh = (phi+limit) - 2*limit*Math.floor((phi+limit)/(2*limit)) - rh*resolution;

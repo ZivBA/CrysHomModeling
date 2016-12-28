@@ -12,8 +12,8 @@ import meshi.util.filters.Filter;
 
 
 public class TetherCreator extends EnergyCreator implements KeyWords {
-	Filter filter = null;
-	AtomList takePegFrom = null;
+	private Filter filter = null;
+	private AtomList takePegFrom = null;
 
 	public TetherCreator() {
 		super( TETHER_ENERGY);

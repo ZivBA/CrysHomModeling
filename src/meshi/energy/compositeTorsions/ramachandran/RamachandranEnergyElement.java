@@ -9,9 +9,9 @@ public class RamachandranEnergyElement
 	extends EnergyElement
 	implements Residues, CompositeTorsionsDefinitions {
 
-	public final ResidueTorsions residueTorsions;
-	public final RamachandranParameters cpp;
-	protected double weight;
+	private final ResidueTorsions residueTorsions;
+	private final RamachandranParameters cpp;
+	private final double weight;
 
 	public RamachandranEnergyElement(
 			ResidueTorsions residueTorsions,

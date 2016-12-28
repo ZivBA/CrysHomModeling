@@ -11,9 +11,9 @@ import java.util.StringTokenizer;
 
 
 public class LennardJonesParametersList extends ParametersList {
-	private double frac;
+	private final double frac;
 
-    public LennardJonesParametersList(String parametersFileName) {this(parametersFileName,1.0);}
+    protected LennardJonesParametersList(String parametersFileName) {this(parametersFileName,1.0);}
 
     	
     public LennardJonesParametersList(String parametersFileName , double frac) {
@@ -58,12 +58,12 @@ public class LennardJonesParametersList extends ParametersList {
 			   parametersFileName);
 			   throw e;
 		}
-		
-		for (int c=0 ; c<tmpAr.length ; c++)
-		   add(tmpAr[c]);
+	
+	    for (LennardJonesParameters aTmpAr : tmpAr)
+		    add(aTmpAr);
 	}
 
-    public Parameters createParameters(String line) {
+    protected Parameters createParameters(String line) {
 	return new LennardJonesParameters(new StringTokenizer(line) , frac);
     }
     

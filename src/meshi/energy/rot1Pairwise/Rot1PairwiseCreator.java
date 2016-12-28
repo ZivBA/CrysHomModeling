@@ -10,15 +10,13 @@ import meshi.util.KeyWords;
 public class Rot1PairwiseCreator extends EnergyCreator  implements KeyWords {
 
 
-	private int type=0; // allows us to run one of the EV scenario 
-	private double frac=1.0; // allows us to multiply the atomic radii by a certain fraction 
+	private int type=0; // allows us to run one of the EV scenario
 	
-
-    public Rot1PairwiseCreator(double weight , int type , double frac) {
+	
+	public Rot1PairwiseCreator(double weight , int type , double frac) {
   	super(weight);
   	this.type = type;
-  	this.frac = frac;
-    }
+	}
  
     public Rot1PairwiseCreator(double weight , int type) {
   	super(weight);

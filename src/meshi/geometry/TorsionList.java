@@ -25,7 +25,7 @@ public class TorsionList extends MeshiList implements Updateable {
     /**
      * An empty TorsionList
      **/
-     protected TorsionList(Filter filter) {
+    private TorsionList(Filter filter) {
         super(filter);
     }
 
@@ -55,7 +55,7 @@ public class TorsionList extends MeshiList implements Updateable {
 	}
     }
 
-      public Torsion getTorsion(Angle angle1, Angle angle2, DistanceMatrix distanceMatrix) {
+      Torsion getTorsion(Angle angle1, Angle angle2, DistanceMatrix distanceMatrix) {
 	     return new Torsion(angle1, angle2, distanceMatrix);
       } 
 
@@ -101,7 +101,7 @@ public class TorsionList extends MeshiList implements Updateable {
 	return list;
     }
 
-    public boolean equivalentExists(Torsion findMe) {
+    private boolean equivalentExists(Torsion findMe) {
 	Iterator torsions = iterator();
 	Torsion torsion;
 	while ((torsion = (Torsion) torsions.next()) != null)
@@ -165,15 +165,15 @@ public class TorsionList extends MeshiList implements Updateable {
     }
 
     
-    public static boolean isNamed(Torsion torsion) {
+    private static boolean isNamed(Torsion torsion) {
 	    return torsion.getTorsionName().compareTo("") != 0;
     }
 
-    public static boolean isPhi(Torsion torsion) {
+    private static boolean isPhi(Torsion torsion) {
 	    return torsion.getTorsionName().compareTo("PHI") == 0;
     }
     
-    public static boolean isPsi(Torsion torsion) {
+    private static boolean isPsi(Torsion torsion) {
 	    return torsion.getTorsionName().compareTo("PSI") == 0;
     }
     
@@ -181,34 +181,34 @@ public class TorsionList extends MeshiList implements Updateable {
 	    return torsion.getTorsionName().compareTo("OMG") == 0;
     }
     
-    public static boolean isCimp(Torsion torsion) {
+    private static boolean isCimp(Torsion torsion) {
 	    return torsion.atom1.name.equals("CA") &
 			    torsion.atom2.name.equals("N") &
 			    torsion.atom3.name.equals("C") &
 			    torsion.atom4.name.equals("O");
     }
     
-    public static boolean isNimp(Torsion torsion) {
+    private static boolean isNimp(Torsion torsion) {
 	    return torsion.atom1.name.equals("H") &
 			    torsion.atom2.name.equals("C") &
 			    torsion.atom3.name.equals("N") &
 			    torsion.atom4.name.equals("CA");
     }
 
-    public static boolean isChi1(Torsion torsion) {
+    private static boolean isChi1(Torsion torsion) {
 	    return torsion.getTorsionName().compareTo("CHI1") == 0;
     }
-    public static boolean isChi2(Torsion torsion) {
+    private static boolean isChi2(Torsion torsion) {
 	    return torsion.getTorsionName().compareTo("CHI2") == 0;
     }
-    public static boolean isChi3(Torsion torsion) {
+    private static boolean isChi3(Torsion torsion) {
 	    return torsion.getTorsionName().compareTo("CHI3") == 0;
     }
-    public static boolean isChi4(Torsion torsion) {
+    private static boolean isChi4(Torsion torsion) {
 	    return torsion.getTorsionName().compareTo("CHI4") == 0;
     }
 
-    public static boolean isOOP(Torsion torsion) {
+    private static boolean isOOP(Torsion torsion) {
 	    return torsion.getTorsionName().compareTo("OOP") == 0;
     }
 

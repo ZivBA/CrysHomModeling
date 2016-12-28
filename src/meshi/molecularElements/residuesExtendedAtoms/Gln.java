@@ -15,8 +15,7 @@ import meshi.molecularElements.AtomList;
  *                OE1  HE22
  **/
 public class Gln extends ResidueExtendedAtoms {
-    public final Atom CG, CD, OE1, NE2, HE21, HE22;
-    public static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
+	private static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
 	"                O\n"+
 	"                |\n"+
 	"       N - CA - C...n\n"+
@@ -38,16 +37,22 @@ public class Gln extends ResidueExtendedAtoms {
 	super(GLN, atomList, number, mode,  addAtomsFlag);
 	Object[] temp = new Object[6];
 	int i=0;
-	temp[i++] = CG = getAtom("CG",QCG, atomList, this);
-	temp[i++] = CD = getAtom("CD",QCD, atomList, this);
-	temp[i++] = NE2 = getAtom("NE2",QNE, atomList, this);
-	if (NE2 != null) {
+	    Atom CG;
+	    temp[i++] = CG = getAtom("CG",QCG, atomList, this);
+	    Atom CD;
+	    temp[i++] = CD = getAtom("CD",QCD, atomList, this);
+	    Atom NE2;
+	    temp[i++] = NE2 = getAtom("NE2",QNE, atomList, this);
+	    Atom HE22;
+	    Atom HE21;
+	    if (NE2 != null) {
 	    temp[i++] = HE21 = getAtom("HE21",QHE1, atomList, this);
 	    temp[i++] = HE22 = getAtom("HE22",QHE2, atomList, this);
 	}
 	else HE21 = HE22 = null;
-	    
-	temp[i++] = OE1 = getAtom("OE1",QOE, atomList, this);
+	
+	    Atom OE1;
+	    temp[i++] = OE1 = getAtom("OE1",QOE, atomList, this);
 	for (i = 0; i <temp.length; i++)
 	    if (temp[i] != null) atoms.add(temp[i]);
 

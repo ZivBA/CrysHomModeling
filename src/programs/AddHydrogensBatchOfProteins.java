@@ -35,11 +35,10 @@ import meshi.util.file.MeshiWriter;
  *
  **/
 
-public class AddHydrogensBatchOfProteins extends MeshiProgram implements Residues, AtomTypes {
+class AddHydrogensBatchOfProteins extends MeshiProgram implements Residues, AtomTypes {
 
     private static CommandList commands;
-    private static String commandsFileName = null;
-    private static String modelsFileName = null;  
+	private static String modelsFileName = null;
 
  
     public static void main(String[] args) throws MinimizerException, LineSearchException {
@@ -59,26 +58,25 @@ public class AddHydrogensBatchOfProteins extends MeshiProgram implements Residue
 	
 	// Looping on all the models
 	String[] models = File2StringArray.f2a(modelsFileName);
-	for (int i=0 ; i<models.length ; i++) {
-		// Reading the model
-		model = new Protein(new AtomList(models[i]) , new ResidueExtendedAtoms(ADD_HYDROGENS_AND_FREEZE));
-		for (int cc=0 ; cc<model.atoms().size() ; cc++)
-				model.atoms().atomAt(cc).setChain("A");
+	    for (String model1 : models) {
+		    // Reading the model
+		    model = new Protein(new AtomList(model1), new ResidueExtendedAtoms(ADD_HYDROGENS_AND_FREEZE));
+		    for (int cc = 0; cc < model.atoms().size(); cc++)
+			    model.atoms().atomAt(cc).setChain("A");
 		
-		// Energy and RMS - Before minimization
-	  	model.defrost();
-	  	model.atoms().filter(new AtomList.NonHydrogen()).freeze();
-		distanceMatrix = new DistanceMatrix(model.atoms(), 5.5, 2.0, 4);
-		energy = new TotalEnergy(model, distanceMatrix, energyCreators, commands);
-		minimizer = new LBFGS(energy, 0.05, 500, 100);
-		System.out.println(minimizer.minimize());
-		try {
-			model.atoms().print(new MeshiWriter(models[i]+".withH.pdb"));
-		}
-		catch (Exception e) {
-			System.out.print("\nThere was a problem writing the output:\n" + e + "\n\nContinueing...\n\n");
-		}
-	}
+		    // Energy and RMS - Before minimization
+		    model.defrost();
+		    model.atoms().filter(new AtomList.NonHydrogen()).freeze();
+		    distanceMatrix = new DistanceMatrix(model.atoms(), 5.5, 2.0, 4);
+		    energy = new TotalEnergy(model, distanceMatrix, energyCreators, commands);
+		    minimizer = new LBFGS(energy, 0.05, 500, 100);
+		    System.out.println(minimizer.minimize());
+		    try {
+			    model.atoms().print(new MeshiWriter(model1 + ".withH.pdb"));
+		    } catch (Exception e) {
+			    System.out.print("\nThere was a problem writing the output:\n" + e + "\n\nContinueing...\n\n");
+		    }
+	    }
 	
 	} // Of main
 
@@ -109,10 +107,10 @@ public class AddHydrogensBatchOfProteins extends MeshiProgram implements Residue
     			       "<Wrg>  <Wev> <Wsolv> <Whb> <Wprop> <Wramach> \n"+
     			       "                    ******************\n");
     			      
-    	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-    	commandsFileName = getOrderedArgument(args);
+    	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+	    String commandsFileName = getOrderedArgument(args);
     	if (commandsFileName == null) throw new RuntimeException(errorMessage);
-    	System.out.println("# commandsFileName = "+commandsFileName);
+    	System.out.println("# commandsFileName = "+ commandsFileName);
 
     	commands = new CommandList(commandsFileName);
     	

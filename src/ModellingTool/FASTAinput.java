@@ -3,37 +3,31 @@ package ModellingTool;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.File;
+import java.nio.file.Paths;
 
-public class FASTAinput extends JDialog {
+class FASTAinput extends JDialog {
 	private JPanel contentPane;
 	private JButton buttonOK;
 	private JButton buttonCancel;
 	private JTabbedPane tabbedPane1;
 	private JTextPane inputFASTAfield;
 	private JPanel fileChooserPane;
-	private JFileChooser fc;
+	private final JFileChooser fc;
 	public int fileChooserResult;
 	public String fastaSequence;
 	File fastaFile;
 
 	public FASTAinput(JFileChooser fc) {
 		this.fc =fc;
+		fc.setCurrentDirectory(Paths.get("").toAbsolutePath().toFile());
 		setContentPane(contentPane);
 		setModal(true);
 		getRootPane().setDefaultButton(buttonOK);
 
 
-		buttonOK.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				onOK();
-			}
-		});
+		buttonOK.addActionListener(e -> onOK());
 
-		buttonCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				onCancel();
-			}
-		});
+		buttonCancel.addActionListener(e -> onCancel());
 
 		// call onCancel() when cross is clicked
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -44,11 +38,7 @@ public class FASTAinput extends JDialog {
 		});
 
 		// call onCancel() on ESCAPE
-		contentPane.registerKeyboardAction(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				onCancel();
-			}
-		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 	}
 
 	private void onOK() {
@@ -68,17 +58,15 @@ public class FASTAinput extends JDialog {
 		// TODO: place custom component creation code here
 		fileChooserPane = new JPanel();
 		fileChooserPane.add(fc);
-		fc.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION)) {
-					fastaFile = fc.getSelectedFile();
-					fastaSequence = null;
-					fileChooserResult = JFileChooser.APPROVE_OPTION;
-					dispose();
+		fc.addActionListener(e -> {
+			if (e.getActionCommand().equals(JFileChooser.APPROVE_SELECTION)) {
+				fastaFile = fc.getSelectedFile();
+				fastaSequence = null;
+				fileChooserResult = JFileChooser.APPROVE_OPTION;
+				dispose();
 
-				}else{
-					onCancel();
-				}
+			}else{
+				onCancel();
 			}
 		});
 

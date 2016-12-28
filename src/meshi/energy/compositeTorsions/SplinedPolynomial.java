@@ -9,14 +9,12 @@ package meshi.energy.compositeTorsions;
 public class SplinedPolynomial
 	implements CompositeTorsionsDefinitions {
 	
-	private int numVariables;		/* how many variables the polynom accepts */
-	private int aac;				/* amino acid type */
-	private int torsionAngles[];	/* torsion angles used */
-	private int ssType;				/* secondary structure type */
-	private double breaks[][];		/* polynomial breaks for each variable */
-	private double coefs[];			/* polynomial coefficients */
-	
-	private int order[];			/* order of polynomial */
+	private final int numVariables;		/* how many variables the polynom accepts */
+	private final int aac;				/* amino acid type */
+	private final int[] torsionAngles;	/* torsion angles used */
+	private final int ssType;				/* secondary structure type */
+	private final double[][] breaks;		/* polynomial breaks for each variable */
+	private final double[] coefs;			/* polynomial coefficients */
 	
 	/** Creates a new splined polynomial. */
 	public SplinedPolynomial(
@@ -30,7 +28,7 @@ public class SplinedPolynomial
 		this.coefs = coefs;
 		
 		/* polynomial's order is assumed to be four */
-		order = new int[numVariables];
+		int[] order = new int[numVariables];
 		for( int i=0; i<numVariables; i++ )
 			order[i] = 4;
 	}
@@ -241,7 +239,7 @@ public class SplinedPolynomial
 	 * 
 	 * @return left bound of break, -1 if no break found.
 	 */
-	public int findBin( double breaks[], double torsion ) {
+	private int findBin(double breaks[], double torsion) {
 		/* update torsion to be in bin range */
 		if( torsion < breaks[0] )
 			torsion = torsion + 2*Math.PI;
@@ -260,7 +258,7 @@ public class SplinedPolynomial
 	 * method) we need this addition to verify the polynomial is
 	 * calculated correctly.
 	 */
-	public double fixTorsionToBin( double breaks[], double torsion, int bin ) {
+	private double fixTorsionToBin(double breaks[], double torsion, int bin) {
 		if( torsion < breaks[bin] )
 			torsion = torsion + 2*Math.PI;
 		else if( torsion > breaks[bin+1] )

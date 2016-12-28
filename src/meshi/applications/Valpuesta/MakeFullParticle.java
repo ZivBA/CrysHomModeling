@@ -12,10 +12,10 @@ import meshi.util.MeshiProgram;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class MakeFullParticle extends MeshiProgram implements Residues,AtomTypes {
+class MakeFullParticle extends MeshiProgram implements Residues,AtomTypes {
 	
 	public static void main(String[] args) throws Exception {
-		init(args);
+		init();
 		
 
 		// Defining the arrangement 
@@ -55,7 +55,7 @@ public class MakeFullParticle extends MeshiProgram implements Residues,AtomTypes
 				AtomList template = willison1Q3R.chainFilter(chainID+"");
 				Atom.resetNumberOfAtoms();
 				System.out.println("\n\n" + toPut + " in chain " + chainID + "  ::: " + template.size());
-				AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), 'K',template);
+				AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), template);
 				finalUnit.setChain(chainID+"");
 				// Writing
 				for (int c=0 ; c<finalUnit.size() ; c++) {
@@ -70,7 +70,7 @@ public class MakeFullParticle extends MeshiProgram implements Residues,AtomTypes
 				AtomList template = willison1Q3R.chainFilter(chainID+"");
 				Atom.resetNumberOfAtoms();
 				System.out.println("\n\n" + toPut + " in chain " + chainID + "  ::: " + template.size());
-				AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), 'K',template);
+				AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), template);
 				finalUnit.setChain(chainID+"");
 				// Writing
 				for (int c=0 ; c<finalUnit.size() ; c++) {
@@ -86,7 +86,7 @@ public class MakeFullParticle extends MeshiProgram implements Residues,AtomTypes
 	}
 
 	
-	protected static AtomList HMunit(String querySeq,char queryUnit , String templateSeq, char templateUnit, AtomList template) {
+	private static AtomList HMunit(String querySeq, char queryUnit, String templateSeq, AtomList template) {
 		boolean[] residueInAllSeqs = {false,  // -   
 				false,  // - 1 
 				false,  // - 2 
@@ -800,21 +800,18 @@ public class MakeFullParticle extends MeshiProgram implements Residues,AtomTypes
 
 	
 
-	protected static AtomList filterDomainAccordingTo1Q3R(AtomList fullList, char subunit , char domain) {
+	private static AtomList filterDomainAccordingTo1Q3R(AtomList fullList, char subunit, char domain) {
 		int[][] parsingQ3R; 
 		TricAlignment alignments = new TricAlignment();
 		switch (domain) {
     	case 'E': // Equatorial 
-    		int[][] newParse = {{18,149} , {404,535}};
-    		parsingQ3R = newParse;
+		    parsingQ3R = new int[][]{{18,149} , {404,535}};
     		break;
     	case 'M': // Middle 
-    		int[][] newParse1 = {{150,217} , {369,403}};
-    		parsingQ3R = newParse1;
+		    parsingQ3R = new int[][]{{150,217} , {369,403}};
     		break;
     	case 'A': // Apical 
-    		int[][] newParse2 = {{218,368}};
-    		parsingQ3R = newParse2;
+		    parsingQ3R = new int[][]{{218,368}};
     		break;
 //    	case 'A': // Apical 
 //    		int[][] newParse2 = {{218,247} , {278,368}};
@@ -841,12 +838,12 @@ public class MakeFullParticle extends MeshiProgram implements Residues,AtomTypes
 	}
 	
 	
-	protected static AtomList filterDomain(AtomList fullList, int[][] parsing) {
+	private static AtomList filterDomain(AtomList fullList, int[][] parsing) {
 		AtomList newList = new AtomList();
 		for (int c=0 ; c<fullList.size() ; c++) {
 			int resNum = fullList.atomAt(c).residueNumber();
-			for (int segID=0 ; segID<parsing.length ; segID++ ) {
-				if ((resNum>=parsing[segID][0]) & (resNum<=parsing[segID][1])) {
+			for (int[] aParsing : parsing) {
+				if ((resNum >= aParsing[0]) & (resNum <= aParsing[1])) {
 					newList.add(fullList.atomAt(c));
 				}
 			}
@@ -855,7 +852,7 @@ public class MakeFullParticle extends MeshiProgram implements Residues,AtomTypes
 	}
 	
 	
-	protected static void init(String[] args) {
+	private static void init() {
 		int zvl = ALA; // force the reading of "meshi.parameters.Residues"
 		zvl = ACA;// force the reading of "meshi.parameters.AtomTypes"
 		initRandom(333);

@@ -36,11 +36,11 @@ public class DoubleList extends MeshiList {
     }
 
     //#3a double shortcuts 
-    public void addDouble(double d) {
-	add(new Double(d));
+    private void addDouble(double d) {
+	add(d);
     }
     public double doubleAt(int index) {
-	return  ((Double) elementAt(index)).doubleValue();
+	return (Double) elementAt(index);
     }
 
     static class IsDouble implements Filter {

@@ -32,11 +32,10 @@ import java.io.FileWriter;
 import java.util.StringTokenizer;
 
 
-public class MinimizeCoarseLoops extends MeshiProgram implements Residues, AtomTypes {
+class MinimizeCoarseLoops extends MeshiProgram implements Residues, AtomTypes {
 
 	private static CommandList commands;
-	private static String commandsFileName = null;
-	private static String modelFileName = null;  
+	private static String modelFileName = null;
 	private static String loopsFileName = null;  	
 	private static String dataFileName = null;  
 	private static String noTorsionFileName = null;  
@@ -60,9 +59,9 @@ public class MinimizeCoarseLoops extends MeshiProgram implements Residues, AtomT
 		String[] closures = File2StringArray.f2a(noTorsionFileName);
 		if (closures.length==2) {
 			StringTokenizer st = new StringTokenizer(closures[0]);
-			dontTakeTorsion1 = (new Integer(st.nextToken())).intValue(); 
+			dontTakeTorsion1 = new Integer(st.nextToken());
 			st = new StringTokenizer(closures[1]);
-			dontTakeTorsion2 = (new Integer(st.nextToken())).intValue(); 
+			dontTakeTorsion2 = new Integer(st.nextToken());
 		}
 		else 
 			throw new RuntimeException("There should be only 2 closure residues in the file: " + noTorsionFileName);
@@ -146,21 +145,21 @@ public class MinimizeCoarseLoops extends MeshiProgram implements Residues, AtomT
 				// Setting the minimization energy
 				tetherTerm.updatePegsToCurrentPosition();
 				String[] phipsiData = File2StringArray.f2a(dataFile[i]);
-				for (int c=0 ; c<phipsiData.length ; c++) {
-					StringTokenizer st = new StringTokenizer(phipsiData[c]);
+				for (String aPhipsiData : phipsiData) {
+					StringTokenizer st = new StringTokenizer(aPhipsiData);
 					int residueNumber = Integer.parseInt(st.nextToken());
 					double phi = Double.parseDouble(st.nextToken());
 					double psi = Double.parseDouble(st.nextToken());
-					if ((residueNumber!=dontTakeTorsion1) && (residueNumber!=dontTakeTorsion2) &&
-							(torsionTerm1.getTorsionEnergyElement(residueNumber, "PHI")!=null) &&
-							(torsionTerm1.getTorsionEnergyElement(residueNumber, "PSI")!=null)) {  // The null checking is for minimizing terminal loops 
+					if ((residueNumber != dontTakeTorsion1) && (residueNumber != dontTakeTorsion2) &&
+							(torsionTerm1.getTorsionEnergyElement(residueNumber, "PHI") != null) &&
+							(torsionTerm1.getTorsionEnergyElement(residueNumber,
+									"PSI") != null)) {  // The null checking is for minimizing terminal loops
 						torsionTerm1.getTorsionEnergyElement(residueNumber, "PHI").setTarget(phi);
 						torsionTerm1.getTorsionEnergyElement(residueNumber, "PSI").setTarget(psi);
 						torsionTerm2.getTorsionEnergyElement(residueNumber, "PHI").setTarget(phi);
 						torsionTerm2.getTorsionEnergyElement(residueNumber, "PSI").setTarget(psi);
-					}
-					else {
-						System.out.println("Not constraining the {phi,psi} of residue: "+residueNumber);
+					} else {
+						System.out.println("Not constraining the {phi,psi} of residue: " + residueNumber);
 					}
 				}
 
@@ -296,10 +295,10 @@ public class MinimizeCoarseLoops extends MeshiProgram implements Residues, AtomT
 				"<loop starting resisue> <loop ending residue> <Wev> <Whb> <Wtorval> <Wtether> <output PDB extension string>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-		commandsFileName = getOrderedArgument(args);
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
-		System.out.println("# commandsFileName = "+commandsFileName);
+		System.out.println("# commandsFileName = "+ commandsFileName);
 
 		commands = new CommandList(commandsFileName);
 
@@ -327,12 +326,12 @@ public class MinimizeCoarseLoops extends MeshiProgram implements Residues, AtomT
 
 		String tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		resStart = (new Integer(tmpString)).intValue();
+		resStart = new Integer(tmpString);
 		System.out.println("# Starting residue is " + resStart);
 
 		tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		resEnd = (new Integer(tmpString)).intValue();
+		resEnd = new Integer(tmpString);
 		System.out.println("# Ending residue is " + resEnd);
 	}
 }

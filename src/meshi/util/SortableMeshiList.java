@@ -8,19 +8,19 @@ import java.util.Comparator;
 public class SortableMeshiList extends MeshiList {
     protected int lastSorted;
 
-    public SortableMeshiList() {
+    protected SortableMeshiList() {
 	super();
     }
     public SortableMeshiList(int capacity) {
     	super(capacity);
     }
 
-    public SortableMeshiList(Filter filter) {
+    protected SortableMeshiList(Filter filter) {
 	super(filter);
 	lastSorted = -1;
     }
 
-     public SortableMeshiList(Filter filter, int capacity) {
+     protected SortableMeshiList(Filter filter, int capacity) {
 	super(filter, capacity);
 	lastSorted = -1;
     }
@@ -35,8 +35,9 @@ public class SortableMeshiList extends MeshiList {
 	modCount++;
 	lastSorted = modCount;
     }
-
-    public void sort(Comparator comparator) {
+    
+	@SuppressWarnings("unchecked")
+	private void sort(Comparator comparator) {
 	    trim();
 	    Arrays.sort(internalArray, comparator);
 	    modCount++;
@@ -53,11 +54,11 @@ public class SortableMeshiList extends MeshiList {
 	return false;
     }
 
-    public int binarySearch(Object obj) {
+    protected int binarySearch(Object obj) {
 	    return Arrays.binarySearch(internalArray, obj);
    }    
 
-   public MeshiList extractLowest(Comparator comparator, int n, MeshiList newList) {
+   protected MeshiList extractLowest(Comparator comparator, int n, MeshiList newList) {
 	   if (newList.size() != 0) throw new RuntimeException("newList must be empty");
 	   if (n > size()) 
 		   throw new RuntimeException("Cannot extract "+n+" element from a list of size "+size());

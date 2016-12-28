@@ -29,7 +29,7 @@ import meshi.util.file.MeshiWriter;
 import programs.PutHydrogens;
 import programs.SCMOD;
 
-public class FinalizeModel extends MeshiProgram implements Residues, AtomTypes {
+class FinalizeModel extends MeshiProgram implements Residues, AtomTypes {
 
     private static CommandList commands; 
 
@@ -136,7 +136,7 @@ public class FinalizeModel extends MeshiProgram implements Residues, AtomTypes {
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -152,7 +152,7 @@ public class FinalizeModel extends MeshiProgram implements Residues, AtomTypes {
 				"Usage java -Xmx600m FinalizeCASP8Models <commands file name> <corpus filename> <alignment file name> <model file> <output file>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);

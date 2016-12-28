@@ -8,7 +8,7 @@ import meshi.util.file.MeshiWriter;
  * Where useful static methods are found. 
  * This is NOT the right place for highly sofisticate algorithms. 
  **/
-public class PredictionUtils {
+class PredictionUtils {
     /**
      * Opens a file for writing (warped by MeshiWriter object) with a name and location specified
      * by the commands and a .<seed>.pdb suffix.

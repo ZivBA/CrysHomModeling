@@ -9,19 +9,19 @@ import meshi.util.MeshiList;
 
 
 public class TetherEnergy  extends SimpleEnergyTerm{
-    /**
-     * The constructor associates any bond with its parameters.
-     **/
-    private int atomCounter=0;
-
-    public TetherEnergy() {}
+	
+	public TetherEnergy() {}
 
     public TetherEnergy(AtomList atomList, AtomList takePegFrom,  double weight) {
 	
 	elementsList = new MeshiList();
 	this.weight = weight;
 
-	for (atomCounter=0 ; atomCounter<atomList.size(); atomCounter++) {
+	/*
+      The constructor associates any bond with its parameters.
+     */
+	    int atomCounter = 0;
+	    for (atomCounter =0 ; atomCounter <atomList.size(); atomCounter++) {
 		Atom atom = atomList.atomAt(atomCounter);
 		if (takePegFrom!=null){
 			if (atom.reliability()>0.0) {
@@ -47,7 +47,7 @@ public class TetherEnergy  extends SimpleEnergyTerm{
     }
 
 
-    public EnergyElement createTetherElement(Atom baseElement , Atom peg) {
+    private EnergyElement createTetherElement(Atom baseElement, Atom peg) {
     	return new TetherEnergyElement(weight, baseElement , peg);
     }
 

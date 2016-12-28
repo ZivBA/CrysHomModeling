@@ -35,7 +35,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 
-public class IterativeSCMOD extends MeshiProgram implements Residues,
+class IterativeSCMOD extends MeshiProgram implements Residues,
 		AtomTypes, KeyWords, MeshiPotential { /**
  * The implemented
  * interfaces defines the 
@@ -47,21 +47,21 @@ public class IterativeSCMOD extends MeshiProgram implements Residues,
 	private static String dsspFileName = null;  
 	private static String weightsFileName = null;  
 	private static String weightsFileName1 = null;  
-	private static String writeDir = null;  
-	private static Protein fullprot,protein,writeProt;
+	private static String writeDir = null;
+	private static Protein protein;
 	private static int TH1 , TH2;
-	private static double A,B,C,D,E;
-	private static DecimalFormat fmt = new DecimalFormat("0.#");    
-	private static DecimalFormat fmt1 = new DecimalFormat("0.##");    
-	private static DecimalFormat fmt2 = new DecimalFormat("0.###");    
-	private static DecimalFormat fmt3 = new DecimalFormat("0.####");    
+	private static double A;
+	private static double E;
+	private static final DecimalFormat fmt = new DecimalFormat("0.#");
+	private static final DecimalFormat fmt1 = new DecimalFormat("0.##");
+	private static final DecimalFormat fmt2 = new DecimalFormat("0.###");
+	private static final DecimalFormat fmt3 = new DecimalFormat("0.####");
 	private static DistanceMatrix distanceMatrix;
-	private static TotalEnergy energy;
 	private static SimpleHydrogenBondEnergy hbTerm;
 	private static SimpleHP solvateTerm;
 	private static Minimizer minimizer;
 	private static double min1,min2,min3;
-	private static int[] seder = {18,19,4,9,10,12,17,7,6,3,8,14,2,13,11,1,16,15};
+	private static final int[] seder = {18,19,4,9,10,12,17,7,6,3,8,14,2,13,11,1,16,15};
 
 
 	public static void main(String[] args)  throws Exception {
@@ -100,13 +100,13 @@ public class IterativeSCMOD extends MeshiProgram implements Residues,
 		double[][] w;
 
 		// Creating the proteins.	
-		fullprot = new Protein(new AtomList(modelFileName),new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
-		for (int cc=0 ; cc<fullprot.atoms().size() ; cc++)
+		Protein fullprot = new Protein(new AtomList(modelFileName), new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
+		for (int cc = 0; cc< fullprot.atoms().size() ; cc++)
 			fullprot.atoms().atomAt(cc).setChain("A");
 		protein = new Protein(new AtomList(modelFileName),new ResidueExtendedAtoms(ADD_ATOMS));
 		for (int cc=0 ; cc<protein.atoms().size() ; cc++)
 			protein.atoms().atomAt(cc).setChain("A");
-		writeProt = new Protein(new AtomList(modelFileName),new ResidueExtendedAtoms(ADD_ATOMS));
+		Protein writeProt = new Protein(new AtomList(modelFileName), new ResidueExtendedAtoms(ADD_ATOMS));
 		for (int cc=0 ; cc<protein.atoms().size() ; cc++)
 			writeProt.atoms().atomAt(cc).setChain("A");
 		DSSP dssp = new DSSP(dsspFileName);
@@ -237,8 +237,8 @@ public class IterativeSCMOD extends MeshiProgram implements Residues,
 				new SimpleHydrogenBond_Dahiyat_LowAccuracy_Creator(1.0),
 				new SimpleHPCreator(1.0,1.0,4.25,4.25,false)
 		};
-
-		energy = new TotalEnergy(protein, distanceMatrix, energyCreators1, commands);
+		
+		TotalEnergy energy = new TotalEnergy(protein, distanceMatrix, energyCreators1, commands);
 		hbTerm = (SimpleHydrogenBondEnergy) energy.getEnergyTerm(new SimpleHydrogenBondEnergy());
 		solvateTerm = (SimpleHP) energy.getEnergyTerm(new SimpleHP());
 
@@ -261,16 +261,16 @@ public class IterativeSCMOD extends MeshiProgram implements Residues,
 				inc=-1;
 			else
 				inc=1;
-
-			for (int s=0 ; s<seder.length ; s++)
-				for (int c=0 ; c!=pp.length ; c++)  //for (int c=startNum ; c!=endNum+inc ; c+=inc)  
-					if ((pp[c]!=null) && (pp[c][2]==seder[s])) { 
+			
+			for (int aSeder : seder)
+				for (int c = 0; c != pp.length; c++)  //for (int c=startNum ; c!=endNum+inc ; c+=inc)
+					if ((pp[c] != null) && (pp[c][2] == aSeder)) {
 						typ = (int) pp[c][2];
-						System.out.println("\n\nDoing residue " + c + " of type " + typ + "\n");	
-
-						inactivateFarFromAtom(protein.residue(c).atoms().findAtomInList("CB", c) , 6.0);
-
-
+						System.out.println("\n\nDoing residue " + c + " of type " + typ + "\n");
+						
+						inactivateFarFromAtom(protein.residue(c).atoms().findAtomInList("CB", c), 6.0);
+						
+						
 						// ********************************
 						// Finding the most similar rotamer
 						// ********************************
@@ -278,27 +278,26 @@ public class IterativeSCMOD extends MeshiProgram implements Residues,
 						rotlikenative = pre;
 						tmprot = allrot[c][pre];
 						diffvec[0] = diffvec[1] = diffvec[2] = diffvec[3] = -999;
-						for (int dd=0 ; dd<lib.getChiMax((int) pp[c][2]) ; dd++) {
-							if (Math.abs(trueAng[c][dd]-tmprot[dd])>Math.PI)
-								diffvec[dd] =  180*(2*Math.PI - Math.abs(trueAng[c][dd]-tmprot[dd]))/Math.PI;
+						for (int dd = 0; dd < lib.getChiMax((int) pp[c][2]); dd++) {
+							if (Math.abs(trueAng[c][dd] - tmprot[dd]) > Math.PI)
+								diffvec[dd] = 180 * (2 * Math.PI - Math.abs(trueAng[c][dd] - tmprot[dd])) / Math.PI;
 							else
-								diffvec[dd] =  180*Math.abs(trueAng[c][dd]-tmprot[dd])/Math.PI;
-							if (diffvec[dd]>evalLimit*180/Math.PI)
+								diffvec[dd] = 180 * Math.abs(trueAng[c][dd] - tmprot[dd]) / Math.PI;
+							if (diffvec[dd] > evalLimit * 180 / Math.PI)
 								rotlikenative = -1;
-						}   
-
-
+						}
+						
+						
 						//*****************************************************************************    
 						// Going over the rotamers
 						badPoints = new double[allrot[c].length][];
 						finalChis = new double[allrot[c].length][lib.getChiMax((int) pp[c][2])];
 						finalRMS = new double[allrot[c].length];
 						results = new int[allrot[c].length];
-						for (ind=0 ; ind<allrot[c].length ; ind++) {
-//							System.out.println("Effetive Rot " + ind);
-							for (int dd=0 ; dd<lib.getChiMax((int) pp[c][2]) ; dd++) 
-								fourTupple[dd] = allrot[c][ind][dd];
-
+						for (ind = 0; ind < allrot[c].length; ind++) {
+							//							System.out.println("Effetive Rot " + ind);
+							System.arraycopy(allrot[c][ind], 0, fourTupple, 0, lib.getChiMax((int) pp[c][2]));
+							
 							ResidueBuilder.build(protein.residue(c),
 									protein.residue(c).type,
 									fourTupple);
@@ -321,143 +320,141 @@ public class IterativeSCMOD extends MeshiProgram implements Residues,
 	for (int dd=0 ; dd<list.size() ; dd++) 
 		finalChis[ind][((TorsionValEnergyElement) list.elementAt(dd)).getTorCode()] =
 								((TorsionValEnergyElement) list.elementAt(dd)).torsion().torsion();*/
-
+							
 							energy.evaluate();
-
+							
 							// Copying the final rotamer to 'finalChis'
-							for (int dd=0 ; dd<finalChis[ind].length ; dd++) 
-								finalChis[ind][dd] = fourTupple[dd];
-
+							System.arraycopy(fourTupple, 0, finalChis[ind], 0, finalChis[ind].length);
+							
 							// Calculating the RMS
 							try {
 								finalRMS[ind] = RotamericTools.calcRMS(fullprot.residue(c), protein.residue(c));
-							}
-							catch (Exception e) {
+							} catch (Exception e) {
 								finalRMS[ind] = 999;
 							}
-
-
-//							energyTerm = energy.getEnergyTerm(new SolvateEnergy());
-//							System.out.println(ind + "\n----------------------");
-//							energyTerm.evaluateAtoms();
-
-
+							
+							
+							//							energyTerm = energy.getEnergyTerm(new SolvateEnergy());
+							//							System.out.println(ind + "\n----------------------");
+							//							energyTerm.evaluateAtoms();
+							
+							
 							// Scores of different energies                           
-							badPoints[ind] = brain(c,probRot[c][ind],parametersList); 
-
-
-
+							badPoints[ind] = brain(c, probRot[c][ind], parametersList);
+							
+							
 							// Checking if the result is true
-							diff = Math.abs(finalChis[ind][0]-trueAng[c][0]);
-							if (lib.getChiMax((int) pp[c][2])>1) {
-								diff1 = Math.abs(finalChis[ind][1]-trueAng[c][1]);
-								if (finalChis[ind][1]<0.0)
-									diff1alt = Math.abs(finalChis[ind][1]+Math.PI-trueAng[c][1]);
+							diff = Math.abs(finalChis[ind][0] - trueAng[c][0]);
+							if (lib.getChiMax((int) pp[c][2]) > 1) {
+								diff1 = Math.abs(finalChis[ind][1] - trueAng[c][1]);
+								if (finalChis[ind][1] < 0.0)
+									diff1alt = Math.abs(finalChis[ind][1] + Math.PI - trueAng[c][1]);
 								else
-									diff1alt = Math.abs(finalChis[ind][1]-Math.PI-trueAng[c][1]);
+									diff1alt = Math.abs(finalChis[ind][1] - Math.PI - trueAng[c][1]);
 							}
-							if (Math.abs(diff-2*Math.PI) < diff)
-								diff = Math.abs(diff-2*Math.PI);
-							if (Math.abs(diff1-2*Math.PI) < diff1)
-								diff1 = Math.abs(diff1-2*Math.PI);
-							if (Math.abs(diff1alt-2*Math.PI) < diff1alt)
-								diff1alt = Math.abs(diff1alt-2*Math.PI);
-							if ((pp[c][2]==2) || (pp[c][2]==4) || (pp[c][2]==19))
-								diff1 = Math.min(diff1,diff1alt);
+							if (Math.abs(diff - 2 * Math.PI) < diff)
+								diff = Math.abs(diff - 2 * Math.PI);
+							if (Math.abs(diff1 - 2 * Math.PI) < diff1)
+								diff1 = Math.abs(diff1 - 2 * Math.PI);
+							if (Math.abs(diff1alt - 2 * Math.PI) < diff1alt)
+								diff1alt = Math.abs(diff1alt - 2 * Math.PI);
+							if ((pp[c][2] == 2) || (pp[c][2] == 4) || (pp[c][2] == 19))
+								diff1 = Math.min(diff1, diff1alt);
 							results[ind] = 0;
-							if (lib.getChiMax((int) pp[c][2])>1) {
+							if (lib.getChiMax((int) pp[c][2]) > 1) {
 								if ((diff < evalLimit) && (diff1 < evalLimit))
 									results[ind] = 1;
 								else if (diff < evalLimit)
 									results[ind] = 2;
 								else if (diff1 < evalLimit)
 									results[ind] = 3;
+							} else {
+								if (diff < evalLimit)
+									results[ind] = 1;
 							}
-							else {
-								if (diff < evalLimit) 
-									results[ind] = 1;	
-							}
-
+							
 						}  // The loop on the rotamers 
 						// END - Going over the rotamers
 						//*****************************************************************************    
-
-
+						
+						
 						// ********************************
 						// Making the prediction
 						// ********************************
 						minscore = 1e10;
 						pred = -1;
-						for (ind=0 ; ind<allrot[c].length ; ind++) {
+						for (ind = 0; ind < allrot[c].length; ind++) {
 							score = w[0][(int) pp[c][2]] * badPoints[ind][0] +
-							w[1][(int) pp[c][2]] * badPoints[ind][1] +
-							w[2][(int) pp[c][2]] * badPoints[ind][2] +
-							w[3][(int) pp[c][2]] * Math.log(badPoints[ind][3]+0.005) +
-							w[4][(int) pp[c][2]] * badPoints[ind][4] +
-							w[5][(int) pp[c][2]] * badPoints[ind][5];        
-							if (score<minscore) {
+									w[1][(int) pp[c][2]] * badPoints[ind][1] +
+									w[2][(int) pp[c][2]] * badPoints[ind][2] +
+									w[3][(int) pp[c][2]] * Math.log(badPoints[ind][3] + 0.005) +
+									w[4][(int) pp[c][2]] * badPoints[ind][4] +
+									w[5][(int) pp[c][2]] * badPoints[ind][5];
+							if (score < minscore) {
 								pred = ind;
 								minscore = score;
 							}
 						}
-						if (pred<0)
-							throw new RuntimeException("Serious problems " + pred); 
-
+						if (pred < 0)
+							throw new RuntimeException("Serious problems " + pred);
+						
 						// Puting the new prediction
-						if ((iter>0) && (w[3][0]>0))
+						if ((iter > 0) && (w[3][0] > 0))
 							ResidueBuilder.build(protein.residue(c),
 									protein.residue(c).type,
-									angsAtEndOfIter1[c]);    
+									angsAtEndOfIter1[c]);
 						else
 							ResidueBuilder.build(protein.residue(c),
 									protein.residue(c).type,
 									allrot[c][pred]);
-
+						
 						// The best rotamer post mortom
 						post = 999;
 						minrms = 9999;
-						for (ind=0 ; ind<allrot[c].length ; ind++) 
-							if (finalRMS[ind]<minrms) {
+						for (ind = 0; ind < allrot[c].length; ind++)
+							if (finalRMS[ind] < minrms) {
 								post = ind;
 								minrms = finalRMS[ind];
-							}		
-						for (int dd=0 ; dd<lib.getChiMax((int) pp[c][2]) ; dd++) {
-							preBest[c][dd] = allrot[c][pre][dd];        
-							predictBest[c][dd] = allrot[c][pred][dd];        
+							}
+						for (int dd = 0; dd < lib.getChiMax((int) pp[c][2]); dd++) {
+							preBest[c][dd] = allrot[c][pre][dd];
+							predictBest[c][dd] = allrot[c][pred][dd];
 							postBest[c][dd] = allrot[c][post][dd];
 						}
-						for (int dd=0 ; dd<lib.getChiMax((int) pp[c][2]) ; dd++) {
-							preBestMin[c][dd] = finalChis[pre][dd];        
-							predictBestMin[c][dd] = finalChis[pred][dd];        
+						for (int dd = 0; dd < lib.getChiMax((int) pp[c][2]); dd++) {
+							preBestMin[c][dd] = finalChis[pre][dd];
+							predictBestMin[c][dd] = finalChis[pred][dd];
 							postBestMin[c][dd] = finalChis[post][dd];
 						}
-
-
+						
+						
 						// ********************************
 						// Writing the raw data
 						// ********************************
-						System.out.print("\n" + ((iter+1)*111111) + " ");
-						System.out.print(typ+ " " + TH1 + " " + c +  "   ");
-						System.out.print((rotlikenative+1) + " " + (int)diffvec[0] + " " + (int)diffvec[1] + " " + (int)diffvec[2] + " " + (int)diffvec[3] + "   ");
-						System.out.print(fmt1.format(dssp.relACCofRes(c,' ')) + "   ");    
-						for (ind=0 ; ind<allrot[c].length ; ind++) 
+						System.out.print("\n" + ((iter + 1) * 111111) + " ");
+						System.out.print(typ + " " + TH1 + " " + c + "   ");
+						System.out.print(
+								(rotlikenative + 1) + " " + (int) diffvec[0] + " " + (int) diffvec[1] + " " + (int) diffvec[2] + " " + (int)
+										diffvec[3] + "   ");
+						System.out.print(fmt1.format(dssp.relACCofRes(c, ' ')) + "   ");
+						for (ind = 0; ind < allrot[c].length; ind++)
 							System.out.print(
-									(ind+1) + " " + fmt3.format(badPoints[ind][0])  + " " + fmt3.format(badPoints[ind][1]) + " " + 
-									fmt3.format(badPoints[ind][2])  + " " + fmt2.format(badPoints[ind][3])  + " " +
-									fmt.format(badPoints[ind][4])  + " " + fmt.format(badPoints[ind][5])  + "   ");
-						for (ind=0 ; ind<allrot[c].length ; ind++) {
-							System.out.print(results[ind]  + " ");
-							if (ind%3==2)
+									(ind + 1) + " " + fmt3.format(badPoints[ind][0]) + " " + fmt3.format(badPoints[ind][1]) + " " +
+											fmt3.format(badPoints[ind][2]) + " " + fmt2.format(badPoints[ind][3]) + " " +
+											fmt.format(badPoints[ind][4]) + " " + fmt.format(badPoints[ind][5]) + "   ");
+						for (ind = 0; ind < allrot[c].length; ind++) {
+							System.out.print(results[ind] + " ");
+							if (ind % 3 == 2)
 								System.out.print("    ");
 						}
-						for (ind=0 ; ind<allrot[c].length ; ind++) {
-							System.out.print(fmt1.format(finalRMS[ind])  + " ");
-							if (ind%3==2)
-								System.out.print("    ");	   
+						for (ind = 0; ind < allrot[c].length; ind++) {
+							System.out.print(fmt1.format(finalRMS[ind]) + " ");
+							if (ind % 3 == 2)
+								System.out.print("    ");
 						}
-						System.out.println((pre+1) + " " + (pred+1) + " " + (post+1));
-
-
+						System.out.println((pre + 1) + " " + (pred + 1) + " " + (post + 1));
+						
+						
 					} // Going for the next residue.
 
 			/*    
@@ -608,7 +605,7 @@ public class IterativeSCMOD extends MeshiProgram implements Residues,
 
 
 
-	protected static double[] brain(int resnum , double prob , SoftExcludedVolParametersList parametersList) {
+	private static double[] brain(int resnum, double prob, SoftExcludedVolParametersList parametersList) {
 		double tmpenergy;
 		SoftExcludedVolParameters parameters;
 
@@ -669,7 +666,7 @@ public class IterativeSCMOD extends MeshiProgram implements Residues,
 		return result;
 	}
 
-	protected static double[][] readWeight(String fileName) throws Exception {
+	private static double[][] readWeight(String fileName) throws Exception {
 		double[][] w = new double[6][20];
 		String line;
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
@@ -678,8 +675,8 @@ public class IterativeSCMOD extends MeshiProgram implements Residues,
 			StringTokenizer st = new StringTokenizer(line);
 			System.out.println();
 			for (int d=0 ; d<6 ; d++) {
-				w[d][c] = (new Double(st.nextToken())).doubleValue();
-				String tmp = fmt1.format(w[d][c]).toString().trim();
+				w[d][c] = new Double(st.nextToken());
+				String tmp = fmt1.format(w[d][c]).trim();
 				for (int m=tmp.length() ; m < 5 ; m++)
 					tmp += " ";
 				System.out.print(tmp + ", ");
@@ -717,7 +714,7 @@ public class IterativeSCMOD extends MeshiProgram implements Residues,
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -734,7 +731,7 @@ public class IterativeSCMOD extends MeshiProgram implements Residues,
 				"Usage java -Xmx300m NoMinimizePerfect <commands file name> <pdb file name> <index in astral List>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
@@ -758,37 +755,37 @@ public class IterativeSCMOD extends MeshiProgram implements Residues,
 
 		String tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		TH1 = (new Integer(tmp)).intValue();
+		TH1 = new Integer(tmp);
 		System.out.println("# The #1 threshhold is:"+TH1);
 
 		tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		TH2 = (new Integer(tmp)).intValue();
+		TH2 = new Integer(tmp);
 		System.out.println("# The residue type is:"+TH2);
 
 		tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		A = (new Double(tmp)).doubleValue();
+		A = new Double(tmp);
 		System.out.println("# A is:"+A);
 
 		tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		B = (new Double(tmp)).doubleValue();
-		System.out.println("# B is:"+B);
+		double b = new Double(tmp);
+		System.out.println("# B is:"+ b);
 
 		tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		C = (new Double(tmp)).doubleValue();
-		System.out.println("# C is:"+C);
+		double c = new Double(tmp);
+		System.out.println("# C is:"+ c);
 
 		tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		D = (new Double(tmp)).doubleValue();
-		System.out.println("# D is:"+D);
+		double d = new Double(tmp);
+		System.out.println("# D is:"+ d);
 
 		tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		E = (new Double(tmp)).doubleValue();
+		E = new Double(tmp);
 		System.out.println("# E is:"+E);
 
 		weightsFileName = getOrderedArgument(args);

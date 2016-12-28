@@ -1,11 +1,11 @@
 package meshi.IMP;
 
-public class Protein {
+class Protein {
 
-	private String proteinName;
-	private DomainList domainList;
+	private final String proteinName;
+	private final DomainList domainList;
 	
-	public Protein(String proteinName, DomainList domainList) {
+	private Protein(String proteinName, DomainList domainList) {
 		this.proteinName =  proteinName;
 		this.domainList = domainList;
 	}

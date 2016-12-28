@@ -40,7 +40,7 @@ import programs.SCMOD;
  *
  */
 
-public class CreateShiftedThreading extends MeshiProgram implements Residues, AtomTypes {
+class CreateShiftedThreading extends MeshiProgram implements Residues, AtomTypes {
 	
 	private static String commandsFileName = null;
 	private static String modelFileName = null;  
@@ -65,7 +65,7 @@ public class CreateShiftedThreading extends MeshiProgram implements Residues, At
 	
 	
 	
-	public static AtomList createShiftedThreading(CommandList commands, Protein prot, int delta) {
+	private static AtomList createShiftedThreading(CommandList commands, Protein prot, int delta) {
 		AtomList newList = new AtomList();
 		Protein newProt;
 		DistanceMatrix dm;
@@ -173,9 +173,9 @@ public class CreateShiftedThreading extends MeshiProgram implements Residues, At
 			bins[ind]++;
 		}
 		Elj=firstBin;
-		for (int c=0; c<bins.length ; c++) {
-			System.out.println("000 " + Elj + " " + bins[c]);
-			Elj+=binSpacing;
+		for (int bin : bins) {
+			System.out.println("000 " + Elj + " " + bin);
+			Elj += binSpacing;
 		}
 		// --------------------------------------
 		// printing the LJ values histogram - END
@@ -210,7 +210,7 @@ public class CreateShiftedThreading extends MeshiProgram implements Residues, At
 				"Usage java -Xmx300m CreateShiftedThreading <commands file name> <model file name> <output file name> <Delta>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 		
 		commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
@@ -226,7 +226,7 @@ public class CreateShiftedThreading extends MeshiProgram implements Residues, At
 
 		String tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		delta = (new Integer(tmp)).intValue();
+		delta = new Integer(tmp);
 		System.out.println("# delta is:"+delta);
 		
 		initRandom(999);

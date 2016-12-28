@@ -25,36 +25,52 @@ public class Torsion implements Updateable {
     public final Atom atom1, atom2, atom3, atom4;
     private Atom atm1,atm2,atm3,atm4;
     private Angle ANGLE1,ANGLE2;
-    protected String torsionName = "";
-    protected int torsionCode = -1;
-    protected int torsionResNum = -9999;
-    protected String torsionResName = "";
-    public final Distance distance1, distance2, distance3;
-    protected double dCosTorsionDx1, dCosTorsionDy1, dCosTorsionDz1;
-    protected double dCosTorsionDx2, dCosTorsionDy2, dCosTorsionDz2;
-    protected double dCosTorsionDx3, dCosTorsionDy3, dCosTorsionDz3;
-    protected double dCosTorsionDx4, dCosTorsionDy4, dCosTorsionDz4;
-    protected double cosTorsion;
-    protected double dTorsionDx1, dTorsionDy1, dTorsionDz1;
-    protected double dTorsionDx2, dTorsionDy2, dTorsionDz2;
-    protected double dTorsionDx3, dTorsionDy3, dTorsionDz3;
-    protected double dTorsionDx4, dTorsionDy4, dTorsionDz4;
-    protected double torsion;
-    protected double ax, ay, az, bx, by, bz, cx, cy, cz;  
-    protected double ab, bc, ac, aa, bb, cc; 
-    protected double uu, vv, uv, den, co1;
-    protected double a0x, a0y, a0z, b0x, b0y, b0z, c0x, c0y, c0z;  
-    protected double uu2, vv2;
-    protected double a1x, a1y, a1z, b1x, b1y, b1z;  
-    protected double a2x, a2y, a2z, b2x, b2y, b2z; 
-    protected double ux, uy, uz;
-    protected double vx, vy, vz;
-    protected double dx1, dy1, dz1;
-    protected double sinSign;
-    protected double cross123x,cross123y,cross123z,cross234x,cross234y,cross234z;
-    protected double normCross123squared,normCross234squared,factor1,factor4;
-    protected double tmpSQRT,invBB,aux1,aux2,aux3,aux4;
-    protected DistanceMatrix distanceMatrix;
+    private String torsionName = "";
+    private int torsionCode = -1;
+    private int torsionResNum = -9999;
+    private String torsionResName = "";
+    private final Distance distance1;
+	private final Distance distance2;
+	private final Distance distance3;
+    private double dCosTorsionDx1;
+	private double dCosTorsionDy1;
+	private double dCosTorsionDz1;
+    private double dCosTorsionDx2;
+	private double dCosTorsionDy2;
+	private double dCosTorsionDz2;
+    private double dCosTorsionDx3;
+	private double dCosTorsionDy3;
+	private double dCosTorsionDz3;
+    private double dCosTorsionDx4;
+	private double dCosTorsionDy4;
+	private double dCosTorsionDz4;
+    double cosTorsion;
+    private double dTorsionDx1;
+	private double dTorsionDy1;
+	private double dTorsionDz1;
+    private double dTorsionDx2;
+	private double dTorsionDy2;
+	private double dTorsionDz2;
+    private double dTorsionDx3;
+	private double dTorsionDy3;
+	private double dTorsionDz3;
+    private double dTorsionDx4;
+	private double dTorsionDy4;
+	private double dTorsionDz4;
+    private double torsion;
+    private double ax;
+	private double ay;
+	private double az;
+	private double bx;
+	private double by;
+	private double bz;
+	private double cx;
+	private double cy;
+	private double cz;
+    private double ab;
+	private double bc;
+	private double bb;
+	private final DistanceMatrix distanceMatrix;
     private int numberOfUpdates = 0;
 
     public Torsion(Angle angle1, Angle angle2, DistanceMatrix distanceMatrix) {
@@ -105,8 +121,8 @@ public class Torsion implements Updateable {
     /**
      * This constructor should be used only by DisposableAngle.
      **/
-    protected Torsion(Atom atom1, Atom atom2, Atom atom3, Atom atom4,
-    			   Distance distance1, Distance distance2, Distance distance3){
+    Torsion(Atom atom1, Atom atom2, Atom atom3, Atom atom4,
+            Distance distance1, Distance distance2, Distance distance3){
       	this.atom1 = atom1;
         this.atom2 = atom2;
         this.atom3 = atom3;
@@ -263,7 +279,7 @@ public class Torsion implements Updateable {
     public double dTorsionDy4() { return dTorsionDy4;}
     public double dTorsionDz4() { return dTorsionDz4;}
 
-    public void updateCosine() {
+    private void updateCosine() {
 	ax = -1*distance1.dx();
 	ay = -1*distance1.dy();
 	az = -1*distance1.dz();
@@ -279,15 +295,15 @@ public class Torsion implements Updateable {
 	// dot products of bond vectors
 	ab = dot(ax,ay,az,bx,by,bz);
 	bc = dot(bx,by,bz,cx,cy,cz);
-	ac = dot(ax,ay,az,cx,cy,cz);
-	aa = dot(ax,ay,az,ax,ay,az);
+	    double ac = dot(ax, ay, az, cx, cy, cz);
+	    double aa = dot(ax, ay, az, ax, ay, az);
 	bb = dot(bx,by,bz,bx,by,bz);
-	cc = dot(cx,cy,cz,cx,cy,cz);
+	    double cc = dot(cx, cy, cz, cx, cy, cz);
 	// calculate cosTorsion	
-	uu = (aa * bb) - (ab * ab);
-	vv = (bb * cc) - (bc * bc);
-	uv = (ab * bc) - (ac * bb);
-	den= 1/Math.sqrt(uu*vv); 
+	    double uu = (aa * bb) - (ab * ab);
+	    double vv = (bb * cc) - (bc * bc);
+	    double uv = (ab * bc) - (ac * bb);
+	    double den = 1 / Math.sqrt(uu * vv);
 
 	cosTorsion = uv * den;
 	if (cosTorsion<-1.0)
@@ -295,54 +311,54 @@ public class Torsion implements Updateable {
 	if (cosTorsion>1.0)
 		cosTorsion = 1.0;		
 	// derivatives
-	 co1 = 0.5*cosTorsion*den;
-	 
-	 a0x = -bc*bx + bb*cx;
-	 a0y = -bc*by + bb*cy;
-	 a0z = -bc*bz + bb*cz;
+	    double co1 = 0.5 * cosTorsion * den;
 	
-	 b0x = ab*cx + bc*ax -2.*ac*bx;
-	 b0y = ab*cy + bc*ay -2.*ac*by;
-	 b0z = ab*cz + bc*az -2.*ac*bz;
+	    double a0x = -bc * bx + bb * cx;
+	    double a0y = -bc * by + bb * cy;
+	    double a0z = -bc * bz + bb * cz;
 	
-	 c0x = ab*bx - bb*ax;
-	 c0y = ab*by - bb*ay;
-	 c0z = ab*bz - bb*az;
+	    double b0x = ab * cx + bc * ax - 2. * ac * bx;
+	    double b0y = ab * cy + bc * ay - 2. * ac * by;
+	    double b0z = ab * cz + bc * az - 2. * ac * bz;
 	
-	 uu2 = 2*uu;
-	 vv2 = 2*vv;
+	    double c0x = ab * bx - bb * ax;
+	    double c0y = ab * by - bb * ay;
+	    double c0z = ab * bz - bb * az;
+	
+	    double uu2 = 2 * uu;
+	    double vv2 = 2 * vv;
+	
+	    double a1x = uu2 * (-cc * bx + bc * cx);
+	    double a1y = uu2 * (-cc * by + bc * cy);
+	    double a1z = uu2 * (-cc * bz + bc * cz);
+	
+	    double b1x = uu2 * (bb * cx - bc * bx);
+	    double b1y = uu2 * (bb * cy - bc * by);
+	    double b1z = uu2 * (bb * cz - bc * bz);
+	
+	    double a2x = -vv2 * (bb * ax - ab * bx);
+	    double a2y = -vv2 * (bb * ay - ab * by);
+	    double a2z = -vv2 * (bb * az - ab * bz);
+	
+	    double b2x = vv2 * (aa * bx - ab * ax);
+	    double b2y = vv2 * (aa * by - ab * ay);
+	    double b2z = vv2 * (aa * bz - ab * az);
 
-	 a1x = uu2*(-cc*bx + bc*cx);
-	 a1y = uu2*(-cc*by + bc*cy);
-	 a1z = uu2*(-cc*bz + bc*cz);
-	
-	 b1x = uu2*(bb*cx - bc*bx);
-	 b1y = uu2*(bb*cy - bc*by);
-	 b1z = uu2*(bb*cz - bc*bz);
-	
-	 a2x = -vv2*(bb*ax - ab*bx);
-	 a2y = -vv2*(bb*ay - ab*by);
-	 a2z = -vv2*(bb*az - ab*bz);
-	
-	 b2x = vv2*(aa*bx - ab*ax);
-	 b2y = vv2*(aa*by - ab*ay);
-	 b2z = vv2*(aa*bz - ab*az);
+	 dCosTorsionDx1 = (a0x - a2x * co1)* den;
+	 dCosTorsionDy1 = (a0y - a2y * co1)* den;
+	 dCosTorsionDz1 = (a0z - a2z * co1)* den;
 
-	 dCosTorsionDx1 = (a0x - a2x*co1)*den;
-	 dCosTorsionDy1 = (a0y - a2y*co1)*den;
-	 dCosTorsionDz1 = (a0z - a2z*co1)*den;
+	 dCosTorsionDx2 = (-a0x - b0x - (a1x - a2x - b2x)* co1)* den;
+	 dCosTorsionDy2 = (-a0y - b0y - (a1y - a2y - b2y)* co1)* den;
+	 dCosTorsionDz2 = (-a0z - b0z - (a1z - a2z - b2z)* co1)* den;
 
-	 dCosTorsionDx2 = (-a0x - b0x - (a1x - a2x - b2x)*co1)*den;
-	 dCosTorsionDy2 = (-a0y - b0y - (a1y - a2y - b2y)*co1)*den;
-	 dCosTorsionDz2 = (-a0z - b0z - (a1z - a2z - b2z)*co1)*den;
+	 dCosTorsionDx3 = (b0x - c0x - (-a1x - b1x + b2x)* co1)* den;
+	 dCosTorsionDy3 = (b0y - c0y - (-a1y - b1y + b2y)* co1)* den;
+	 dCosTorsionDz3 = (b0z - c0z - (-a1z - b1z + b2z)* co1)* den;
 
-	 dCosTorsionDx3 = (b0x - c0x - (-a1x - b1x + b2x)*co1)*den;
-	 dCosTorsionDy3 = (b0y - c0y - (-a1y - b1y + b2y)*co1)*den;
-	 dCosTorsionDz3 = (b0z - c0z - (-a1z - b1z + b2z)*co1)*den;
-
-	 dCosTorsionDx4 = (c0x - b1x*co1)*den; 
-	 dCosTorsionDy4 = (c0y - b1y*co1)*den; 
-	 dCosTorsionDz4 = (c0z - b1z*co1)*den; 
+	 dCosTorsionDx4 = (c0x - b1x * co1)* den;
+	 dCosTorsionDy4 = (c0y - b1y * co1)* den;
+	 dCosTorsionDz4 = (c0z - b1z * co1)* den;
     }
 
     
@@ -361,23 +377,23 @@ public class Torsion implements Updateable {
      * This method simply calls Math.acos, extending classes however may 
      * use approximations in order to save time.
      **/
-    public double acos(double cos) {
+    double acos(double cos) {
 	return Math.acos(cos);
     }
-    protected void update() {
+    private void update() {
 	updateCosine();
-	ux = ay*bz - az*by;
-	uy = az*bx - ax*bz;
-	uz = ax*by - ay*bx;
- 
-	vx = by*cz - bz*cy;
-	vy = bz*cx - bx*cz;
-	vz = bx*cy - by*cx;
- 
-	dx1 = uy*vz - uz*vy;
-	dy1 = uz*vx - ux*vz;
-	dz1 = ux*vy - uy*vx;
-	sinSign = dot(dx1,dy1,dz1,bx,by,bz);
+	    double ux = ay * bz - az * by;
+	    double uy = az * bx - ax * bz;
+	    double uz = ax * by - ay * bx;
+	
+	    double vx = by * cz - bz * cy;
+	    double vy = bz * cx - bx * cz;
+	    double vz = bx * cy - by * cx;
+	
+	    double dx1 = uy * vz - uz * vy;
+	    double dy1 = uz * vx - ux * vz;
+	    double dz1 = ux * vy - uy * vx;
+	    double sinSign = dot(dx1, dy1, dz1, bx, by, bz);
 	torsion = acos(cosTorsion);
 	//torsion = Math.acos(cosTorsion);
 	if(sinSign < 0) torsion = -1*torsion;
@@ -385,41 +401,41 @@ public class Torsion implements Updateable {
 	/* This part was written by Nir (nirka@cs.bgu.ac.il) on 6.11.2005 because of
 	   severe instabilities near Torsion = 0,PI,-PI */
 		// Calculating the cross products
-		cross123x = ay*bz - az*by;
-		cross123y = az*bx - ax*bz;
-		cross123z = ax*by - ay*bx;
-
-		cross234x = cy*bz - cz*by;
-		cross234y = cz*bx - cx*bz;
-		cross234z = cx*by - cy*bx;
-
-		normCross123squared = cross123x*cross123x + cross123y*cross123y + cross123z*cross123z; 
-		normCross234squared = cross234x*cross234x + cross234y*cross234y + cross234z*cross234z; 
-
-		tmpSQRT = -distance2.distance();
-		invBB = 1.0/bb;
-		factor1 = tmpSQRT/normCross123squared;
-		factor4 = tmpSQRT/normCross234squared;
-		aux1 = -factor1*(1+ab*invBB);
-		aux2 = factor4*bc*invBB;
-		aux3 = factor1*ab*invBB;
-		aux4 = -factor4*(1+bc*invBB);
+	    double cross123x = ay * bz - az * by;
+	    double cross123y = az * bx - ax * bz;
+	    double cross123z = ax * by - ay * bx;
+	
+	    double cross234x = cy * bz - cz * by;
+	    double cross234y = cz * bx - cx * bz;
+	    double cross234z = cx * by - cy * bx;
+	
+	    double normCross123squared = cross123x * cross123x + cross123y * cross123y + cross123z * cross123z;
+	    double normCross234squared = cross234x * cross234x + cross234y * cross234y + cross234z * cross234z;
+	
+	    double tmpSQRT = -distance2.distance();
+	    double invBB = 1.0 / bb;
+	    double factor1 = tmpSQRT / normCross123squared;
+	    double factor4 = tmpSQRT / normCross234squared;
+	    double aux1 = -factor1 * (1 + ab * invBB);
+	    double aux2 = factor4 * bc * invBB;
+	    double aux3 = factor1 * ab * invBB;
+	    double aux4 = -factor4 * (1 + bc * invBB);
 		
-		dTorsionDx1 = factor1*cross123x;
-		dTorsionDy1 = factor1*cross123y;
-		dTorsionDz1 = factor1*cross123z;
+		dTorsionDx1 = factor1 * cross123x;
+		dTorsionDy1 = factor1 * cross123y;
+		dTorsionDz1 = factor1 * cross123z;
 
-		dTorsionDx2 = cross123x*aux1 + cross234x*aux2;
-		dTorsionDy2 = cross123y*aux1 + cross234y*aux2;
-		dTorsionDz2 = cross123z*aux1 + cross234z*aux2;
+		dTorsionDx2 = cross123x * aux1 + cross234x * aux2;
+		dTorsionDy2 = cross123y * aux1 + cross234y * aux2;
+		dTorsionDz2 = cross123z * aux1 + cross234z * aux2;
 
-		dTorsionDx3 = cross123x*aux3 + cross234x*aux4;
-		dTorsionDy3 = cross123y*aux3 + cross234y*aux4;
-		dTorsionDz3 = cross123z*aux3 + cross234z*aux4;
+		dTorsionDx3 = cross123x * aux3 + cross234x * aux4;
+		dTorsionDy3 = cross123y * aux3 + cross234y * aux4;
+		dTorsionDz3 = cross123z * aux3 + cross234z * aux4;
 
-		dTorsionDx4 = factor4*cross234x;
-		dTorsionDy4 = factor4*cross234y;
-		dTorsionDz4 = factor4*cross234z;
+		dTorsionDx4 = factor4 * cross234x;
+		dTorsionDy4 = factor4 * cross234y;
+		dTorsionDz4 = factor4 * cross234z;
 	/* End of the new part */
     }
 
@@ -436,8 +452,8 @@ public class Torsion implements Updateable {
 				((atom3 == other.atom2) & (atom2 == other.atom3));
 	}
     }
-    public static double dot(double d1,double d2,double d3,
-			     double e1,double e2,double e3) {
+    private static double dot(double d1, double d2, double d3,
+                              double e1, double e2, double e3) {
 	return d1*e1 + d2*e2 + d3*e3;
     }
     
@@ -482,9 +498,9 @@ public class Torsion implements Updateable {
      *residues. These torsions are mainly relevent ro the plane energies. The residue names and 
      *the residue numbers of the proximal torsions are left undefined, and only the torsion code
      *and torsion anme are updated.  
-     **/    
+     **/
 
-    protected void assignName() {
+    private void assignName() {
         if (Math.abs(atom4.residueNumber() - atom1.residueNumber()) < 2) {
            torsionName = "proximal"; 
            torsionCode = -1;

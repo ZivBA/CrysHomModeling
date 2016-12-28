@@ -31,14 +31,14 @@ public class DahiyatHydrogenBondList extends AbstractHydrogenBondList implements
 	 * This array stores pointers to the base atoms of every non-hydrogen polar atom in the protein. 
 	 * The indexation is through the atom number (field)   
 	 **/
-    protected Atom[] baseAtom; 
+	private Atom[] baseAtom;
 	/**
 	 * Parameters for the hydrogen bonds.   
 	 **/
-    protected DahiyatParametersInterface parameters;
+	DahiyatParametersInterface parameters;
 
 
-    public DahiyatHydrogenBondList() {
+    DahiyatHydrogenBondList() {
     	throw new RuntimeException("\nERROR: without parameters the hydrogen bonds cannot be formed.\n");    	
     }
 
@@ -144,7 +144,7 @@ public class DahiyatHydrogenBondList extends AbstractHydrogenBondList implements
     	return createSpecificBond(tmpList, tmpSigma);
     }
 
-    protected DahiyatHydrogenBond createSpecificBond(AtomList tmpList,	HB_Sigma tmpSigma) {
+    DahiyatHydrogenBond createSpecificBond(AtomList tmpList, HB_Sigma tmpSigma) {
     	return new DahiyatHydrogenBond(dm, tmpList,	tmpSigma, parameters);
     }
 

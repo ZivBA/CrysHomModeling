@@ -7,11 +7,11 @@ import java.util.Iterator;
 
 public  class MatrixRow {
     public final Atom atom;
-    public final int number;
-    int searchStart = 0;
-    MatrixRow[] matrix;
-    double rMax2;
-    double rMaxPlusBuffer2;
+    private final int number;
+    private int searchStart = 0;
+    private final MatrixRow[] matrix;
+    private final double rMax2;
+    private final double rMaxPlusBuffer2;
     private Distance[] distances;
     private int size;
     private int capacity;
@@ -83,7 +83,7 @@ public  class MatrixRow {
   
     public int size() {return size;}
     
-    protected final Distance binarySearch(int key ){
+    final Distance binarySearch(int key){
 	int low = 0, middle, high = size-1;
 	Distance distance;
 	int atom2number;
@@ -99,9 +99,9 @@ public  class MatrixRow {
 	}
 	return null;
     }
-    protected void resetSerialSearch() {searchStart = 0;}
+    private void resetSerialSearch() {searchStart = 0;}
 
-    protected final Distance serialBinarySearch(int key ){
+    private Distance serialBinarySearch(int key){
 	int low = searchStart, middle, high = size-1;
 	Distance distance;
 	int atom2number;
@@ -147,7 +147,7 @@ public  class MatrixRow {
     }
     
     
-    public Distance remove(int key) {
+    private Distance remove(int key) {
 	int low = 0, middle, high = size-1;
 	Distance dis;
 	int atom2number;
@@ -156,8 +156,7 @@ public  class MatrixRow {
 	    dis =  distances[middle];
 	    atom2number = dis.atom2Number;
 	    if (key == atom2number){
-		for (int i = middle; i < size-1; i++)		    	
-                    distances[i] = distances[i+1];  
+		    System.arraycopy(distances, middle + 1, distances, middle, size - 1 - middle);
 		size--;
 		return dis;
 	    }
@@ -170,8 +169,8 @@ public  class MatrixRow {
     }
     public String toString() {
 	   String out =  "MatrixRow atom = "+atom+" number = "+number+"\n";
-	   for (int i = 0; i < distances.length; i++)
-		   out+=distances[i]+" ; ";
+	    for (Distance distance : distances)
+		    out += distance + " ; ";
 	   return out;
     }
 	    
@@ -235,7 +234,7 @@ public  class MatrixRow {
     }
 
     
-    public boolean addNoSort(Distance d){
+    private boolean addNoSort(Distance d){
         if (size < capacity) {
               distances[size] = d;
               size++;              
@@ -244,23 +243,21 @@ public  class MatrixRow {
         else {
               capacity *= 1.5;
               Distance[] newArray = new Distance[capacity];
-              for (int i = 0; i < size; i++)
-                   newArray[i] = distances[i];
+	        System.arraycopy(distances, 0, newArray, 0, size);
               distances = newArray;
               return add(d) ;
               }        
     }        
     
-    protected void sort(){
+    private void sort(){
         Arrays.sort(distances,0,size);     
     }        
    
-    public int insert(Distance d) {
+    private int insert(Distance d) {
         if (size+1>= capacity) {
               capacity *= 1.5;
               Distance[] newArray = new Distance[capacity];
-              for (int i = 0; i < size; i++)
-                    newArray[i] = distances[i];
+	        System.arraycopy(distances, 0, newArray, 0, size);
               distances = newArray;
               return insert(d) ;
         }
@@ -269,17 +266,15 @@ public  class MatrixRow {
               size++;
               return 0;
         }
-        if (distances[0].atom2Number > d.atom2Number) {                        
-              for (int k = size; k > 0; k--)
-              distances[k] = distances[k-1];        		      
+        if (distances[0].atom2Number > d.atom2Number) {
+	        System.arraycopy(distances, 0, distances, 1, size);
               distances[0] = d;
               size++;
               return 0;        
         }
         for (int i = 0; i < size - 1; i++)                 
-        if ((distances[i].atom2Number < d.atom2Number) & (distances[i+1].atom2Number >= d.atom2Number)) { 
-               for (int k = size; k > i+1; k--)
-                   distances[k] = distances[k-1];        		              		                              
+        if ((distances[i].atom2Number < d.atom2Number) & (distances[i+1].atom2Number >= d.atom2Number)) {
+	        System.arraycopy(distances, i + 1, distances, i + 1 + 1, size - (i + 1));
                distances[i+1] = d;
                size++;
                return i+1;	                            
@@ -314,7 +309,7 @@ public  class MatrixRow {
 	}
 
     }
-    protected Distance[] distances(){	return distances;}
+    Distance[] distances(){	return distances;}
 
 }
 

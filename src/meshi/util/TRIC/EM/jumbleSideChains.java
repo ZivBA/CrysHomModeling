@@ -24,7 +24,7 @@ import meshi.util.rotamericTools.RotamericTools;
 
 import java.io.IOException;
 
-public class jumbleSideChains extends MeshiProgram implements Residues {
+class jumbleSideChains extends MeshiProgram implements Residues {
 	
 	public static void main(String[] args) {
 		initRandom();
@@ -36,20 +36,20 @@ public class jumbleSideChains extends MeshiProgram implements Residues {
 				"Atemp_HM_H",
 				"Atemp_HM_Q",
 				"Atemp_HM_Z"};
-		for (int doProt=0; doProt<names.length ; doProt++) {
-			Protein prot = new Protein(new AtomList(names[doProt]+".pdb"),new ResidueExtendedAtoms(ADD_ATOMS));
+		for (String name : names) {
+			Protein prot = new Protein(new AtomList(name + ".pdb"), new ResidueExtendedAtoms(ADD_ATOMS));
 			RotamericTools.jumble(prot);
 			EnergyCreator[] energyCreators = {
 					new BondCreator(),
 					new AngleCreator(),
 					new PlaneCreator(),
 					new OutOfPlaneCreator(),
-					new SoftExcludedVolCreator(100.0 , 4 , 1.0),
+					new SoftExcludedVolCreator(100.0, 4, 1.0),
 			};
 			CommandList commands = new CommandList("C:\\Users\\Nir\\Loop_Building_Project\\commands");
 			prot.atoms().backbone().freeze();
-			for (int iter=0 ; iter<8 ; iter++) {
-				DistanceMatrix distanceMatrix = new DistanceMatrix(prot.atoms(), 5.5, 2.0,4); 
+			for (int iter = 0; iter < 8; iter++) {
+				DistanceMatrix distanceMatrix = new DistanceMatrix(prot.atoms(), 5.5, 2.0, 4);
 				TotalEnergy energy = new TotalEnergy(prot, distanceMatrix, energyCreators, commands);
 				Minimizer minimizer = new LBFGS(energy, 0.05, 10000, 1000);
 				try {
@@ -61,32 +61,32 @@ public class jumbleSideChains extends MeshiProgram implements Residues {
 				AbstractEnergy term = energy.getEnergyTerm(new SoftExcludedVol());
 				term.evaluateAtoms();
 				int badCounter = 0;
-				for (int res=0 ; res<prot.residues().size() ; res++) {
+				for (int res = 0; res < prot.residues().size(); res++) {
 					boolean bad = false;
-					for (int atomC=0 ; atomC<prot.residues().residueAt(res).atoms().size() ; atomC++) {
+					for (int atomC = 0; atomC < prot.residues().residueAt(res).atoms().size(); atomC++) {
 						if (!prot.residues().residueAt(res).atoms().atomAt(atomC).isBackbone &&
-								(prot.residues().residueAt(res).atoms().atomAt(atomC).energy()>5.0)) {
+								(prot.residues().residueAt(res).atoms().atomAt(atomC).energy() > 5.0)) {
 							bad = true;
 						}
 					}
 					if (bad) {
 						badCounter++;
-						double[] tmprot={-999,-999,-999,-999};
-						tmprot[0] = 2*Math.PI*(0.5-Math.random());
-						tmprot[1] = 2*Math.PI*(0.5-Math.random());
-						tmprot[2] = 2*Math.PI*(0.5-Math.random());
-						tmprot[3] = 2*Math.PI*(0.5-Math.random());
+						double[] tmprot = {-999, -999, -999, -999};
+						tmprot[0] = 2 * Math.PI * (0.5 - Math.random());
+						tmprot[1] = 2 * Math.PI * (0.5 - Math.random());
+						tmprot[2] = 2 * Math.PI * (0.5 - Math.random());
+						tmprot[3] = 2 * Math.PI * (0.5 - Math.random());
 						ResidueBuilder.build(prot.residues().residueAt(res), prot.residues().residueAt(res).type, tmprot);
 					}
 				}
 				System.out.println("Number of bads: " + badCounter);
 			}
 			try {
-				prot.atoms().print(new MeshiWriter(names[doProt]+".jumbleMin.pdb"));
+				prot.atoms().print(new MeshiWriter(name + ".jumbleMin.pdb"));
 				System.out.println("Wrote file successfully.");
 			} catch (IOException e) {
 				throw new RuntimeException("Could not write file.");
-			}						
+			}
 		}
 	}
 

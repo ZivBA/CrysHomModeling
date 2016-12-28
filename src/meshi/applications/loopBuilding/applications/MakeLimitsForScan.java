@@ -12,7 +12,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.Vector;
 
-public class MakeLimitsForScan extends MeshiProgram implements Residues, AtomTypes {
+class MakeLimitsForScan extends MeshiProgram implements Residues, AtomTypes {
 
 	private static String templateFileName = null;  
 	
@@ -43,8 +43,8 @@ public class MakeLimitsForScan extends MeshiProgram implements Residues, AtomTyp
 	}
 	
 	
-	protected static int[][] getScanLimits(Protein template, int loopLength_local, int shift_local) {
-		Vector<int[]> resultVec = new Vector<int[]>();
+	static int[][] getScanLimits(Protein template, int loopLength_local, int shift_local) {
+		Vector<int[]> resultVec = new Vector<>();
 		int startLoop = template.firstResidue();
 		int endLoop = startLoop + loopLength_local - 1;
 		int lastRes = template.lastResidue();
@@ -76,7 +76,7 @@ public class MakeLimitsForScan extends MeshiProgram implements Residues, AtomTyp
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -92,7 +92,7 @@ public class MakeLimitsForScan extends MeshiProgram implements Residues, AtomTyp
 				"Usage java -Xmx600m MakeLimitsForScan <model filename> <output filename> <Loop Length> <Shift>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		templateFileName = getOrderedArgument(args);
 		if (templateFileName == null) throw new RuntimeException(errorMessage);
@@ -104,12 +104,12 @@ public class MakeLimitsForScan extends MeshiProgram implements Residues, AtomTyp
 
 		String tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		loopLength = (new Integer(tmp.trim())).intValue();
+		loopLength = new Integer(tmp.trim());
 		System.out.println("# Will scan with a loop of this length: " + loopLength);
 		
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		shift = (new Integer(tmp.trim())).intValue();
+		shift = new Integer(tmp.trim());
 		System.out.println("# The shift will be of this length: " + shift);
 
 		initRandom(999);

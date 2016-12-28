@@ -17,7 +17,7 @@ import meshi.util.rotamericTools.RotamericTools;
 import java.text.DecimalFormat;
 
 
-public class DetailedAccuracyChecker extends MeshiProgram implements Residues,
+class DetailedAccuracyChecker extends MeshiProgram implements Residues,
 		AtomTypes, KeyWords { /**
 									 * The implemented
 									 * interfaces defines the 
@@ -29,14 +29,12 @@ public class DetailedAccuracyChecker extends MeshiProgram implements Residues,
     private static String dsspFileName;
     private static Protein solution;
     private static Protein model;
-    private static TorsionList modelChi1,modelChi2,solutionChi1,solutionChi2;
-    private static double angleCorrect;
-    private static DistanceMatrix distanceMatrix;
-    private static DSSP dssp;
+	private static double angleCorrect;
+	private static DSSP dssp;
     private static double TH_relACC = 0.2;
     private static String detailRes = "";
-    private static DecimalFormat fmt1 = new DecimalFormat("0.#");    
-    private static DecimalFormat fmt2 = new DecimalFormat("0.##");    
+    private static final DecimalFormat fmt1 = new DecimalFormat("0.#");
+    private static final DecimalFormat fmt2 = new DecimalFormat("0.##");
     
     
     public static void main(String[] args) {
@@ -81,15 +79,17 @@ public class DetailedAccuracyChecker extends MeshiProgram implements Residues,
     }
   	
   	// Building the torsion lists.
-  	distanceMatrix = new DistanceMatrix(model.atoms(), 6.0, 2.0,4);
+	    DistanceMatrix distanceMatrix = new DistanceMatrix(model.atoms(), 6.0, 2.0, 4);
   	try {
   		distanceMatrix.update(1); 
   	}
     catch (Exception e) {
     	throw new RuntimeException(e);
     }
-    modelChi1 = (TorsionList) TorsionList.createTorsionList(model, distanceMatrix).filter(new TorsionList.FilterChi1() , new TorsionList());
-    modelChi2 = (TorsionList) TorsionList.createTorsionList(model, distanceMatrix).filter(new TorsionList.FilterChi2() , new TorsionList());
+	    TorsionList modelChi1 = (TorsionList) TorsionList.createTorsionList(model, distanceMatrix).filter(new TorsionList.FilterChi1(),
+			    new TorsionList());
+	    TorsionList modelChi2 = (TorsionList) TorsionList.createTorsionList(model, distanceMatrix).filter(new TorsionList.FilterChi2(),
+			    new TorsionList());
   	distanceMatrix = new DistanceMatrix(solution.atoms(), 6.0, 2.0,4);
   	try {
   		distanceMatrix.update(1); 
@@ -97,11 +97,13 @@ public class DetailedAccuracyChecker extends MeshiProgram implements Residues,
     catch (Exception e) {
     	throw new RuntimeException(e);
     }
-    solutionChi1 = (TorsionList) TorsionList.createTorsionList(solution, distanceMatrix).filter(new TorsionList.FilterChi1() , new TorsionList());
-    solutionChi2 = (TorsionList) TorsionList.createTorsionList(solution, distanceMatrix).filter(new TorsionList.FilterChi2() , new TorsionList());
+	    TorsionList solutionChi1 = (TorsionList) TorsionList.createTorsionList(solution, distanceMatrix).filter(new TorsionList.FilterChi1(),
+			    new TorsionList());
+	    TorsionList solutionChi2 = (TorsionList) TorsionList.createTorsionList(solution, distanceMatrix).filter(new TorsionList.FilterChi2(),
+			    new TorsionList());
     
     // Actual analisys of the torsion lists
-    for (int c=0 ; c<solutionChi1.size() ; c++) {
+    for (int c = 0; c< solutionChi1.size() ; c++) {
     	tor1s = solutionChi1.torsionAt(c);
     	resNum = tor1s.getTorsionResNum();
     	resType = Residue.type(tor1s.getTorsionResName());
@@ -207,7 +209,7 @@ public class DetailedAccuracyChecker extends MeshiProgram implements Residues,
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -223,7 +225,7 @@ public class DetailedAccuracyChecker extends MeshiProgram implements Residues,
 			       "Usage java -Xmx300m AccuracyChecker <solution pdb> <model pdb> <correct angle>\n"+
 			       "                    ******************\n");
 			      
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 	solutionFileName = getOrderedArgument(args);
 	if (solutionFileName == null) throw new RuntimeException(errorMessage);
@@ -239,13 +241,13 @@ public class DetailedAccuracyChecker extends MeshiProgram implements Residues,
 
 	String angleCorrectString = getOrderedArgument(args);
 	if (angleCorrectString== null) throw new RuntimeException(errorMessage);
-	angleCorrect = (new Double(angleCorrectString)).doubleValue();
+	angleCorrect = new Double(angleCorrectString);
 	System.out.println("# Correct angles are under "+angleCorrect);
 	angleCorrect = angleCorrect*Math.PI/180.0;
 
 	String accessString = getOrderedArgument(args);
 	if (accessString!= null) {
-		TH_relACC = (new Double(accessString)).doubleValue();
+		TH_relACC = new Double(accessString);
 		System.out.println("# Relative accessability "+TH_relACC);
 	}
 

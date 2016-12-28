@@ -13,7 +13,7 @@ import java.util.Vector;
 
 public class CrystalContacts {
 	
-	private Vector<Integer> contacts = new Vector<Integer>(); 
+	private final Vector<Integer> contacts = new Vector<>();
 	
 	/**
 	 * Constructing the data from the file "fileName" which must be a CryCo file.
@@ -33,7 +33,7 @@ public class CrystalContacts {
 	    	if (!line.substring(1,4).trim().equalsIgnoreCase("HOH")) { // We don't care about water
 	    		Integer resNum = new Integer(line.substring(4,9).trim());
 		    	if (!line.substring(30,33).trim().equalsIgnoreCase("HOH")) { // We don't care about water
-		    		double dis = (new Double(line.substring(47,51).trim())).doubleValue();
+		    		double dis = new Double(line.substring(47, 51).trim());
 		    		if (dis<contactMaxDis)
 		    			if (!isContact(resNum))
 		    				contacts.add(resNum);		    		
@@ -64,8 +64,8 @@ public class CrystalContacts {
 	 * If residue 'resNum' is in contact, returns true. 
 	 */
 	public boolean isContact(int resNum) {
-		for (int c=0; c<contacts.size() ; c++)
-			if (contacts.get(c).intValue()==resNum)
+		for (Integer contact : contacts)
+			if (contact == resNum)
 				return true;
 		return false;
 	}

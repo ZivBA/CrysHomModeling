@@ -11,10 +11,10 @@ import meshi.util.file.File2StringArray;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class Willison64possibilities extends MeshiProgram implements Residues,AtomTypes {
+class Willison64possibilities extends MeshiProgram implements Residues,AtomTypes {
 
 	public static void main(String[] args) {
-		init(args);
+		init();
 		
 		String[] seqs = File2StringArray.f2a("/Users/nirka/TRiC/New_Work_on_TRiC_14_8_2011/Gunnar/Yeast_Thermosome_alignment_1line");
 		String seq_13QR = seqs[0].substring(8);
@@ -146,7 +146,7 @@ public class Willison64possibilities extends MeshiProgram implements Residues,At
 	
 	
 	
-	protected static AtomList HMunit(String querySeq,String templateSeq,boolean[] toTake,String chainID, String DorE) {
+	private static AtomList HMunit(String querySeq, String templateSeq, boolean[] toTake, String chainID, String DorE) {
 		AtomList al = new AtomList("/Users/nirka/TRiC/New_Work_on_TRiC_14_8_2011/Gunnar/3P9"+DorE+".pdb").chainFilter(chainID);
 		Atom.resetNumberOfAtoms();
 		AtomList newList = new AtomList();
@@ -182,7 +182,7 @@ public class Willison64possibilities extends MeshiProgram implements Residues,At
 		return newList;		
 	}
 	
-	protected static int getSeqNum(char gene) {
+	private static int getSeqNum(char gene) {
 		switch(gene) {
 		case 'A':
 			return 3;
@@ -211,7 +211,7 @@ public class Willison64possibilities extends MeshiProgram implements Residues,At
 	
 	
 	
-	protected static void init(String[] args) {
+	private static void init() {
 		int zvl = ALA; // force the reading of "meshi.parameters.Residues"
 		zvl = ACA;// force the reading of "meshi.parameters.AtomTypes"
 		initRandom(333);

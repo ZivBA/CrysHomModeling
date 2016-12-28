@@ -11,16 +11,16 @@ public abstract class HydrogenBondsPairsParametersList extends ParametersList {
     //private HydrogenBondsPairsParametersList coilParametersList;
 
     //---------------------------------- constructor -------------------------------
-    public HydrogenBondsPairsParametersList (){
+    HydrogenBondsPairsParametersList(){
         super(new NoElements());                //create an empty list with filter IsParameter
     }
 
-    public HydrogenBondsPairsParametersList (Filter filter ){
+    HydrogenBondsPairsParametersList(Filter filter){
         super(filter);                //create an empty list with Filter filter
     }
 
 
-    public HydrogenBondsPairsParametersList(String parametersFileName) {
+    HydrogenBondsPairsParametersList(String parametersFileName) {
         super(parametersFileName ,true);  //true means it is sortable parameter list using compare
     }
 
@@ -39,7 +39,7 @@ public abstract class HydrogenBondsPairsParametersList extends ParametersList {
      * @param baseElement should be instance of PairOfHydrogenBondsElements
      * @return HydrogenBondsPairsParameters with 6 values to use un serching the freqency value
      */
-    public Parameters getKey(Object baseElement) {
+    private Parameters getKey(Object baseElement) {
         //if (!(baseElement instanceof PairOfHydrogenBondsElements))
         //    throw new RuntimeException("problem with getKey in HBPEnergy"+ baseElement);
         PairOfHydrogenBondsElements element = (PairOfHydrogenBondsElements)baseElement;

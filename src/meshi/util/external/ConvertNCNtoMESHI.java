@@ -7,7 +7,7 @@ import meshi.util.overlap.Overlap;
 
 import java.io.IOException;
 
-public class ConvertNCNtoMESHI {
+class ConvertNCNtoMESHI {
 
 	/**
 	 * Run as: ConvertNCNtoMESHI <NCN pdb> <original PDB> <output PDB>

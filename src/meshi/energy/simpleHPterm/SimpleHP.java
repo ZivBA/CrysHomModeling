@@ -12,7 +12,6 @@ import java.util.Iterator;
 
 public class SimpleHP extends AbstractEnergy {
 	
-	private final double TRANSITION_REGION = 0.25; // Angs
 	private DistanceMatrix dm;
 	private double weightHydrophobic;
 	private double weightHydrophilic;
@@ -36,10 +35,11 @@ public class SimpleHP extends AbstractEnergy {
 		this.weightHydrophobic = weightHydrophobic;
 		this.weightHydrophilic = weightHydrophilic;
 		this.toCalcDerivatives = toCalcDerivatives;
-		hydrophilicSigma = new HB_Sigma(0.1,radiusHydrophilic-TRANSITION_REGION,radiusHydrophilic+TRANSITION_REGION,
-				radiusHydrophilic+2*TRANSITION_REGION,0.95,0.05);
-		hydrophobicSigma = new HB_Sigma(0.1,radiusHydrophobic-TRANSITION_REGION,radiusHydrophobic+TRANSITION_REGION,
-				radiusHydrophobic+2*TRANSITION_REGION,0.95,0.05);
+	    double TRANSITION_REGION = 0.25;
+	    hydrophilicSigma = new HB_Sigma(0.1,radiusHydrophilic- TRANSITION_REGION,radiusHydrophilic+ TRANSITION_REGION,
+				radiusHydrophilic+2* TRANSITION_REGION,0.95,0.05);
+		hydrophobicSigma = new HB_Sigma(0.1,radiusHydrophobic- TRANSITION_REGION,radiusHydrophobic+ TRANSITION_REGION,
+				radiusHydrophobic+2* TRANSITION_REGION,0.95,0.05);
     }
 
 	public double evaluate() {
@@ -163,14 +163,14 @@ public class SimpleHP extends AbstractEnergy {
 		coordinates[1] = atom.Y();
 		coordinates[2] = atom.Z();
 		for(int i = 0; i< 3; i++) {
-			try{totalEnergy.update();}catch(UpdateableException ue){}
+			try{totalEnergy.update();}catch(UpdateableException ignored){}
 			double x = coordinates[i][0];
 			coordinates[i][1] = 0;
 			double e1 = evaluate();
 			double analiticalForce = coordinates[i][1];
 			coordinates[i][0] += DX;
 			// Whatever should be updated ( such as distance matrix torsion list etc. )
-			try{totalEnergy.update();}catch(UpdateableException ue){}
+			try{totalEnergy.update();}catch(UpdateableException ignored){}
 			double e2 = evaluate();
 			double de = e2-e1;
 			double numericalForce = - de/DX;

@@ -65,21 +65,8 @@ import java.util.Iterator;
  *
  **/
 public final class SolvateEnergy extends CooperativeEnergyTerm implements AtomTypes, Residues {
-    
-	 // Relative strength of SALT BRIDGES compared with regular HYDROGEN BONDS for desolvation purposes, i.e. in
-	 // regard to the effect on observed CNC medians. Following Table 1 in the paper. 
-	 private final double SALT_BRIDGE_STRENGTH_ASP_OD = 0.45; 	 
-	 private final double SALT_BRIDGE_STRENGTH_GLU_OE = 0.45; 	 
-	 private final double SALT_BRIDGE_STRENGTH_LYS_NZ = 1.65; 	 
-	 private final double SALT_BRIDGE_STRENGTH_ARG_NH = 1.5; 	 
-	 private final double SALT_BRIDGE_STRENGTH_TRO = 0.45; 	 
-	 private final double SALT_BRIDGE_STRENGTH_TRN = 1.8; 	 
-	 /** The following parameter allow for a different weighting of SALT BRIDGES compared with regular HYDROGEN BONDS for the 
-	  Ehb energy, that is also claculated. 
-	 **/
-	 private final double SALT_BRIDGE_STRENGTH_GENERAL = 1.0; 	 
-
-    /** 
+	
+	/**
      * These are fields for temporary array results that are needed in the evaluation stage.
      * They are declared as fields so that time will not be waisted on creating new 
      * instances of the arrays. The lengths of these arrays is the length of the atom list. 
@@ -150,15 +137,15 @@ public final class SolvateEnergy extends CooperativeEnergyTerm implements AtomTy
     /** 
      * See the comment at the top of the class for descriptions on the weights.
      **/
-    public SolvateEnergy(AtomList atomList, 
-                    DistanceMatrix dm,
-				    SolvateParametersList parameters,
-				    AbstractHydrogenBondList hbList,
-				    double weightSCPolarSolvate,
-				    double weightBBPolarSolvate,
-				    double weightSCCarbonSolvate,
-				    double weightHB,
-				    boolean toCalcDerivatives) {
+    private SolvateEnergy(AtomList atomList,
+                          DistanceMatrix dm,
+                          SolvateParametersList parameters,
+                          AbstractHydrogenBondList hbList,
+                          double weightSCPolarSolvate,
+                          double weightBBPolarSolvate,
+                          double weightSCCarbonSolvate,
+                          double weightHB,
+                          boolean toCalcDerivatives) {
 	super(toArray(hbList), atomList, dm, parameters, weightSCPolarSolvate);
     this.weightSCPolarSolvate = weightSCPolarSolvate;
     this.weightBBPolarSolvate = weightBBPolarSolvate;
@@ -421,7 +408,7 @@ public final class SolvateEnergy extends CooperativeEnergyTerm implements AtomTy
     /**
      * This method makes changes to the instance of the "SolvateDistanceAttribute" in the distance.
      */
-    private final void characterizedDistance(Distance dis) {
+    private void characterizedDistance(Distance dis) {
     	SolvateDistanceAttribute sigmaValues = (SolvateDistanceAttribute) dis.getAttribute(SolvateDistanceAttribute.SOLVATE_ALL_ATOM_ATTRIBUTE);
     		
     	// Does this distance involve a hydrogen ??
@@ -437,19 +424,29 @@ public final class SolvateEnergy extends CooperativeEnergyTerm implements AtomTy
     	     ((dis.atom2().type == DOD) || (dis.atom2().type == EOE) || (dis.atom2().type == TRO)))      || 
     	     (((dis.atom2().type == KNZ) || (dis.atom2().type == RNH) || (dis.atom2().type == TRN)) && 
     	     ((dis.atom1().type == DOD) || (dis.atom1().type == EOE) || (dis.atom1().type == TRO)))) {  // This is a salt bridge
-    	     sigmaValues.saltBridgeFactorForHBenergyA1 = SALT_BRIDGE_STRENGTH_GENERAL;
+    	     /* The following parameter allow for a different weighting of SALT BRIDGES compared with regular HYDROGEN BONDS for the
+	  Ehb energy, that is also claculated.
+	 */
+		    double SALT_BRIDGE_STRENGTH_GENERAL = 1.0;
+		    sigmaValues.saltBridgeFactorForHBenergyA1 = SALT_BRIDGE_STRENGTH_GENERAL;
     	     sigmaValues.saltBridgeFactorForHBenergyA2 = SALT_BRIDGE_STRENGTH_GENERAL;
-    	     if (dis.atom1().type == DOD)
+		    double SALT_BRIDGE_STRENGTH_ASP_OD = 0.45;
+		    if (dis.atom1().type == DOD)
     	     	sigmaValues.saltBridgeFactorA1 = SALT_BRIDGE_STRENGTH_ASP_OD;
-    	     if (dis.atom1().type == EOE)
+		    double SALT_BRIDGE_STRENGTH_GLU_OE = 0.45;
+		    if (dis.atom1().type == EOE)
     	     	sigmaValues.saltBridgeFactorA1 = SALT_BRIDGE_STRENGTH_GLU_OE;
-    	     if (dis.atom1().type == TRO)
+		    double SALT_BRIDGE_STRENGTH_TRO = 0.45;
+		    if (dis.atom1().type == TRO)
     	     	sigmaValues.saltBridgeFactorA1 = SALT_BRIDGE_STRENGTH_TRO;
-    	     if (dis.atom1().type == KNZ)
+		    double SALT_BRIDGE_STRENGTH_LYS_NZ = 1.65;
+		    if (dis.atom1().type == KNZ)
     	     	sigmaValues.saltBridgeFactorA1 = SALT_BRIDGE_STRENGTH_LYS_NZ;
-    	     if (dis.atom1().type == RNH)
-    	     	sigmaValues.saltBridgeFactorA1 = SALT_BRIDGE_STRENGTH_ARG_NH;    		     
-    	     if (dis.atom1().type == TRN)
+		    double SALT_BRIDGE_STRENGTH_ARG_NH = 1.5;
+		    if (dis.atom1().type == RNH)
+    	     	sigmaValues.saltBridgeFactorA1 = SALT_BRIDGE_STRENGTH_ARG_NH;
+		    double SALT_BRIDGE_STRENGTH_TRN = 1.8;
+		    if (dis.atom1().type == TRN)
     	     	sigmaValues.saltBridgeFactorA1= SALT_BRIDGE_STRENGTH_TRN;    		     
     	     if (dis.atom2().type == DOD)
     	     	sigmaValues.saltBridgeFactorA2 = SALT_BRIDGE_STRENGTH_ASP_OD;
@@ -471,7 +468,7 @@ public final class SolvateEnergy extends CooperativeEnergyTerm implements AtomTy
      * atom2 in the Distance - dis. The results are updated in the fields of the 
      * SolvateDistanceAttribute of dis - sigmaValues.
      **/ 
-    private final void updateSigmVals(Distance dis) {
+    private void updateSigmVals(Distance dis) {
     	SolvateDistanceAttribute sigmaValues = 
     		(SolvateDistanceAttribute) dis.getAttribute(SolvateDistanceAttribute.SOLVATE_ALL_ATOM_ATTRIBUTE); 
     	int TsaiAtomicType1 = parameters.atomicTypeConverter[dis.atom1().type]; // Converting from the 190 atom types to the 14 defined in Tsai 99'

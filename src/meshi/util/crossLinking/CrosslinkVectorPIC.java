@@ -2,11 +2,11 @@ package meshi.util.crossLinking;
 
 import meshi.molecularElements.AtomList;
 
-public class CrosslinkVectorPIC extends CrosslinkVector {
+class CrosslinkVectorPIC extends CrosslinkVector {
 
 	private static final long serialVersionUID = 1L;
 
-	public CrosslinkVectorPIC() {
+	private CrosslinkVectorPIC() {
 		// TODO Auto-generated constructor stub
 	}
 

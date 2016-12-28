@@ -8,7 +8,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class MergeGunnarAndMe {
+class MergeGunnarAndMe {
 
 	/**
 	 * @param args
@@ -21,40 +21,38 @@ public class MergeGunnarAndMe {
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(out));
 			String[] gFile = File2StringArray.f2a(gunnar);
-			for (int c=0 ; c<gFile.length ; c++) {
-				if ((gFile[c].length()<5) || !gFile[c].substring(0, 5).equals("ATOM ")) {
-					bw.write(gFile[c] + "\n");
-				}
-				else if (gFile[c].contains("OXT")) {
-					bw.write(gFile[c] + "\n");
-				}
-				else {
-					Atom atom = fullList.findAtomInListReturningAtom(gFile[c].substring(12,16).trim(), gFile[c].substring(21,22), Integer.parseInt(gFile[c].substring(23,26).trim()));
+			for (String aGFile : gFile) {
+				if ((aGFile.length() < 5) || !aGFile.substring(0, 5).equals("ATOM ")) {
+					bw.write(aGFile + "\n");
+				} else if (aGFile.contains("OXT")) {
+					bw.write(aGFile + "\n");
+				} else {
+					Atom atom = fullList.findAtomInListReturningAtom(aGFile.substring(12, 16).trim(), aGFile.substring(21, 22),
+							Integer.parseInt(aGFile.substring(23, 26).trim()));
 					String atomS = atom.toString();
-					if (gFile[c].substring(13, 16).equals("C5*") |
-							gFile[c].substring(13, 16).equals("C4*") |
-							gFile[c].substring(13, 16).equals("O4*") |
-							gFile[c].substring(13, 16).equals("C3*") |
-							gFile[c].substring(13, 16).equals("O3*") |
-							gFile[c].substring(13, 16).equals("C2*") |
-							gFile[c].substring(13, 16).equals("O2*") |
-							gFile[c].substring(13, 16).equals("C1*") |
-							gFile[c].substring(13, 16).equals("N9 ") |
-							gFile[c].substring(13, 16).equals("C8 ") |
-							gFile[c].substring(13, 16).equals("N7 ") |
-							gFile[c].substring(13, 16).equals("C5 ") |
-							gFile[c].substring(13, 16).equals("C6 ") |
-							gFile[c].substring(13, 16).equals("N6 ") |
-							gFile[c].substring(13, 16).equals("N1 ") |
-							gFile[c].substring(13, 16).equals("C2 ") |
-							gFile[c].substring(13, 16).equals("N3 ") |
-							gFile[c].substring(13, 16).equals("C4 ") ) {
-						bw.write(gFile[c] + "\n");
-						System.out.print("kept from original: " + gFile[c] + "\n");
-					}
-					else {
-						bw.write(gFile[c].substring(0, 26) + atomS.substring(26,54) + gFile[c].substring(54) + "\n");
-						System.out.print(gFile[c].substring(0, 26) + atomS.substring(26,54) + gFile[c].substring(54) + "\n");
+					if (aGFile.substring(13, 16).equals("C5*") |
+							aGFile.substring(13, 16).equals("C4*") |
+							aGFile.substring(13, 16).equals("O4*") |
+							aGFile.substring(13, 16).equals("C3*") |
+							aGFile.substring(13, 16).equals("O3*") |
+							aGFile.substring(13, 16).equals("C2*") |
+							aGFile.substring(13, 16).equals("O2*") |
+							aGFile.substring(13, 16).equals("C1*") |
+							aGFile.substring(13, 16).equals("N9 ") |
+							aGFile.substring(13, 16).equals("C8 ") |
+							aGFile.substring(13, 16).equals("N7 ") |
+							aGFile.substring(13, 16).equals("C5 ") |
+							aGFile.substring(13, 16).equals("C6 ") |
+							aGFile.substring(13, 16).equals("N6 ") |
+							aGFile.substring(13, 16).equals("N1 ") |
+							aGFile.substring(13, 16).equals("C2 ") |
+							aGFile.substring(13, 16).equals("N3 ") |
+							aGFile.substring(13, 16).equals("C4 ")) {
+						bw.write(aGFile + "\n");
+						System.out.print("kept from original: " + aGFile + "\n");
+					} else {
+						bw.write(aGFile.substring(0, 26) + atomS.substring(26, 54) + aGFile.substring(54) + "\n");
+						System.out.print(aGFile.substring(0, 26) + atomS.substring(26, 54) + aGFile.substring(54) + "\n");
 					}
 				}
 			}

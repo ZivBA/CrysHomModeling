@@ -13,23 +13,29 @@ import meshi.molecularElements.Atom;
 public  class CoulombElectrostaticEnergyElement extends NonBondedEnergyElement {
 	
     public static final double MAX_ENERGY = 100;
-    public static final double ALPHA = 0.5;
-    protected DistanceMatrix distanceMatrix;
-    protected Atom atom1, atom2;
-    protected int atom1Number, atom2Number;
-    protected double dielectricConstant, q1, q2 ;//q1 = charge of atom # 1, etc.
+    private static final double ALPHA = 0.5;
+    private DistanceMatrix distanceMatrix;
+    private Atom atom1;
+	private Atom atom2;
+    private int atom1Number;
+	private int atom2Number;
+    private double dielectricConstant;
+	private double q1;
+	private double q2 ;//q1 = charge of atom # 1, etc.
     protected boolean frozen;
-    protected double dEdD; // Derivation of the electrostatic energy according to the distance between two atoms.
-    protected double dEdX; // Derivation of the electrostatic energy according to the X coordinate
-    protected double dEdY; // Derivation of the electrostatic energy according to the Y coordinate
-    protected double dEdZ;// Derivation of the electrostatic energy according to the Z coordinate
-    protected double energy; 
-    protected double weight; 
-    protected double rMax; // The maximum distance between two atoms
+	private double dEdX; // Derivation of the electrostatic energy according to the X coordinate
+    private double dEdY; // Derivation of the electrostatic energy according to the Y coordinate
+    private double dEdZ;// Derivation of the electrostatic energy according to the Z coordinate
+    private double energy;
+    private double weight;
+    private double rMax; // The maximum distance between two atoms
     //that will be considered when calculating the electrostatics energy. 
-    protected double contact, dCdD, dCdX, dCdY, dCdZ;
+    private double contact;
+	private double dCdX;
+	private double dCdY;
+	private double dCdZ;
     private final int FIRST = 0,SECOND=1;
-    protected ChargeParametersList parametersList; // Holds all the atoms' charges data.
+    private ChargeParametersList parametersList; // Holds all the atoms' charges data.
 
     /**
      * default constructor
@@ -95,14 +101,15 @@ public  class CoulombElectrostaticEnergyElement extends NonBondedEnergyElement {
     /**
      * Updates the energy
      * @return double - energy*weight
-     **/	
-    public double updateEnergy(){
+     **/
+    private double updateEnergy(){
         double EL;	
         double dELdD;
         double rMaxMinusDis, rMaxMinusDisPlus;
  
         // if one of the atoms has zero charge, then the electostatic energy is 0.
-        if(q1==0 || q2==0){
+	    double dEdD;
+	    if(q1==0 || q2==0){
             energy = dEdD = dEdX = dEdY = dEdZ = contact = dCdX = dCdY = dCdZ = dELdD = 0;
         }
 
@@ -151,13 +158,13 @@ public  class CoulombElectrostaticEnergyElement extends NonBondedEnergyElement {
             double rMaxMinusDisTimesAlpha = rMaxMinusDis*ALPHA;
             double rMaxMinusDisSquarePlusAlphaSquare = rMaxMinusDisSquarePlusAlpha*rMaxMinusDisSquarePlusAlpha;
             contact = rMaxMinusDisSquare/rMaxMinusDisSquarePlusAlpha;
-            dCdD = -2*rMaxMinusDisTimesAlpha/rMaxMinusDisSquarePlusAlphaSquare; //The minus comes from rMaxMinusDis
+	        double dCdD = -2 * rMaxMinusDisTimesAlpha / rMaxMinusDisSquarePlusAlphaSquare;
             energy = EL*contact;
-            dEdD = dELdD*contact + dCdD*EL;    
+            dEdD = dELdD*contact + dCdD *EL;
 		
-            dEdX = dEdD*distance.dDistanceDx();
-            dEdY = dEdD*distance.dDistanceDy();
-            dEdZ = dEdD*distance.dDistanceDz();
+            dEdX = dEdD *distance.dDistanceDx();
+            dEdY = dEdD *distance.dDistanceDy();
+            dEdZ = dEdD *distance.dDistanceDz();
 				
         }
         return energy;
@@ -169,7 +176,7 @@ public  class CoulombElectrostaticEnergyElement extends NonBondedEnergyElement {
      *
      **/
 
-    public void updateAtoms(){
+    private void updateAtoms(){
         if (! atom1.frozen()) {
             atom1.addToFx(-1*dEdX*weight); // force = -derivative   
             atom1.addToFy(-1*dEdY*weight);
@@ -239,7 +246,7 @@ public  class CoulombElectrostaticEnergyElement extends NonBondedEnergyElement {
      * @param weight
      * @return double
      **/
-    public double contact(double weight) {
+    private double contact(double weight) {
         if (! atom1.frozen()) {
             atom1.addToFx(dCdX*weight); // force = -derivative
             atom1.addToFy(dCdY*weight);
@@ -273,7 +280,7 @@ public  class CoulombElectrostaticEnergyElement extends NonBondedEnergyElement {
         Distance distance = distanceMatrix.distance(atom1Number, atom2Number);
         double dis = distance.distance();
         return ("ElectrostaticEnergyElement q1 = "+q1+" q2 = "+ q2 +" dielectricConstant = "+dielectricConstant+" Distance = "+
-                dFormatSrt.f(dis)+" rMax = "+rMax+"\n"+atom1.verbose(1)+"\n"+atom2.verbose(1));
+                dFormatSrt.f(dis)+" rMax = "+rMax+"\n"+atom1.verbose()+"\n"+atom2.verbose());
     }
 
 }

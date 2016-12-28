@@ -12,17 +12,17 @@ import java.util.StringTokenizer;
 /**
  * Proteins storage
  */
-public class ComplexProtein extends Protein{
-    protected Collection proteins;
-    public ComplexProtein(){
-        modelNumber = new Integer(0);
+class ComplexProtein extends Protein{
+    private final Collection proteins;
+    private ComplexProtein(){
+        modelNumber = 0;
         proteins = new LinkedList();
     }
-    public ComplexProtein(Protein p1){
+    private ComplexProtein(Protein p1){
         this();
         add(p1);
     }
-    public ComplexProtein(Protein p1,Protein p2){
+    private ComplexProtein(Protein p1, Protein p2){
         this(p1);
         add(p2);
     }
@@ -40,7 +40,7 @@ public class ComplexProtein extends Protein{
 	this(pdbFileName, new PdbLineATOM());
     }
 
-    public  ComplexProtein(String pdbFileName, Filter lineFilter){
+    private ComplexProtein(String pdbFileName, Filter lineFilter){
         this();
        AtomList fullList =  new AtomList(pdbFileName, lineFilter);
        Iterator fullListIter = fullList.iterator();
@@ -76,14 +76,15 @@ public class ComplexProtein extends Protein{
 
 	   
     public Protein extractChain(String chain) {
-	for (Iterator iter = proteins.iterator(); iter.hasNext();) {
-	    Protein protein = (Protein) iter.next();
-	    if (protein.atoms().atomAt(0).chain().equals(chain)) return protein;
-	}
+	    for (Object protein1 : proteins) {
+		    Protein protein = (Protein) protein1;
+		    if (protein.atoms().atomAt(0).chain().equals(chain))
+			    return protein;
+	    }
 	return null;
     }
-
-    public void add(Protein p){
+	@SuppressWarnings("unchecked")
+	private void add(Protein p){
         if(isEmpty()) {
             name = p.name;
 	    residues = new ResidueList();
@@ -97,5 +98,5 @@ public class ComplexProtein extends Protein{
 	bonds.add(p.bonds);
 	proteins.add(p);
     }
-    public boolean isEmpty(){return proteins.isEmpty();}
+    private boolean isEmpty(){return proteins.isEmpty();}
 }

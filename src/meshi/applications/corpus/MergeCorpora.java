@@ -5,7 +5,7 @@ import meshi.parameters.Residues;
 import meshi.util.MeshiProgram;
 import meshi.util.file.File2StringArray;
 
-public class MergeCorpora extends MeshiProgram implements Residues,
+class MergeCorpora extends MeshiProgram implements Residues,
 		AtomTypes { /**
 									 * The implemented
 									 * interfaces defines the 
@@ -42,7 +42,7 @@ public class MergeCorpora extends MeshiProgram implements Residues,
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -59,7 +59,7 @@ public class MergeCorpora extends MeshiProgram implements Residues,
 			       "Usage java -Xmx300m MergeCorpora <corpora file> \n"+
 			       "                    ******************\n");
 			      
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 	
 	fileName = getOrderedArgument(args);
 	if (fileName == null) throw new RuntimeException(errorMessage);

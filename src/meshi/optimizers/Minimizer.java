@@ -11,17 +11,17 @@ import meshi.util.Terminator;
  **/
 
 public abstract class Minimizer extends MeshiProgram implements KeyWords{
-    public static final double DEFAULT_TOLERANCE = 0.001;
-    public static final int DEFAULT_MAX_ITERATIONS = 1000;
-    public static final int DEFAULT_REPORT_EVERY = 10;
+    static final double DEFAULT_TOLERANCE = 0.001;
+    static final int DEFAULT_MAX_ITERATIONS = 1000;
+    static final int DEFAULT_REPORT_EVERY = 10;
     public static final int STEEPEST = 1;
     public static final int LBFGS = 2;
 
-    protected TotalEnergy energy;
-    protected double tolerance;
+    final TotalEnergy energy;
+    final double tolerance;
     protected boolean debug = MeshiProgram.debug();
-    protected int reportEvery;
-    protected int maxIteration;
+    int reportEvery;
+    final int maxIteration;
     //Minmization terminator
     public static final Terminator terminator = new Terminator();
     /**
@@ -30,15 +30,15 @@ public abstract class Minimizer extends MeshiProgram implements KeyWords{
      * 0 = last run did not converge
      * 1 = last run did converge
      **/
-    protected int isConverged = -1;
+    int isConverged = -1;
  
-    public Minimizer(TotalEnergy energy, double tolerance, int maxIteration) {
+    Minimizer(TotalEnergy energy, double tolerance, int maxIteration) {
 	this.energy = energy;
 	this.tolerance = tolerance;
 	this.maxIteration = maxIteration;
 	terminator.reset();
     }
-    public Minimizer(TotalEnergy energy, CommandList commands) {
+    Minimizer(TotalEnergy energy, CommandList commands) {
 	this.energy = energy;
 	CommandList minimizerCommands = commands.firstWordFilter(MINIMIZE);
 	tolerance = minimizerCommands.secondWord(TOLERANCE).thirdWordDouble();
@@ -56,15 +56,7 @@ public abstract class Minimizer extends MeshiProgram implements KeyWords{
             return run();
         }
         catch (RuntimeException re) { throw re; }
-        catch (MinimizerException ex) {
-            System.out.println("******************************** MINIMIZER EXCEPTION ************************\n"+
-			       ex+
-			       "caught in Mimimizer.minimize()");
-	    ex.printStackTrace();
-            energy.test();
-            throw ex;
-        }
-        catch (LineSearchException ex) {
+        catch (MinimizerException | LineSearchException ex) {
             System.out.println("******************************** MINIMIZER EXCEPTION ************************\n"+
 			       ex+
 			       "caught in Mimimizer.minimize()");

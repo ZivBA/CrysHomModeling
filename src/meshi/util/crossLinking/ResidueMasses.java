@@ -2,7 +2,7 @@ package meshi.util.crossLinking;
 
 import meshi.parameters.AtomTypes;
 
-public interface ResidueMasses extends AtomTypes {
+interface ResidueMasses extends AtomTypes {
     double[] MW_AA =
        {/*Ala*/	71.037114,
     	/*Cys*/	174.04628, // 103.00918 for un-alkylated cys , 161.014680 for the one methyl less

@@ -24,18 +24,20 @@ public class SingularValueDecomposition implements java.io.Serializable {
    @serial internal storage of U.
    @serial internal storage of V.
    */
-   private double[][] U, V;
+   private final double[][] U;
+	   private final double[][] V;
 
    /** Array for internal storage of singular values.
    @serial internal storage of singular values.
    */
-   private double[] s;
+   private final double[] s;
 
    /** Row and column dimensions.
    @serial row dimension.
    @serial column dimension.
    */
-   private int m, n;
+   private final int m;
+	   private final int n;
 
 /* ------------------------
    Constructor
@@ -536,11 +538,11 @@ public class SingularValueDecomposition implements java.io.Serializable {
       double eps = Math.pow(2.0,-52.0);
       double tol = Math.max(m,n)*s[0]*eps;
       int r = 0;
-      for (int i = 0; i < s.length; i++) {
-         if (s[i] > tol) {
-            r++;
-         }
-      }
+	   for (double value : s) {
+		   if (value > tol) {
+			   r++;
+		   }
+	   }
       return r;
    }
 }

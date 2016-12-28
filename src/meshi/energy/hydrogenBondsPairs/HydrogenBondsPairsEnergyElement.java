@@ -10,13 +10,16 @@ public class HydrogenBondsPairsEnergyElement extends NonBondedEnergyElement {
 
     //----------------------------------------- data ------------------------------------
 
-    BetaParametersList betaParametersList;
-    HelixParametersList helixParametersList;
-    double punish,hpunish;
+    private BetaParametersList betaParametersList;
+    private HelixParametersList helixParametersList;
+    private double punish;
+	private double hpunish;
     private Atom oAtom1, hAtom1, oAtom2, hAtom2;    
     private double weight;    
-    Distance HOelement1,HOelement2;
-    HB_DistanceAttribute distanceAttributes1,distanceAttributes2;
+    Distance HOelement1;
+	private Distance HOelement2;
+    HB_DistanceAttribute distanceAttributes1;
+	private HB_DistanceAttribute distanceAttributes2;
     private double deDxOAtom1, deDyOAtom1, deDzOAtom1,deDxOAtom2, deDyOAtom2, deDzOAtom2;
     private double deDxHAtom1, deDyHAtom1, deDzHAtom1,deDxHAtom2, deDyHAtom2, deDzHAtom2;    
     private double energy = 0;
@@ -165,11 +168,8 @@ public class HydrogenBondsPairsEnergyElement extends NonBondedEnergyElement {
         atoms = null;
         HOelement1 = HOelement2 = null;
         distanceAttributes2 = distanceAttributes1 = null;
-        factor = 1/0.0;
-        deDxHAtom1 = deDxHAtom2 =deDxOAtom1 =deDxOAtom2 = 1/0.0;
-        deDyHAtom1 = deDyHAtom2 =deDyOAtom1 =deDyOAtom2 =1/0.0;
-        deDzHAtom1 =deDzHAtom2 =deDzOAtom1 =deDzOAtom2 =1/0.0;
-        energy =1/0.0;
+        factor = deDxHAtom1 = deDxHAtom2 =deDxOAtom1 =deDxOAtom2 = deDyHAtom1 = deDyHAtom2 =deDyOAtom1 =deDyOAtom2 =
+        deDzHAtom1 =deDzHAtom2 =deDzOAtom1 =deDzOAtom2 = energy = Double.POSITIVE_INFINITY;
         oAtom1 =oAtom2 =hAtom1 =hAtom2=null;
     }
 
@@ -189,7 +189,7 @@ public class HydrogenBondsPairsEnergyElement extends NonBondedEnergyElement {
         return energy * weight;
     }
 	
-    public double updateEnergy() {
+    private double updateEnergy() {
 
         HydrogenBondsEnergyElement hbElement = new HydrogenBondsEnergyElement();
         hbElement.set(HOelement1);
@@ -252,7 +252,7 @@ public class HydrogenBondsPairsEnergyElement extends NonBondedEnergyElement {
         return energy;  
     }	
 	
-    public void updateAtoms(){
+    private void updateAtoms(){
         if (! oAtom1.frozen()) {
             oAtom1.addToFx(-1 * deDxOAtom1 * weight); // force = -derivative
             oAtom1.addToFy(-1 * deDyOAtom1 * weight); // force = -derivative

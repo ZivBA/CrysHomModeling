@@ -7,11 +7,11 @@ import meshi.molecularElements.AtomList;
 
 
 public class TetherEnergyElement extends EnergyElement {
-    protected Atom atom;
-    protected double weight;
+    Atom atom;
+    private double weight;
     protected boolean frozen;
-    protected Distance distance;
-    protected Atom evaluatedAtom;
+    private Distance distance;
+    private Atom evaluatedAtom;
     
     public TetherEnergyElement() {}
     
@@ -35,7 +35,7 @@ public class TetherEnergyElement extends EnergyElement {
         distance = new Distance(atom,evaluatedAtom);
     }
 
-    protected void setNewPegCoordinates(double newX,double newY,double newZ) {
+    void setNewPegCoordinates(double newX, double newY, double newZ) {
     	evaluatedAtom.setXYZ(newX, newY, newZ);
     }
     

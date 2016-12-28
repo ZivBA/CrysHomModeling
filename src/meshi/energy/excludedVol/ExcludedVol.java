@@ -27,7 +27,7 @@ import java.util.Iterator;
 
 public class ExcludedVol extends NonBondedEnergyTerm implements Classes {
     protected double Rfac;
-    protected Filter filter;
+    private Filter filter;
 
     public ExcludedVol(){super();}
 

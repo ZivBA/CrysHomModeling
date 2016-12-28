@@ -26,7 +26,7 @@ import meshi.util.file.File2StringArray;
 import meshi.util.file.MeshiWriter;
 import programs.SCMOD;
 
-public class SimpleHomologyModeling extends MeshiProgram implements Residues, AtomTypes {
+class SimpleHomologyModeling extends MeshiProgram implements Residues, AtomTypes {
 
 	private static CommandList commands;
 
@@ -51,7 +51,7 @@ public class SimpleHomologyModeling extends MeshiProgram implements Residues, At
 		String[] alignmentStrings = File2StringArray.f2a(alignmentFileName);
 		System.out.println("Reading template: " + alignmentStrings[0].trim());
 		template = new ExtendedAtomsProtein(alignmentStrings[0].trim(),DO_NOT_ADD_ATOMS);
-		firstResInTemplate = (new Integer(alignmentStrings[1])).intValue();
+		firstResInTemplate = new Integer(alignmentStrings[1]);
 		System.out.println("Alignment in template starts at: " + firstResInTemplate);
 		queryAlignment = alignmentStrings[2].trim();
 		System.out.println("QUERY " + queryAlignment);
@@ -168,7 +168,7 @@ public class SimpleHomologyModeling extends MeshiProgram implements Residues, At
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -184,7 +184,7 @@ public class SimpleHomologyModeling extends MeshiProgram implements Residues, At
 				"Usage java -Xmx600m SimpleHomologyModeling <commands file name> <alignment file name> \n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
 		System.out.println("# commandsFileName = "+commandsFileName);

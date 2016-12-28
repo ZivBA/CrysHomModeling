@@ -38,7 +38,7 @@ public class ViewAt {
         return transformToOrigin( M, invM,p1,p2,p3      ) ;
     }
 
-    public static double[][] transformToOrigin( double M[][],double invM[][],double P1[],double P2[],double P3[]){
+    private static double[][] transformToOrigin(double M[][], double invM[][], double P1[], double P2[], double P3[]){
        // double invM[][] = new double[4][4];
         double	d12;
         double	P120, P121, P122, P130, P131, P132;
@@ -105,7 +105,7 @@ public class ViewAt {
         return invM;
     }
 
-    protected static double[] nmcrosprod(double x1,double y1,double z1, double x2, double y2, double z2){
+    private static double[] nmcrosprod(double x1, double y1, double z1, double x2, double y2, double z2){
 /*     double	x1, y1, z1, x2, y2, z2; r1 cross r2
      double	*x3, *y3, *z3;		 Normalized crossproduct
 */

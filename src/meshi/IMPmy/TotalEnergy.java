@@ -2,14 +2,14 @@ package meshi.IMPmy;
 
 import java.util.Vector;
 
-public class TotalEnergy {
+class TotalEnergy {
 
-	private Vector<AnchorPosition> positions; // Non redundant in Anchor positions
-	private DistanceConstraintList disList;
+	private final Vector<AnchorPosition> positions; // Non redundant in Anchor positions
+	private final DistanceConstraintList disList;
 	
 	public TotalEnergy(DistanceConstraintList disList) {
 		this.disList = disList;
-		positions = new Vector<AnchorPosition>();
+		positions = new Vector<>();
 		for (DistanceConstraint dc : disList) {
 			if (!findPosition(dc.pos1())) {
 				positions.add(dc.pos1());
@@ -20,7 +20,7 @@ public class TotalEnergy {
 		}
 	}
 	
-	public boolean findPosition(AnchorPosition pos) {
+	private boolean findPosition(AnchorPosition pos) {
 		for (AnchorPosition anotherPos : positions) {
 			if (pos==anotherPos) {
 				return true;
@@ -40,7 +40,7 @@ public class TotalEnergy {
 		return energy;
 	}
 
-	public void resetForces() {
+	private void resetForces() {
 		for (AnchorPosition pos : positions) {
 			pos.resetForces();
 		}
@@ -82,7 +82,7 @@ public class TotalEnergy {
 		}
 	}
 
-	public void scaleVelocity(double factor) {
+	private void scaleVelocity(double factor) {
 		for (AnchorPosition pos : positions) {
 			pos.setVX(pos.vx()*factor);
 			pos.setVY(pos.vy()*factor);
@@ -116,7 +116,7 @@ public class TotalEnergy {
 	}
 	
 	// Returns the root-mean-square velocity
-	public double rmsVelocity() {
+	private double rmsVelocity() {
 		double totalVelocity = 0.0;
 		for (AnchorPosition pos : positions) {
 			totalVelocity += (pos.vx()*pos.vx() + 

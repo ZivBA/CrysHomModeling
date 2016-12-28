@@ -19,7 +19,7 @@ import meshi.util.CommandList;
 public class HBondsPunishOHNAngleCreator extends EnergyCreator {
 	
 	HBondsPunishOHNAngleEnergy hBondsPunishOHNAngleEnergy;
-	HydrogenBondsCreator hydrogenBondsCreator;
+	private final HydrogenBondsCreator hydrogenBondsCreator;
 	
 	
 	/**

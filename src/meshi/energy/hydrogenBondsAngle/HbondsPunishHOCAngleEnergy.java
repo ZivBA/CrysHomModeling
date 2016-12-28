@@ -22,7 +22,7 @@ public class HbondsPunishHOCAngleEnergy extends AbstractPunishAngleEnergy {
                                       double weight,
                                       DistanceList specialDis)
     {
-        super(distanceMatrix,hBondList ,weight,specialDis);
+        super(distanceMatrix,hBondList ,weight);
     }
 
 

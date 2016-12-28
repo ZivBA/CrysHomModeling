@@ -6,7 +6,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.StringTokenizer;
 
-public class Merge_SCA_RVals {
+class Merge_SCA_RVals {
 
 	/**
 	 * @param args

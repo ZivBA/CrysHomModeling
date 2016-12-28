@@ -5,16 +5,16 @@ import meshi.util.crossLinking.CrosslinkVectorTRiC;
 
 import java.util.Random;
 
-public class TRiC_1_ring extends DomainListWithStructure {
+class TRiC_1_ring extends DomainListWithStructure {
 
 	private static final long serialVersionUID = 1L;
 
-	public TRiC_1_ring(String fileName) {
+	private TRiC_1_ring(String fileName) {
 		super(fileName);
 	}
 
 	@Override
-	AtomList getAtomicModelFileName(String protName, String domainName) {
+	AtomList getAtomicModelFileName(String protName) {
 		return (new AtomList("One_Ring_Model_OMS.pdb")).chainFilter(protName);
 //		return new AtomList("HM_"+protName+".pdb");
 	}

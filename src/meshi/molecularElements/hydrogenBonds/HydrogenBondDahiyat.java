@@ -118,11 +118,11 @@ public class HydrogenBondDahiyat extends AbstractHydrogenBond {
 
 	// These distances are used in the calculations of the angles and distance sigmoids. 
 	// The numbering of the atoms (1 to 4) is as describe in the top of the class.
-	Distance disAng1atoms12;
-	Distance disAng1atoms32;
-	Distance disAng2atoms23;
-	Distance disAng2atoms43;
-	Distance disDonorAcceptor;
+	private Distance disAng1atoms12;
+	private Distance disAng1atoms32;
+	private Distance disAng2atoms23;
+	private Distance disAng2atoms43;
+	private Distance disDonorAcceptor;
 	
 	// The 4 atoms in atom list a referenced by these fields, according to the numbering of the 
 	// atoms (1 to 4) that is described at the top of the class.
@@ -207,7 +207,7 @@ public class HydrogenBondDahiyat extends AbstractHydrogenBond {
 	* This method update the distance sigmoid and all the relevent derivatives. 
 	* The numbering of the atoms (1 to 4) is as describe in the top of the class.
 	**/   
-	private final void updateDis() {	
+	private void updateDis() {
    		Sigma.sigma(disDonorAcceptor.distance(), end, p1, p2, valAtp1, valAtp2);
     	hbDisScore = Sigma.s;
     	if (!a2.isHydrogen && !a3.isHydrogen) {  // case 1:   base---O...O---base    or    base---O...N---base 
@@ -276,7 +276,7 @@ public class HydrogenBondDahiyat extends AbstractHydrogenBond {
 	* and all the relevent derivatives. The numbering of the atoms (1 to 4) is as describe in the top
 	* of the class.
 	**/   
-	private final void updateAngProduct1234() {	
+	private void updateAngProduct1234() {
 		
 		updateAng123();
 		updateAng234();
@@ -307,7 +307,7 @@ public class HydrogenBondDahiyat extends AbstractHydrogenBond {
 	}
 
 	// Auxilary method to 'updateAngProduct1234'
-	private final void updateAng123() {
+	private void updateAng123() {
 		double cosAng = disAng1atoms12.dDistanceDx()*disAng1atoms32.dDistanceDx() + 
 						disAng1atoms12.dDistanceDy()*disAng1atoms32.dDistanceDy() + 
 						disAng1atoms12.dDistanceDz()*disAng1atoms32.dDistanceDz();
@@ -341,7 +341,7 @@ public class HydrogenBondDahiyat extends AbstractHydrogenBond {
 	}
 
 	// Auxilary method to 'updateAngProduct1234'
-	private final void updateAng234() {
+	private void updateAng234() {
 		double cosAng = disAng2atoms23.dDistanceDx()*disAng2atoms43.dDistanceDx() + disAng2atoms23.dDistanceDy()*disAng2atoms43.dDistanceDy() + disAng2atoms23.dDistanceDz()*disAng2atoms43.dDistanceDz();
 		if (Double.isNaN(cosAng)) {
 			System.out.println("Warning: Overlapping atoms detected during hydrogen bond list update.\n" +
@@ -372,7 +372,7 @@ public class HydrogenBondDahiyat extends AbstractHydrogenBond {
 		}			
 	}
 
-	private final void atomListTo1_4numbering() {
+	private void atomListTo1_4numbering() {
     	if (!atomList.atomAt(2).isHydrogen && !atomList.atomAt(3).isHydrogen) {  // case 1:   base---O...O---base    or    base---O...N---base 
 			a1 = atomList.atomAt(2);
 			a2 = atomList.atomAt(0);

@@ -4,9 +4,9 @@ import meshi.util.crossLinking.MySequence;
 import meshi.util.crossLinking.MySequenceList;
 import meshi.util.file.File2StringArray;
 
-public class RvalAligner {
+class RvalAligner {
 	
-	public static double singleRvalAlignerRun(String seq , RvalSequence Rseq , boolean toPrintAlignment) {
+	private static double singleRvalAlignerRun(String seq, RvalSequence Rseq, boolean toPrintAlignment) {
 		AminoAcidSequence AAseq = new AminoAcidSequence(seq);
 //		SmithWatermanSolver SW = new SmithWatermanSolver(Rseq, AAseq, new RvalScoringScheme());
 //		SW.printBestAlignment();
@@ -24,52 +24,56 @@ public class RvalAligner {
 		MySequenceList swissProt = new MySequenceList("C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\uniprot-all_06_2015_allSeqs_in.fasta");
 		System.out.println("Total num of SwissProt seqs: " + swissProt.size());
 		String[] lines = File2StringArray.f2a("C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\all_domains.txt");
-		for (int c=0 ; c<lines.length ; c++) {
-			MySequenceList mySeqList = new MySequenceList("C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\PDBs\\"+lines[c]+".fasta");			
-			RvalSequence Rseq = new RvalSequence("C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\Run_not_minimized_with_HET_profiles\\"+lines[c]+"_Rval_profile.txt");
-			System.out.println("\n" + lines[c]  + ":  Structure positions: " + Rseq.size() + "   Length of *true* seq: " + mySeqList.get(0).seq().length() + "\n---------------------------------------------------------------------------------------");
-			double sameSeqScore = singleRvalAlignerRun(mySeqList.get(0).seq() , Rseq, true);		
+		for (String line : lines) {
+			MySequenceList mySeqList = new MySequenceList("C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\PDBs\\" + line + ".fasta");
+			RvalSequence Rseq = new RvalSequence(
+					"C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\Run_not_minimized_with_HET_profiles\\" + line + "_Rval_profile.txt");
+			System.out.println("\n" + line + ":  Structure positions: " + Rseq.size() + "   Length of *true* seq: " + mySeqList.get(
+					0).seq().length() + "\n---------------------------------------------------------------------------------------");
+			double sameSeqScore = singleRvalAlignerRun(mySeqList.get(0).seq(), Rseq, true);
 			double largest = 0.0;
 			int indOflargest = -1;
 			int validSeqCounter = 0;
 			int worseScore = 0;
-			for (int ccc=0 ; ccc<swissProt.size() ; ccc++) {
+			for (int ccc = 0; ccc < swissProt.size(); ccc++) {
 				MySequence mySeq = swissProt.get(ccc);
-//				if (seqCounter%5000 == 0) {
-//					System.out.println(seqCounter + ": " + worseScore + " with worse score.");
-//				}				
-				if (!(mySeq.seq().indexOf('X')>-1) &&
-						!(mySeq.seq().indexOf('B')>-1) &&
-						!(mySeq.seq().indexOf('J')>-1) && 
-						!(mySeq.seq().indexOf('Z')>-1) &&
-						!(mySeq.seq().indexOf('O')>-1) &&
-						!(mySeq.seq().indexOf('U')>-1)) {
+				//				if (seqCounter%5000 == 0) {
+				//					System.out.println(seqCounter + ": " + worseScore + " with worse score.");
+				//				}
+				if (!(mySeq.seq().indexOf('X') > -1) &&
+						!(mySeq.seq().indexOf('B') > -1) &&
+						!(mySeq.seq().indexOf('J') > -1) &&
+						!(mySeq.seq().indexOf('Z') > -1) &&
+						!(mySeq.seq().indexOf('O') > -1) &&
+						!(mySeq.seq().indexOf('U') > -1)) {
 					if (mySeq.seq().length() >= Rseq.size()) {
-						double score = singleRvalAlignerRun(mySeq.seq() , Rseq , false);
-						if (score>-10000) {
+						double score = singleRvalAlignerRun(mySeq.seq(), Rseq, false);
+						if (score > -10000) {
 							validSeqCounter++;
-							if ((score>largest) & (score != sameSeqScore)) {
+							if ((score > largest) & (score != sameSeqScore)) {
 								largest = score;
 								indOflargest = ccc;
 							}
-							if (score>sameSeqScore) {
+							if (score > sameSeqScore) {
 								worseScore++;
 							}
 						}
 					}
 				}
 			}
-			System.out.println(worseScore + " entries out of valid " + validSeqCounter + " are with better score than the *true*. The best score that is not the *true* sequence is: " + largest);
-			if (worseScore>0) {
+			System.out.println(
+					worseScore + " entries out of valid " + validSeqCounter + " are with better score than the *true*. The best score that is not " +
+							"the *true* sequence is: " + largest);
+			if (worseScore > 0) {
 				MySequence mySeq = swissProt.get(indOflargest);
-				System.out.println("The best alignment is " + mySeq.title().substring(0,Math.min(mySeq.title().length()-1, 30)));
-				singleRvalAlignerRun(mySeq.seq() , Rseq, true);
+				System.out.println("The best alignment is " + mySeq.title().substring(0, Math.min(mySeq.title().length() - 1, 30)));
+				singleRvalAlignerRun(mySeq.seq(), Rseq, true);
 			}
 		}	
 	}
 		
 
-	public static void oldmain(String[] args) {
+	public static void oldmain() {
 //		// Sequence of 4GWP_D
 //		String S2 = "MSNQALYEKLEQTRTILSVKLAELINMTTIADRNDDDEGSFAQENSELAVATTSVMMVNNQTMQLIKNVQDLLILTRSIKEKWLLNQIPVTEHSKVTRFDEKQIEELLDNCIETFVAEKTT";
 //		RvalSequence seq1 = new RvalSequence("C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\For_Roger\\4GWP_D_Rval_profile.txt");

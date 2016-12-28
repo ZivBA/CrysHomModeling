@@ -15,11 +15,11 @@ public abstract class SimpleEnergyTerm extends AbstractEnergy {
 
     protected MeshiList elementsList;
 
-    public SimpleEnergyTerm() {}
+    protected SimpleEnergyTerm() {}
 
-    public SimpleEnergyTerm(Object[] updateableResources,
-			    ParametersList  parametersList, 
-			    double weight) {
+    protected SimpleEnergyTerm(Object[] updateableResources,
+                               ParametersList parametersList,
+                               double weight) {
 	super(updateableResources, parametersList, weight);
     }
 
@@ -31,8 +31,8 @@ public abstract class SimpleEnergyTerm extends AbstractEnergy {
      * BondEnergy for example tries to warp every single element of "baseList" while PlaneEnergy 
      * assumes that the list is redundant and warps only those Torsion elements for which it finds parameters.
      * The binding of "baseElement" to the parameters is done by the method parameters of ParametersList.
-     **/    
-    public void createElementsList(MeshiList baseList) {
+     **/
+    protected void createElementsList(MeshiList baseList) {
 	elementsList = new MeshiList();
 
 	Object baseElement;
@@ -52,7 +52,7 @@ public abstract class SimpleEnergyTerm extends AbstractEnergy {
 
     public MeshiList elementsList() {return elementsList;} 
     
-    public abstract EnergyElement createElement(Object baseElement, Parameters parameters);
+    protected abstract EnergyElement createElement(Object baseElement, Parameters parameters);
 
     /**
      * Testing of one atom in all energy elements

@@ -9,12 +9,15 @@ import java.util.StringTokenizer;
 public class PlaneParameters extends Parameters implements Comparable {
     public final static int TRANS = 1;
     public final static int CIS = 2;
-    public final static int CIS_TRANS = 3;
+    private final static int CIS_TRANS = 3;
 
     public final double force, force2;
-    public int trans;
-    public final int type1, type2, type3, type4;
-    static String temp;
+    public final int trans;
+    private final int type1;
+	private final int type2;
+	private final int type3;
+	private final int type4;
+    private static String temp;
     public PlaneParameters() {
 	this(-1,-1,-1,-1,-9999.9,1); 
     }
@@ -34,9 +37,9 @@ public class PlaneParameters extends Parameters implements Comparable {
 	                                      (temp.equals("CIS")?CIS:CIS_TRANS));
     }
 
-    public PlaneParameters(int type1, int type2,
-			   int type3, int type4,
-			   double force, int trans) {
+    private PlaneParameters(int type1, int type2,
+                            int type3, int type4,
+                            double force, int trans) {
 	this.type1 = type1;
 	this.type2 = type2;
 	this.type3 = type3;

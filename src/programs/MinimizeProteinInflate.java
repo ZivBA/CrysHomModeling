@@ -35,7 +35,7 @@ import meshi.util.MeshiProgram;
 import java.io.IOException;
 
 
-public class MinimizeProteinInflate extends MeshiProgram implements Residues,
+class MinimizeProteinInflate extends MeshiProgram implements Residues,
 		AtomTypes { /**
 									 * The implemented
 									 * interfaces defines the 
@@ -46,13 +46,8 @@ public class MinimizeProteinInflate extends MeshiProgram implements Residues,
      * Reads, parse and stores the contents of the commands file. 
      **/ 
     private static CommandList commands;
-   
-    /**
-     * A string with the name of the command file.
-     **/
-    private static String commandsFileName = null;
- 
-    /**
+	
+	/**
      * A string with the name of the pdb file to minimize.
      **/
     private static String modelFileName = null;  
@@ -72,24 +67,12 @@ public class MinimizeProteinInflate extends MeshiProgram implements Residues,
     private static double Wsolv = 0.5;  
     private static double Whb = 1.0;  
     private static double Wprop = 1.0;  
-    private static double Wramach = 0.1;  
-    private static double Wsc = 0.0;  
+    private static double Wramach = 0.1;
 	private static double Winf = 0.0;
 	private static double infTar = 0.0;
-
-
-    /**
-     * The minimized protein object.
-     **/
-    private static Protein origProt;
-    
-    private static Protein protein;
-
-    private static Protein reference;
- 
-    private static Protein copyReference;
-
-    public static void main(String[] args) throws IOException,MinimizerException, LineSearchException {
+	
+	
+	public static void main(String[] args) throws IOException,MinimizerException, LineSearchException {
 	/**
 	 * A static function for parsing of the command line arguments and assigning the 
 	 * variables commandsFileName, modelFileName and randomNumberSeed with the right values.
@@ -106,11 +89,14 @@ public class MinimizeProteinInflate extends MeshiProgram implements Residues,
 	double LocWprop = 0.5;
 	double LocWsolv = 0.3;
 	double LocWhb = 0.0;
-	reference = new Protein(refFileName);
-	copyReference = new ExtendedAtomsProtein(refFileName,ADD_ATOMS_AND_FREEZE);
-	origProt = new Protein(getMatchingAtoms(reference.atoms().noOXTFilter(),
-		new AtomList(modelFileName)) , new ResidueExtendedAtoms(ADD_ATOMS_AND_FREEZE));
-	for (int cc=0 ; cc<origProt.atoms().size() ; cc++)
+		Protein reference = new Protein(refFileName);
+		Protein copyReference = new ExtendedAtomsProtein(refFileName, ADD_ATOMS_AND_FREEZE);
+	/*
+      The minimized protein object.
+     */
+		Protein origProt = new Protein(getMatchingAtoms(reference.atoms().noOXTFilter(),
+				new AtomList(modelFileName)), new ResidueExtendedAtoms(ADD_ATOMS_AND_FREEZE));
+	for (int cc = 0; cc< origProt.atoms().size() ; cc++)
 		origProt.atoms().atomAt(cc).setChain("A");
 	
 
@@ -170,7 +156,7 @@ public class MinimizeProteinInflate extends MeshiProgram implements Residues,
 	System.out.println("******************** Phase II - free minimization ********************");
 	System.out.println("************* Energy of the model *********");
 	/* Initial RMS,GDT */
-   	protein = new Protein(origProt.atoms().duplicate() , new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
+		Protein protein = new Protein(origProt.atoms().duplicate(), new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
   	protein.defrost();
 	System.out.println("OUT: 111111 00 " + GDTcalculator.gdt(reference.atoms(), protein.atoms()));
 	System.out.println("OUT: 222222 00 " + reference.atoms().CAFilter().getRms(protein.atoms().CAFilter()));
@@ -286,7 +272,7 @@ public class MinimizeProteinInflate extends MeshiProgram implements Residues,
 
 
 
-	protected static AtomList getMatchingAtoms(AtomList refAtoms , AtomList protAtoms) {
+	private static AtomList getMatchingAtoms(AtomList refAtoms, AtomList protAtoms) {
 		AtomList result = new AtomList();
 		for (int c=0 ; c<refAtoms.size() ; c++) 
 		try {
@@ -308,7 +294,7 @@ public class MinimizeProteinInflate extends MeshiProgram implements Residues,
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -325,10 +311,13 @@ public class MinimizeProteinInflate extends MeshiProgram implements Residues,
 			       "Usage java -Xmx300m MinimizeProtein <commands file name> <pdb file name> seed\n"+
 			       "                    ******************\n");
 			      
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-	commandsFileName = getOrderedArgument(args);
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+	/*
+      A string with the name of the command file.
+     */
+	    String commandsFileName = getOrderedArgument(args);
 	if (commandsFileName == null) throw new RuntimeException(errorMessage);
-	System.out.println("# commandsFileName = "+commandsFileName);
+	System.out.println("# commandsFileName = "+ commandsFileName);
 
 	commands = new CommandList(commandsFileName);
 	
@@ -343,74 +332,74 @@ public class MinimizeProteinInflate extends MeshiProgram implements Residues,
 
 	String seedString = getOrderedArgument(args);
 	if (seedString== null) throw new RuntimeException(errorMessage);
-	int seed = (new Integer(seedString)).intValue();
+	int seed = new Integer(seedString);
 	System.out.println("# seed is "+seed);
 	initRandom(seed);
 
 
 	String tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	modelNum = (new Integer(tmpString)).intValue();
+	modelNum = new Integer(tmpString);
 	System.out.println("# modelNum is " + modelNum);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	numOfSCMODiterations = (new Integer(tmpString)).intValue();
+	numOfSCMODiterations = new Integer(tmpString);
 	System.out.println("# numOfSCMODiterations is "+numOfSCMODiterations);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	withSCMOD = (new Integer(tmpString)).intValue();
+	withSCMOD = new Integer(tmpString);
 	System.out.println("# withSCMOD (true if >0) is "+withSCMOD);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	randomFactorSCMOD = (new Double(tmpString)).doubleValue();
+	randomFactorSCMOD = new Double(tmpString);
 	System.out.println("# randomFactorSCMOD is " + randomFactorSCMOD);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wrg = (new Double(tmpString)).doubleValue();
+	Wrg = new Double(tmpString);
 	System.out.println("# Wrg is " + Wrg);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wev = (new Double(tmpString)).doubleValue();
+	Wev = new Double(tmpString);
 	System.out.println("# Wev is " + Wev);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wsolv = (new Double(tmpString)).doubleValue();
+	Wsolv = new Double(tmpString);
 	System.out.println("# Wsolv is " + Wsolv);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Whb = (new Double(tmpString)).doubleValue();
+	Whb = new Double(tmpString);
 	System.out.println("# Whb is " + Whb);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wprop = (new Double(tmpString)).doubleValue();
+	Wprop = new Double(tmpString);
 	System.out.println("# Wprop is " + Wprop);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wramach = (new Double(tmpString)).doubleValue();
+	Wramach = new Double(tmpString);
 	System.out.println("# Wramach is " + Wramach);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wsc = (new Double(tmpString)).doubleValue();
-	System.out.println("# Wsc is " + Wsc);
+	    double wsc = new Double(tmpString);
+	System.out.println("# Wsc is " + wsc);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Winf = (new Double(tmpString)).doubleValue();
+	Winf = new Double(tmpString);
 	System.out.println("# Winf is " + Winf);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	infTar = (new Double(tmpString)).doubleValue();
+	infTar = new Double(tmpString);
 	System.out.println("# infTar is " + infTar);
     }
 }

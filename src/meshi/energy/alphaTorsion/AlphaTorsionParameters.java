@@ -14,11 +14,11 @@ import java.util.StringTokenizer;
  *{Starting torsion value value of the SHEET secondary structure}
  *{Finish torsion value value of the SHEET secondary structure}
  **/
- 
- public class AlphaTorsionParameters extends Parameters {
 
-    public String aaLetter;
-    public double weightAA;
+class AlphaTorsionParameters extends Parameters {
+
+    public final String aaLetter;
+    public final double weightAA;
     public double startAlphaHELIX;
     public double endAlphaHELIX;
     public double startAlphaSHEET;
@@ -29,19 +29,19 @@ import java.util.StringTokenizer;
     	StringTokenizer stok;
        	stok = new StringTokenizer(line);
         aaLetter = stok.nextToken().trim();
-        weightAA = Double.valueOf(stok.nextToken()).doubleValue();
+        weightAA = Double.valueOf(stok.nextToken());
         if (weightAA < 0.0)
             throw new RuntimeException("Weight must be non-negative\n");      	        
-        startAlphaHELIX = Double.valueOf(stok.nextToken()).doubleValue();
+        startAlphaHELIX = Double.valueOf(stok.nextToken());
         if ((startAlphaHELIX < -Math.PI) || (startAlphaHELIX > Math.PI))
             throw new RuntimeException("Wrong values in the parameters file\n");      	
-        endAlphaHELIX = Double.valueOf(stok.nextToken()).doubleValue();
+        endAlphaHELIX = Double.valueOf(stok.nextToken());
         if ((endAlphaHELIX < -Math.PI) || (endAlphaHELIX > Math.PI) || (endAlphaHELIX < startAlphaHELIX))
             throw new RuntimeException("Wrong values in the parameters file\n");      	
-        startAlphaSHEET = Double.valueOf(stok.nextToken()).doubleValue();
+        startAlphaSHEET = Double.valueOf(stok.nextToken());
         if ((startAlphaSHEET < -Math.PI) || (startAlphaSHEET > Math.PI))
             throw new RuntimeException("Wrong values in the parameters file\n");      	
-        endAlphaSHEET = Double.valueOf(stok.nextToken()).doubleValue();
+        endAlphaSHEET = Double.valueOf(stok.nextToken());
         if ((endAlphaSHEET < -Math.PI) || (endAlphaSHEET > Math.PI) || (endAlphaSHEET > startAlphaSHEET))
             throw new RuntimeException("Wrong values in the parameters file\n");      	
     }

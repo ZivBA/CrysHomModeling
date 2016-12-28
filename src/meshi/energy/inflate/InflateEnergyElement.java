@@ -10,7 +10,8 @@ import meshi.util.MeshiProgram;
 //                                     InflateElement
 //-------------------------------------------------------------------------------------------------------
 public  class InflateEnergyElement extends EnergyElement {
-    protected Atom atom1, atom2;
+    private final Atom atom1;
+	private final Atom atom2;
     //    protected AtomPair atomPair;
     protected Atom atom1Copy, atom2Copy;
     protected double dEdD;
@@ -18,13 +19,13 @@ public  class InflateEnergyElement extends EnergyElement {
     protected double dEdY;
     protected double dEdZ;
     protected double energy;
-    protected double weight;
-    protected Distance distance;
-    protected double target;
-    public static final double ALPHA = 0.1;
-    private double rMax2;
+    private final double weight;
+    private final Distance distance;
+    private final double target;
+    private static final double ALPHA = 0.1;
+    private final double rMax2;
     
-    public  InflateEnergyElement(Distance atoms,  DistanceMatrix distanceMatrix, double weight) {
+    public  InflateEnergyElement(Distance atoms, double weight) {
 	atom1 = atoms.atom1();
 	atom2 = atoms.atom2();
         //atomPair = atoms;

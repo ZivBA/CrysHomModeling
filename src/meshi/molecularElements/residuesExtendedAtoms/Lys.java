@@ -14,8 +14,7 @@ import meshi.molecularElements.AtomList;
  *
  **/
 public class Lys extends ResidueExtendedAtoms {
-    public final Atom CG, CD, CE, NZ;
-    public static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
+	private static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
 	"                O\n"+
 	"                |\n"+
 	"       N - CA - C...n\n"+
@@ -36,17 +35,21 @@ public class Lys extends ResidueExtendedAtoms {
 
 	Object[] temp = new Object[4];
 	int i=0;
-	temp[i++] = CG = getAtom("CG",KCG, atomList, this);
-	temp[i++] = CD = getAtom("CD",KCD, atomList, this);
-	temp[i++] = CE = getAtom("CE",KCE, atomList, this);
-	temp[i++] = NZ = getAtom("NZ",KNZ, atomList, this);
+	    Atom CG;
+	    temp[i++] = CG = getAtom("CG",KCG, atomList, this);
+	    Atom CD;
+	    temp[i++] = CD = getAtom("CD",KCD, atomList, this);
+	    Atom CE;
+	    temp[i++] = CE = getAtom("CE",KCE, atomList, this);
+	    Atom NZ;
+	    temp[i++] = NZ = getAtom("NZ",KNZ, atomList, this);
 	for (i = 0; i <temp.length; i++)
 	    if (temp[i] != null) atoms.add(temp[i]);
 
-	if ((CB  != null)   && (CG  != null)) bonds.add(CB.bond(CG));
-	if ((CG  != null)   && (CD  != null)) bonds.add(CG.bond(CD));
-	if ((CD  != null)   && (CE  != null)) bonds.add(CD.bond(CE));
-	if ((CE  != null)   && (NZ  != null)) bonds.add(CE.bond(NZ));
+	if ((CB  != null)   && (CG != null)) bonds.add(CB.bond(CG));
+	if ((CG != null)   && (CD != null)) bonds.add(CG.bond(CD));
+	if ((CD != null)   && (CE != null)) bonds.add(CD.bond(CE));
+	if ((CE != null)   && (NZ != null)) bonds.add(CE.bond(NZ));
     }
     public String comment() {
 	return COMMENT;

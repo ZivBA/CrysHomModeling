@@ -23,14 +23,14 @@ import java.io.FileWriter;
  *
  */
 
-public class FindLoopsFor500setDataExtraction implements Residues, AtomTypes {
+class FindLoopsFor500setDataExtraction implements Residues, AtomTypes {
 
 	public static void main(String[] args) {
 		String protName = args[0].trim();
 		String CryCoFileName = args[1].trim();
 		String dsspFileName = args[2].trim();
 		String outputFileName = args[3].trim();
-		double crystalContactDis = (new Double(args[4].trim())).doubleValue();
+		double crystalContactDis = new Double(args[4].trim());
 		
 		Protein prot =  new ExtendedAtomsProtein(protName,DO_NOT_ADD_ATOMS);
 		CrystalContacts contacts = new CrystalContacts(CryCoFileName,crystalContactDis);

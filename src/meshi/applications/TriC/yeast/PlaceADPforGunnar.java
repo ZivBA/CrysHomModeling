@@ -14,10 +14,10 @@ import meshi.util.file.File2StringArray;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class PlaceADPforGunnar  extends MeshiProgram implements Residues,AtomTypes {
+class PlaceADPforGunnar  extends MeshiProgram implements Residues,AtomTypes {
 	
 	public static void main(String[] args) throws Exception {
-		init(args);
+		init();
 		
 		// Defining the arrangement 
 		String topTrue =   "BDAGZQHE"; // OMS
@@ -220,7 +220,7 @@ public class PlaceADPforGunnar  extends MeshiProgram implements Residues,AtomTyp
 		bw.close();		
 	}	
 	
-	protected static void init(String[] args) {
+	private static void init() {
 		int zvl = ALA; // force the reading of "meshi.parameters.Residues"
 		zvl = ACA;// force the reading of "meshi.parameters.AtomTypes"
 		initRandom(333);

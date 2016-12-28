@@ -34,7 +34,7 @@ public class LennardJones extends NonBondedEnergyTerm implements Classes {
 	super(toArray(distanceMatrix), parametersList, weight,distanceMatrix);
 	comment = "LennardJones";
 	this.distanceMatrix = distanceMatrix;
-	energyElement = new LennardJonesEnergyElement(parametersList, distanceMatrix, type, weight);
+	energyElement = new LennardJonesEnergyElement(parametersList, distanceMatrix, weight);
     }
     
 }

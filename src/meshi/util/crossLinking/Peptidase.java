@@ -2,9 +2,9 @@ package meshi.util.crossLinking;
 
 import meshi.molecularElements.Protein;
 
-public abstract class Peptidase {
+abstract class Peptidase {
 
-	public Peptidase() {}
+	Peptidase() {}
 
 	boolean isCterm(Protein prot, int residueNumber) {
 		if (prot.residue(residueNumber+1) == null) // End of the chain

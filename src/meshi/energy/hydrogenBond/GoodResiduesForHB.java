@@ -9,9 +9,9 @@ import meshi.util.filters.Filter;
 import java.util.Iterator;
 
 public class GoodResiduesForHB implements Filter {
-    private IsHO isHO = new IsHO();
-    private IsNot13 isNot13 = new IsNot13();
-    private GoodSS goodSS = new GoodSS();
+    private final IsHO isHO = new IsHO();
+    private final IsNot13 isNot13 = new IsNot13();
+    private final GoodSS goodSS = new GoodSS();
     private boolean firstTimeWornning = true;
     private DistanceList specialDis = null;
 

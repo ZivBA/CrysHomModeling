@@ -10,7 +10,7 @@ import java.util.Iterator;
 
 // constructors
 public class IntegerList extends SortableMeshiList implements Comparator{
-    public IntegerList() {
+    private IntegerList() {
 	super(new IsInteger());
     }
     public IntegerList(int size) {
@@ -34,11 +34,11 @@ public class IntegerList extends SortableMeshiList implements Comparator{
 	    add(array[i]);
     }
     // integer shortcuts 
-    public void add(int i) {
+    private void add(int i) {
 	add(new Integer(i));
     }
     public int integerAt(int index) {
-	return  ((Integer) elementAt(index)).intValue();
+	return (Integer) elementAt(index);
     }
     public double doubleAt(int index) {
 	return  ((Integer) elementAt(index)).doubleValue();
@@ -55,12 +55,12 @@ public class IntegerList extends SortableMeshiList implements Comparator{
 	}
     }
     public boolean sortable() {return true;}
-    public void set(int index,int value) {
+    private void set(int index, int value) {
 	    set(index,new Integer(value));
 	}
 
     public void increment(int index) {
-	set(index,((Integer) elementAt(index)).intValue()+1);
+	set(index, (Integer) elementAt(index) +1);
     }
 
 }

@@ -2,15 +2,12 @@ package alignment;
 
 public class RvalPosition implements Position {
 
-	private double[] Rfits;
-	private int resType;
-	private int resNum;
+	private final double[] Rfits;
+	private final int resType;
 	private double gapOpeningScore =  -999999999.9;
-	private double gapAligningScore = -0.000002;
 	
 	public RvalPosition(int resNum, int resType, double[] Rfits) {
 		this.Rfits = Rfits;
-		this.resNum = resNum;
 		this.resType = resType;
 	}
 
@@ -25,7 +22,7 @@ public class RvalPosition implements Position {
 	
 	@Override
 	public double gapAligningScore() {
-		return gapAligningScore;
+		return -0.0;
 	}
 
 	@Override

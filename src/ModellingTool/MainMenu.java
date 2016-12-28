@@ -6,17 +6,16 @@ import ScoreUtilities.ScoringGeneralHelpers;
 import ScoreUtilities.scwrlIntegration.SCWRLrunner;
 import UtilExceptions.MissingChainID;
 import UtilExceptions.SfCheckResultError;
+import alignment.RvalAlignerCluster;
 
-import javax.jnlp.BasicService;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -32,8 +31,8 @@ import java.util.concurrent.Executors;
 public class MainMenu extends JPanel implements ActionListener {
 
 
-	public static RunParameters params;
-	static private final String newline = "\n";
+	private static RunParameters params;
+	private final File configFile;
 	private JTextArea crystallographyModelingToolV0TextArea;
 	private JButton SCWRLExecutableButton;
 	private JButton SFCheckExecutableButton;
@@ -49,46 +48,50 @@ public class MainMenu extends JPanel implements ActionListener {
 	private JTable chainListTable;
 	private JCheckBox saveDefaultsCheckBox;
 
-	private JFileChooser fc;
+	private final JFileChooser fc;
 	private JCheckBox debug;
 	private JCheckBox keepHetAtm;
 	private JScrollPane chainsListContainer;
 
 	private JScrollPane filesContainer;
-	private JProgressBar scwrlProgress;
-	private JProgressBar sfchkProgress;
 	private JTextArea pleasePointToSCWRLTextArea;
 	private JTextArea pleaseChooseTheSourceTextArea;
 	private JTextArea limitNumberOfThreadsTextArea;
 	private JTabbedPane tabbedPane1;
-	private JTextArea pleaseEnterTheRequestedTextArea;
 	private JButton FASTAButton;
 	private JRadioButton fullFastaRadioButton;
 	private JRadioButton inputSeqRadioButton;
-	FASTAinput fastaDialog;
-
-	protected static Integer scwrlProgressCounter = 0;
+	private JProgressBar threadProgress;
+	private final FASTAinput fastaDialog;
+	
+	private JProgressBar scwrlProgress;
+	private JProgressBar sfchkProgress;
+	private JButton SWISSPROTButton;
+	
+	private static Integer scwrlProgressCounter = 0;
 	public static int sfckProgressCounter = 0;
 
-	int totalNumberOfFilesToProcess = 0;
-	public static ConcurrentLinkedQueue<File> filesToSFcheck;
+	private int totalNumberOfFilesToProcess = 0;
+	public static ConcurrentLinkedQueue<File> SCWRLfilesToSFcheck;
 
 
-	static protected CRYS_Score crysScore;
-	protected List<List<SCWRLrunner>> SCWRLruns;
-	public static List<String[]> SFCheckResultSet = new LinkedList<>();
-	private ExecutorService executorSC;
+	private CRYS_Score crysScore;
+	public static final List<String[]> SFCheckResultSet = new LinkedList<>();
 	private static ExecutorService executorSF;
-
-	static BasicService basicService = null;
+	private static ExecutorService executorSC;
 	private String fastaSequence;
-	private File fastaFile;
 
-	public MainMenu() {
+	private File fastaFile;
+	private final CustomOutputStream customOut = new CustomOutputStream(log);
+	private boolean doneWithCSVs = false;
+	
+	private MainMenu() {
 		super(new BorderLayout());
 
 		fc = new JFileChooser();
-		fastaDialog = new FASTAinput(fc);
+		fc.setCurrentDirectory(Paths.get("").toAbsolutePath().toFile());
+		JFileChooser fc2 = new JFileChooser();
+		fastaDialog = new FASTAinput(fc2);
 		fastaDialog.pack();
 
 		// add listeners to buttons
@@ -99,43 +102,51 @@ public class MainMenu extends JPanel implements ActionListener {
 		executeButton.addActionListener(this);
 		debug.addActionListener(this);
 		FASTAButton.addActionListener(this);
+		SWISSPROTButton.addActionListener(this);
 
+		// define or create config file:
+		String curPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		configFile = new File(curPath.substring(0,curPath.lastIndexOf(File.separatorChar))+"/config.xml");
+		if (!configFile.exists()) {
+			try {
+				configFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 		//redirect standard output to onscreen log.
-		PrintStream printStream = new PrintStream(new CustomOutputStream(log));
 
+		PrintStream printStream = new PrintStream(customOut);
 
 		Runtime.getRuntime().addShutdownHook(new ShutDownHook());
-		updateFields();
-		//		if (debug.isSelected()) {
-		//			System.setErr(printStream);
-		//			System.setOut(printStream);
-		//		} else {
-		//			System.setOut(printStream);
-		//		}
-		filesToSFcheck = new ConcurrentLinkedQueue<>();
+		try {
+			updateFields();
+		} catch (Exception e) {
+			System.out.println("Problem with current config.xml file, continue without defaults.");
+		}
+		if (debug.isSelected()) {
+			System.setErr(printStream);
+			System.setOut(printStream);
+		} else {
+			System.setOut(printStream);
+		}
+		SCWRLfilesToSFcheck = new ConcurrentLinkedQueue<>();
 
 	}
 
-
 	private static void createAndShowGUI() {
-
-		//		try {
-		//			basicService = (BasicService)
-		//					ServiceManager.lookup("javax.jnlp.BasicService");
-		//		} catch (UnavailableServiceException e) {
-		//			System.err.println("Lookup failed: " + e);
-		//		}
 
 		JFrame frame = new JFrame("Crystallography Modeling Tool V0.√(π)");
 		MainMenu menu = new MainMenu();
 		frame.setContentPane(menu.JPanelMain);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.pack();
 		frame.setVisible(true);
-
+		
 
 	}
+
 
 	private void createUIComponents() {
 		// populate the files tables
@@ -144,12 +155,13 @@ public class MainMenu extends JPanel implements ActionListener {
 				{"SFChck exe", "..."},
 				{"Map source", "..."},
 				{"PDB source", "..."},
+				{"SWISSPROT source", "..."}
+				
 
 		};
 		Object columnNames[] = {"Object", "Path"};
 		TableModel model = new DefaultTableModel(rowData, columnNames);
 		CurrentData = new JTable(model);
-		// update values from config.xml
 
 		chainListTable = new JTable(new ChainListTableModel());
 
@@ -158,12 +170,15 @@ public class MainMenu extends JPanel implements ActionListener {
 				.availableProcessors
 						(), 1);
 		threadLimit = new JSpinner(model1);
-
+		logPane = new JScrollPane(log);
+		
 
 	}
 
-
 	@Override
+	/**
+	 * button interactions
+	 */
 	public void actionPerformed(ActionEvent e) {
 
 
@@ -180,11 +195,11 @@ public class MainMenu extends JPanel implements ActionListener {
 			}
 
 			// handle FAST button
-		} else if (e.getSource() == FASTAButton){
+		} else if (e.getSource() == FASTAButton) {
 			fastaDialog.setLocationRelativeTo(this.getRootPane());
 			fastaDialog.setVisible(true);
 
-			if (fastaDialog.fileChooserResult == JFileChooser.APPROVE_OPTION){
+			if (fastaDialog.fileChooserResult == JFileChooser.APPROVE_OPTION) {
 				this.fastaFile = fastaDialog.fastaFile;
 				this.fastaSequence = fastaDialog.fastaSequence;
 			}
@@ -223,7 +238,7 @@ public class MainMenu extends JPanel implements ActionListener {
 				System.out.println("SFcheck Exe: " + file.getName() + " selected.");
 
 			} else {
-				System.out.println("Select SFcheck Exe cancelled by user.");
+				System.out.println("Select SFcheck Exe cancelled by user.\n");
 			}
 
 			// handle Map file section button
@@ -232,10 +247,22 @@ public class MainMenu extends JPanel implements ActionListener {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = fc.getSelectedFile();
 				params.setMAPsrc(file);
-				System.out.println("Opening MAP file: " + file.getName() + ".");
+				System.out.println("Opening MAP file: " + file.getName() + ".\n");
 
 			} else {
-				System.out.println("PDB selection canceled by user.");
+				System.out.println("PDB selection canceled by user.\n");
+			}
+			
+			// handle SWISSPROT file section button
+		} else if (e.getSource() == SWISSPROTButton) {
+			int returnVal = fc.showSaveDialog(MainMenu.this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File file = fc.getSelectedFile();
+				params.setSWISSProt(file);
+				System.out.println("Opening MAP file: " + file.getName() + ".\n");
+				
+			} else {
+				System.out.println("PDB selection canceled by user.\n");
 			}
 
 
@@ -247,9 +274,12 @@ public class MainMenu extends JPanel implements ActionListener {
 
 	}
 
-	public void startProgramMainThread() {
-		log.setText("");
-		log.append("Starting run!\n");
+
+	private void startProgramMainThread() {
+		
+		params.setCustomOutputStream(customOut);
+		System.out.println("");
+		System.out.println("Starting run!\n");
 		params.setHetAtmProcess(keepHetAtm.isSelected());
 		params.setDebug(debug.isSelected());
 		params.setThreadLimit((Integer) threadLimit.getValue());
@@ -276,22 +306,39 @@ public class MainMenu extends JPanel implements ActionListener {
 			}
 		}
 
+		params.setChainsToStrip(chainsToStrip.toArray(new Character[chainsToStrip.size()]));
+		params.setSymmetricHomologues(homologues.toArray(new Character[homologues.size()]));
+
+		if (chainsToProcess == null) {
+			JOptionPane.showMessageDialog(this, "Please choose one chain to process.");
+		}else{
+			params.setChainToProcess(chainsToProcess);
+		}
+		int homChainLength = 0;
+		for (Character chain : homologues) {
+			if (homChainLength == 0)
+				homChainLength = params.getProtein().getChain(chain).getLength();
+			else if (homChainLength != params.getProtein().getChain(chain).getLength()) {
+				JOptionPane.showMessageDialog(this, "Homologous chains must have the same length.");
+				return;
+			}
+		}
+
 		if (saveDefaultsCheckBox.isSelected()) {
 			params.setProperty("Save Defaults", String.valueOf(true));
-			File configFile = new File("config.xml");
+			
 			OutputStream outputStream = null;
 			try {
 				outputStream = new FileOutputStream(configFile);
 				params.storeToXML(outputStream, "Modeling Tool default settings");
 				outputStream.close();
-				System.out.println("Saved values to \"config.xml\" param file.");
+				System.out.println("Saved values to "+ configFile.getAbsolutePath()+" param file.\n");
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 
 
 		} else {
-			File configFile = new File("config.xml");
 			configFile.delete();
 		}
 
@@ -301,55 +348,88 @@ public class MainMenu extends JPanel implements ActionListener {
 		params.setChainToProcess(chainsToProcess);
 
 
-
 		int threads = params.getThreadLimit();
 		executorSC = Executors.newFixedThreadPool(threads - 1);
 		executorSF = Executors.newFixedThreadPool(1);
-
 		ScoringGeneralHelpers.debug = debug.isSelected();
-		crysScore = new CRYS_Score(params);
 
-		if (fastaFile != null && fastaSequence == null){
-			crysScore.setFastaFile(fastaFile);
-		} else if (fastaSequence != null && fastaFile == null){
-			crysScore.setFastaSequence(fastaSequence);
-		}
+		SwingWorker<Void, Void> mainThread = new SwingWorker<Void, Void>() {
+			@Override
+			protected Void doInBackground() throws Exception {
 
+				crysScore = new CRYS_Score(params);
 
-		totalNumberOfFilesToProcess = crysScore.getExpectedTotalNumberOfFiles();
-		scwrlProgress.setMaximum(totalNumberOfFilesToProcess);
-		sfchkProgress.setMaximum(totalNumberOfFilesToProcess);
-
-
-		try {
-
-			SCWRLruns = crysScore.iterateAndGenScwrl();
-			if (SCWRLruns == null) {
-				log.append("Finished processing existing files\n");
-			} else {
-				for (List<SCWRLrunner> SCWRLTasks : SCWRLruns) {
-					for (SCWRLrunner singleRun : SCWRLTasks) {
-						singleRun.addPropertyChangeListener(new PropertyChangeListener() {
-							@Override
-							public void propertyChange(PropertyChangeEvent e) {
-								if (e.getPropertyName().equals("progress")) {
-									scwrlProgressCounter++;
-									scwrlProgress.setValue(scwrlProgressCounter);
-									checkSCWRLfile();
-								}
-
-							}
-						});
-						executorSC.submit(singleRun);
-					}
+				if (fastaFile != null && fastaSequence == null) {
+					crysScore.setFastaFile(fastaFile);
+				} else if (fastaSequence != null && fastaFile == null) {
+					crysScore.setFastaSequence(fastaSequence);
 				}
+
+
+				totalNumberOfFilesToProcess = crysScore.getExpectedTotalNumberOfFiles();
+				scwrlProgress.setMaximum(totalNumberOfFilesToProcess);
+				sfchkProgress.setMaximum(totalNumberOfFilesToProcess);
+
+
+				try {
+
+					List<List<SCWRLrunner>> SCWRLruns = crysScore.iterateAndGenScwrl();
+					if (SCWRLruns == null) {
+						customOut.writeToFile();
+						scwrlProgress.setValue(scwrlProgress.getMaximum());
+						sfchkProgress.setValue(sfchkProgress.getMaximum());
+						
+						System.out.println("Finished processing existing files.\n");
+						System.out.flush();
+						RvalAlignerCluster results = crysScore.getRvalThread();
+						runThreadingThread(results);
+					} else {
+						System.out.println("Starting SCWRL and SFCheck runs.");
+						System.out.flush();
+						for (List<SCWRLrunner> SCWRLTasks : SCWRLruns) {
+							for (SCWRLrunner singleRun : SCWRLTasks) {
+								singleRun.addPropertyChangeListener(e -> {
+									if (e.getPropertyName().equals("progress")) {
+										
+										SwingUtilities.invokeLater(() -> {
+											scwrlProgressCounter++;
+											scwrlProgress.setValue(scwrlProgressCounter);
+											checkSCWRLfile();
+										});
+										
+									}
+
+								});
+								executorSC.submit(singleRun);
+							}
+						}
+					}
+				} catch (IOException | MissingChainID e) {
+					System.err.println(e.getMessage());
+					System.out.println("There was a problem processing one of the files.");
+					System.out.flush();
+				}
+				return null;
 			}
-		} catch (IOException | MissingChainID e) {
-			System.err.println(e.getMessage());
-			System.out.println("There was a problem processing one of the files.");
-		}
 
+			@Override
+			public void done(){
+				
+			}
+		};
+		mainThread.execute();
+	}
 
+	private void runThreadingThread(RvalAlignerCluster finalThreadingRuns) {
+		finalThreadingRuns.setExecutor(executorSC);
+		finalThreadingRuns.setProgressBar(threadProgress);
+		finalThreadingRuns.addPropertyChangeListener(evt -> {
+			if (evt.getPropertyName().equals("progress")) {
+				threadProgress.setValue(finalThreadingRuns.getProgress());
+			}
+
+		});
+		finalThreadingRuns.execute();
 	}
 
 	private void updateFields() {
@@ -359,7 +439,13 @@ public class MainMenu extends JPanel implements ActionListener {
 		model1.setValueAt(params.getProperty(RunParameters.SFCHECK_PATH), 1, 1);
 		model1.setValueAt(params.getProperty(RunParameters.MAPSRC), 2, 1);
 		model1.setValueAt(params.getProperty(RunParameters.PDBSRC), 3, 1);
-
+		model1.setValueAt(params.getProperty(RunParameters.SWISSPROTpath), 4,1);
+		
+		try {
+			populateChainsList(params.getProtein());
+		} catch (Exception e) {
+			System.out.println("cant load protein from config file.");
+		}
 		try {
 			keepHetAtm.getModel().setSelected(Boolean.parseBoolean(params.getProperty(RunParameters.HETATM)));
 		} catch (Exception e) {
@@ -378,10 +464,31 @@ public class MainMenu extends JPanel implements ActionListener {
 		}
 		try {
 			fullFastaRadioButton.setSelected(Boolean.parseBoolean(params.getProperty(RunParameters.FULL_FASTA)));
-		} catch (Exception e){
+		} catch (Exception e) {
 			System.out.println("There was an issue parsing FASTA threading preference. no worries.");
 		}
+		try{
+			TableModel chainlist = chainListTable.getModel();
+			LinkedList<Character> chainsToStrip = new LinkedList<>(java.util.Arrays.asList(params.getChainsToStrip()));
+			LinkedList<Character> homologues = new LinkedList<>(java.util.Arrays.asList(params.getSymmetricHomologues()));
+			Character chainToProcess = params.getChainToProcess();
+			for (int i = 0; i < chainlist.getRowCount(); i++) {
+				if (chainlist.getValueAt(i, 0).equals(chainToProcess)) {
+					chainlist.setValueAt(true, i, 2);
 
+				}
+				if (chainsToStrip.contains(chainlist.getValueAt(i, 0))) {
+					chainlist.setValueAt(true,i,3);
+				}
+				if (homologues.contains(chainlist.getValueAt(i,0))) {
+					chainlist.setValueAt(true,i,4);
+				}
+			}
+
+		} catch (Exception ignored){
+
+		}
+		System.out.flush();
 
 	}
 
@@ -397,39 +504,36 @@ public class MainMenu extends JPanel implements ActionListener {
 			row.add(false); // homologue
 			model1.addRow(row);
 		}
+		model1.fireTableDataChanged();
 	}
 
-
 	public static void main(String[] args) throws FileNotFoundException {
-		// get number of threads
-		int cores = Runtime.getRuntime().availableProcessors();
 		params = new RunParameters();
 		//Schedule a job for the event dispatch thread:
 		//creating and showing this application's GUI.
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				//Turn off metal's use of bold fonts
-				UIManager.put("swing.boldMetal", Boolean.FALSE);
-				createAndShowGUI();
-			}
+		SwingUtilities.invokeLater(() -> {
+			//Turn off metal's use of bold fonts
+			UIManager.put("swing.boldMetal", Boolean.FALSE);
+			createAndShowGUI();
 		});
 
 
 	}
 
-	public void checkSCWRLfile() {
-		try {
-			SFCheckThread sfThread = new SFCheckThread(filesToSFcheck.poll(), params);
-			sfThread.addPropertyChangeListener(new PropertyChangeListener() {
-				@Override
-				public void propertyChange(PropertyChangeEvent e) {
-					if (e.getPropertyName().equals("progress")) {
-						sfchkProgress.setValue(scwrlProgressCounter);
-						checkIfLastSFCHECK();
 
-					}
+	private void checkSCWRLfile() {
+		try {
+			SFCheckThread sfThread = new SFCheckThread(SCWRLfilesToSFcheck.poll(), params);
+			sfThread.addPropertyChangeListener(e -> {
+				if (e.getPropertyName().equals("progress")) {
+					
+					SwingUtilities.invokeLater(() -> {
+						sfchkProgress.setValue(sfckProgressCounter);
+						checkIfLastSFCHECK();
+					});
 
 				}
+
 			});
 			executorSF.submit(sfThread);
 		} catch (IOException e) {
@@ -437,32 +541,43 @@ public class MainMenu extends JPanel implements ActionListener {
 		}
 	}
 
-	public void checkIfLastSFCHECK() {
+	private void checkIfLastSFCHECK() {
+
 		if (sfckProgressCounter == totalNumberOfFilesToProcess) {
-			log.append("Processing Results\n");
-			try {
-				crysScore.processSFCheckResults(SFCheckResultSet);
-			} catch (SfCheckResultError | IOException e) {
-				log.append(e.getMessage() + "\n");
-
+			
+			if (!doneWithCSVs) {
+				customOut.writeToFile();
+				System.out.println("Processing Results\n");
+				try {
+					RvalAlignerCluster results = crysScore.processSFCheckResults(SFCheckResultSet);
+					runThreadingThread(results);
+					doneWithCSVs = true;
+					
+				} catch (SfCheckResultError e) {
+					System.out.println("Problem with one of the SFCheck log files:");
+					System.out.println(e.getMessage() + "\n");
+					
+				}
+				System.out.println("Finished Processing Results!\n");
+				System.out.println("Please wait for threading results to appear, then you may exit!");
 			}
-			log.append("Finished Processing Results, You may exit!\n");
-
+			
+			
 		}
 
 	}
-
 
 	private class ShutDownHook extends Thread {
+
+
 		public void run() {
-			File logFile = new File(System.getProperty("user.dir") + "/CrysModeling.log");
-			try (BufferedWriter fileOut = new BufferedWriter(new FileWriter(logFile))) {
-				log.write(fileOut);
-			} catch (IOException e) {
-				System.out.println(e.getMessage());
-			}
+			
+			customOut.writeToFile();
+			customOut.closeFile();
 			crysScore.deleteChains();
+			
 		}
 	}
+
 
 }

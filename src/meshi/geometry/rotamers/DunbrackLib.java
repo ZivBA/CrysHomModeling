@@ -26,13 +26,13 @@ import java.util.StringTokenizer;
  public class DunbrackLib implements Residues, KeyWords{
 
     private String parametersFileName;
-    public final double res = Math.PI/18.0; // 10 degree bins
-    public final int nbins = (int) Math.round(2*Math.PI/res);
+    private final double res = Math.PI/18.0; // 10 degree bins
+    private final int nbins = (int) Math.round(2*Math.PI/res);
     
     private final int[] maxchi = {-1,1,2,3,2,-1,2,2,4,2,3,2,2,3,4,1,1,1,2,2};
-    private double[][][][] prob = new double[20][nbins][nbins][];
-    private double[][][][][] rot = new double[20][nbins][nbins][][];
-    private double[][][][][] dev = new double[20][nbins][nbins][][];
+    private final double[][][][] prob = new double[20][nbins][nbins][];
+    private final double[][][][][] rot = new double[20][nbins][nbins][][];
+    private final double[][][][][] dev = new double[20][nbins][nbins][][];
      
    	int zvl = ALA; // force the reading of "meshi.parameters.Residues"
 
@@ -75,8 +75,8 @@ import java.util.StringTokenizer;
     	while (line!=null) {
     		st = new StringTokenizer(line);
     		resnum = Residue.type(st.nextToken().trim());
-    		phi = Double.valueOf(st.nextToken().trim()).doubleValue();
-    		psi = Double.valueOf(st.nextToken().trim()).doubleValue();
+    		phi = Double.valueOf(st.nextToken().trim());
+    		psi = Double.valueOf(st.nextToken().trim());
     		if ((psi!=prevpsi)&&(prevpsi>-900)) {
         	   if ((prevphi!=180.0)&&(prevpsi!=180.0)) {
     		       ind1 = findInd(prevphi*Math.PI/180.0);
@@ -104,15 +104,15 @@ import java.util.StringTokenizer;
     		st.nextToken();
         	st.nextToken();
     		st.nextToken();
-    		pr[cc] = Double.valueOf(st.nextToken().trim()).doubleValue();
-    		chi[0][cc] = Double.valueOf(st.nextToken().trim()).doubleValue();
-    		chi[1][cc] = Double.valueOf(st.nextToken().trim()).doubleValue();
-    		chi[2][cc] = Double.valueOf(st.nextToken().trim()).doubleValue();
-    		chi[3][cc] = Double.valueOf(st.nextToken().trim()).doubleValue();
-    		devChi[0][cc] = Double.valueOf(st.nextToken().trim()).doubleValue();
-    		devChi[1][cc] = Double.valueOf(st.nextToken().trim()).doubleValue();
-    		devChi[2][cc] = Double.valueOf(st.nextToken().trim()).doubleValue();
-    		devChi[3][cc] = Double.valueOf(st.nextToken().trim()).doubleValue();
+    		pr[cc] = Double.valueOf(st.nextToken().trim());
+    		chi[0][cc] = Double.valueOf(st.nextToken().trim());
+    		chi[1][cc] = Double.valueOf(st.nextToken().trim());
+    		chi[2][cc] = Double.valueOf(st.nextToken().trim());
+    		chi[3][cc] = Double.valueOf(st.nextToken().trim());
+    		devChi[0][cc] = Double.valueOf(st.nextToken().trim());
+    		devChi[1][cc] = Double.valueOf(st.nextToken().trim());
+    		devChi[2][cc] = Double.valueOf(st.nextToken().trim());
+    		devChi[3][cc] = Double.valueOf(st.nextToken().trim());
     		prevphi = phi;
     		prevpsi = psi;
     		prevresnum = resnum;

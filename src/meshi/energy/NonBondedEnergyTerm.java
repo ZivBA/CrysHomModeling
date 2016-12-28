@@ -14,7 +14,7 @@ public abstract class NonBondedEnergyTerm extends AbstractEnergy {
      **/
     protected NonBondedEnergyElement energyElement=null;
 
-    public NonBondedEnergyTerm(){super();}
+    protected NonBondedEnergyTerm(){super();}
 
     /**
      * Creates a new <code>NonBondedEnergyTerm</code> instance.
@@ -24,10 +24,10 @@ public abstract class NonBondedEnergyTerm extends AbstractEnergy {
      * @param weight a <code>double</code> value
      * @param distanceMatrix a <code>DistanceMatrix</code> value
      */
-    public NonBondedEnergyTerm(Object[] updateableResources,
-                               ParametersList  parametersList,
-                               double weight,
-                               DistanceMatrix distanceMatrix){
+    protected NonBondedEnergyTerm(Object[] updateableResources,
+                                  ParametersList parametersList,
+                                  double weight,
+                                  DistanceMatrix distanceMatrix){
         super(updateableResources, parametersList, weight);
         this.distanceMatrix = distanceMatrix;
     }
@@ -39,9 +39,9 @@ public abstract class NonBondedEnergyTerm extends AbstractEnergy {
      * @param weight a <code>double</code> value
      * @param distanceMatrix a <code>DistanceMatrix</code> value
      */
-    public NonBondedEnergyTerm(Object[] updateableResources,
-                               double weight,
-                               DistanceMatrix distanceMatrix){
+    protected NonBondedEnergyTerm(Object[] updateableResources,
+                                  double weight,
+                                  DistanceMatrix distanceMatrix){
         super(updateableResources, weight);
         this.distanceMatrix = distanceMatrix;
     }

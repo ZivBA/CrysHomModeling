@@ -15,51 +15,44 @@ import meshi.energy.TotalEnergy;
  **/
 
 public class ConjugateGradient extends Minimizer {
-    protected LineSearch lineSearch;
-    protected double[][] coordinates;
-    protected double[][] bufferCoordinates;
-    protected double[] P; // search direction
-    protected double[] G; // The (-) gradients at iteration k	
-    protected double beta; // beta at iteration k+1
-    
+    private LineSearch lineSearch;
+    private double[][] coordinates;
+    private double[][] bufferCoordinates;
+    private double[] P; // search direction
+    private double[] G; // The (-) gradients at iteration k
+	
 	private static final int DEFAULT_RESTART_EVERY = 0;
-	protected int restartEvery;
+	private final int restartEvery;
 
     private int iterationNum;
-    private double magnitudeForce;
-    
-    private static final double DEFAULT_TOLERANCE = 0.00001;
+
+	private static final double DEFAULT_TOLERANCE = 0.00001;
     private static final int DEFAULT_MAX_ITERATION = 100000;
     private static final int DEFAULT_REPORT_EVERY = 10;
-    private static  double initStepSteepestDecent = 0.0001;
-    private static  double stepSizeReductionSteepestDecent = 0.5;
-    private static  double stepSizeExpansionSteepestDecent = 2.1;
-    private static  int numStepsSteepestDecent = 100;
-    private static  int maxSteepestDecent = 6;
-    private int nSteepestDecent = 0;
+	private int nSteepestDecent = 0;
 
-    private int reportEvery; // Default value for the frequency of the reports.
+    private final int reportEvery; // Default value for the frequency of the reports.
     
 	// Wolf conditions line search parameters
-	private double c1;
-	private double c2;
-	private double extendAlphaFactorWolfSearch;
-	private int maxNumEvaluationsWolfSearch;
+	private final double c1;
+	private final double c2;
+	private final double extendAlphaFactorWolfSearch;
+	private final int maxNumEvaluationsWolfSearch;
 	private static final double DEFAULT_C1 = 1e-3;
 	private static final double DEFAULT_C2 = 0.4;
 	private static final double DEFAULT_EXTENDED_ALPHA_FACTOR_WOLF_SEARCH = 3.0;
 	private static final int DEFAULT_MAX_NUM_EVALUATIONS_WOLF_SEARCH = 10;
 
     //Full constructor
-	public ConjugateGradient(TotalEnergy energy,
-				 double tolerance,
-				 int maxIteration,
-				 int reportEvery,
-				 double c1,
-				 double c2,
-				 double extendAlphaFactorWolfSearch,
-				 int maxNumEvaluationsWolfSearch,
-				 int restartEvery) {
+    private ConjugateGradient(TotalEnergy energy,
+                              double tolerance,
+                              int maxIteration,
+                              int reportEvery,
+                              double c1,
+                              double c2,
+                              double extendAlphaFactorWolfSearch,
+                              int maxNumEvaluationsWolfSearch,
+                              int restartEvery) {
 		super(energy, tolerance, maxIteration);
 		this.reportEvery = reportEvery;
 		this.c1 = c1;
@@ -130,7 +123,8 @@ public class ConjugateGradient extends Minimizer {
 		init();
 		
 		//main loop
-		while ((iterationNum < maxIteration) && 
+		double magnitudeForce;
+		while ((iterationNum < maxIteration) &&
 		       ((magnitudeForce = TotalEnergy.getGradMagnitude(coordinates)) > tolerance)) {
 
 			// do line search
@@ -142,12 +136,17 @@ public class ConjugateGradient extends Minimizer {
 			    lineSearch.findStepLength(bufferCoordinates);
 			}
 			catch (LineSearchException lse) {
-			    if (nSteepestDecent >= maxSteepestDecent)
+				int maxSteepestDecent = 6;
+				if (nSteepestDecent >= maxSteepestDecent)
 				throw new MinimizerException(10,"too many kickstarts "+lse);
-			    SteepestDecent steepestDecent = new SteepestDecent(energy,tolerance,numStepsSteepestDecent,
-									       reportEvery,initStepSteepestDecent,
-									       stepSizeReductionSteepestDecent,
-									       stepSizeExpansionSteepestDecent);
+				int numStepsSteepestDecent = 100;
+				double stepSizeExpansionSteepestDecent = 2.1;
+				double stepSizeReductionSteepestDecent = 0.5;
+				double initStepSteepestDecent = 0.0001;
+				SteepestDecent steepestDecent = new SteepestDecent(energy,tolerance, numStepsSteepestDecent,
+									       reportEvery, initStepSteepestDecent,
+						stepSizeReductionSteepestDecent,
+						stepSizeExpansionSteepestDecent);
 			    try {
 				if (iterationNum != 0) 
 				    System.out.println("# A kick start has occurred in iteration:"+iterationNum);
@@ -166,8 +165,8 @@ public class ConjugateGradient extends Minimizer {
 			for (int i = 0; i < coordinates.length; i++) {
 				betaSum += coordinates[i][1] * (coordinates[i][1] - G[i]);
 				normalSumSquares += G[i]*G[i];
-			}				
-			beta = betaSum / normalSumSquares; 
+			}
+			double beta = betaSum / normalSumSquares;
 			if (beta < 0 || (restartEvery!=0 && iterationNum!=0 && iterationNum%restartEvery == 0)) {
 				//System.out.println("beta reset at "+iterationNum+" (was "+beta+")");
 				beta = 0;

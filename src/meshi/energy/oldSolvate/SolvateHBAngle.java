@@ -47,9 +47,9 @@ import meshi.util.mathTools.Sigma;
  **/
 
 
-public class SolvateHBAngle {
+class SolvateHBAngle {
 			
-	private DistanceMatrix dm;
+	private final DistanceMatrix dm;
 	private final double sigmoidBeginsWithH;
 	private final double sigmoidEndsWithH;
 	private final double sigmoidBeginsNoH;
@@ -169,7 +169,7 @@ public class SolvateHBAngle {
 		}
 	}
 	
-	private final void updateAndEvaluateAtoms123(Atom a1,Atom a2,Atom a3) {
+	private void updateAndEvaluateAtoms123(Atom a1, Atom a2, Atom a3) {
 		Distance dis1 = dm.distance(a1,a2); // distance on pair (a1-a2)
 		Distance dis2 = dm.distance(a3,a2); // distance on pair (a3-a2)
 		
@@ -196,7 +196,7 @@ public class SolvateHBAngle {
 		}			
 	}
 	
-	private final void updateAndEvaluateAtoms234(Atom a2,Atom a3,Atom a4) {
+	private void updateAndEvaluateAtoms234(Atom a2, Atom a3, Atom a4) {
 		Distance dis1 = dm.distance(a2,a3); // distance on pair (a2-a3)
 		Distance dis2 = dm.distance(a4,a3); // distance on pair (a4-a3)
 		

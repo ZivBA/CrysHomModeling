@@ -1,6 +1,6 @@
 package alignment;
 
-public interface Position {
+interface Position {
 	
 	/*
 	 * The penalty involving a gap opening against this position

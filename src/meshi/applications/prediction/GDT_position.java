@@ -2,12 +2,13 @@ package meshi.applications.prediction;
 
 import meshi.util.overlap.Overlap;
 
-public class GDT_position {
-	private double[][] C1;     
-	private double[][] C2;  
-	private double[][] copyOfInitialC2,copyOfInitialC1;
+class GDT_position {
+	private final double[][] C1;
+	private final double[][] C2;
+	private final double[][] copyOfInitialC2;
+	private final double[][] copyOfInitialC1;
 	public int[] subset;
-	private double cutoff;
+	private final double cutoff;
 
 	public GDT_position(int sub, int place, double max_distance, double[][] C1, double[][] C2)  
 	{

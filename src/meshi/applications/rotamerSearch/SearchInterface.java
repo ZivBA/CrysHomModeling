@@ -16,19 +16,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Vector;
 
-public class SearchInterface extends MeshiProgram {
+class SearchInterface extends MeshiProgram {
 	
-	public final double maxDisCBtoAtomInAnotherChain = 5.0; // All residues whose CB atoms are closer than this to another chain will be refined.
-	public final int N_ITERATIONS = 6;
-	public final boolean WITH_PERMUTE = true;
-	
-	private MultipleResidueSearch search;
-	private Protein prot;
+	private final MultipleResidueSearch search;
+	private final Protein prot;
 
-	public SearchInterface(CommandList commands , Protein prot , String writeInterfaceFile) {
+	private SearchInterface(CommandList commands, Protein prot, String writeInterfaceFile) {
 		this.prot = prot;
 		boolean[] interfaceResidues = interfacingResidues(prot , writeInterfaceFile);
-		Vector<Residue> residues = new Vector<Residue>();
+		Vector<Residue> residues = new Vector<>();
 		for (int c=0 ; c<interfaceResidues.length ; c++) {
 			if (interfaceResidues[c]) {
 				residues.add(prot.residue(c));
@@ -37,11 +33,13 @@ public class SearchInterface extends MeshiProgram {
 		search = new MultipleResidueSearch(prot, commands, residues);
 	}
 
-	public void scan() {
-		search.searchSequential(N_ITERATIONS, WITH_PERMUTE, randomNumberGenerator());
+	private void scan() {
+		boolean WITH_PERMUTE = true;
+		int n_ITERATIONS = 6;
+		search.searchSequential(n_ITERATIONS, WITH_PERMUTE, randomNumberGenerator());
 	}
 	
-	public void writeProt(String fileName, String chainA, String chainB) {
+	private void writeProt(String fileName, String chainA, String chainB) {
 		Atom.resetNumberOfAtoms();
 		AtomList list = ComplexMESHIconversion.MEHSI2complex(prot).duplicate();
 		list.chainFilter("A").setChain("#");
@@ -59,13 +57,14 @@ public class SearchInterface extends MeshiProgram {
 	/**
 	 * The output is a boolean[2000] array (I assume that each subunit is not more 999 residues). True is interfacing.
 	 */
-	public boolean[] interfacingResidues(Protein workingProt, String writeInterfaceFile) {
+	private boolean[] interfacingResidues(Protein workingProt, String writeInterfaceFile) {
 		boolean[] out = new boolean[2000];
 		for (int c=0 ; c<2000 ; c++) {
 			out[c] = false;
 		}
 		// Looking from A to B
-		for (int c=0 ; c<1000 ; c++) {
+		double maxDisCBtoAtomInAnotherChain = 5.0;
+		for (int c = 0; c<1000 ; c++) {
 			Atom atom = workingProt.atoms().findAtomInList("CB", c);
 			if ((atom!=null) && (!atom.residueName().equals("ALA"))
 					&& (!atom.residueName().equals("PHE"))
@@ -130,7 +129,7 @@ public class SearchInterface extends MeshiProgram {
 	/**
 	 * Will create an "A","B" complex of the desired pair.
 	 */
-	public static AtomList getPair(String fullComplexFileName , String chainA, String chainB) {
+	private static AtomList getPair(String fullComplexFileName, String chainA, String chainB) {
 		AtomList fullList = new AtomList(fullComplexFileName);
 		Atom.resetNumberOfAtoms();
 		AtomList tmp1 = fullList.chainFilter(chainA).duplicate();
@@ -146,7 +145,7 @@ public class SearchInterface extends MeshiProgram {
 	/**
 	 * Will create a ready for work protein from an "A","B" atom list.
 	 */
-	public static Protein makeWorkableProtein(AtomList ABlist, CommandList commands) {
+	private static Protein makeWorkableProtein(AtomList ABlist, CommandList commands) {
 		Protein workingProt = ComplexMESHIconversion.complex2meshi(ABlist);
 		PutHydrogens.adjustHydrogens(commands, workingProt);		
 		return workingProt;

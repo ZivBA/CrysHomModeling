@@ -18,7 +18,7 @@ import java.util.Iterator;
  * A list of Atoms
  **/
 public class AtomList extends MeshiList {
-    public MeshiLineReader sourceFile = null;
+    private MeshiLineReader sourceFile = null;
 
 
     /**
@@ -43,7 +43,7 @@ public class AtomList extends MeshiList {
     /**
      * An empty atom list
      **/
-     protected AtomList(Filter filter) {
+    private AtomList(Filter filter) {
         super(filter);
     }
     /**
@@ -130,7 +130,7 @@ public class AtomList extends MeshiList {
     }
 	
     // fastAdd is equal to add(Object element)  in MeshiList, but checking of type is excluded
-    protected boolean fastAdd(Atom element) {
+    boolean fastAdd(Atom element) {
 	if (size < capacity) {
 	    internalArray[size] = element;
 	    size++;
@@ -140,8 +140,7 @@ public class AtomList extends MeshiList {
 	else {
 	    capacity *= 2;
 	    Object[] newArray = new Atom[capacity];
-	    for (int i = 0; i < size; i++)
-		newArray[i] = internalArray[i];
+		System.arraycopy(internalArray, 0, newArray, 0, size);
 	    internalArray = newArray;
 	    return fastAdd(element) ;
 	}
@@ -187,7 +186,7 @@ public class AtomList extends MeshiList {
               return  Math.sqrt(radius2() );
     }
 
-    public double radius2() {
+    private double radius2() {
 	double radius;
         MeshiIterator atomIter = meshiIterator();
 	double dx, dy, dz, d2;
@@ -518,7 +517,7 @@ public class AtomList extends MeshiList {
 	return true;
     }
 	    
-    public AtomList lowestEnergyAtoms(double threshold) {
+    private AtomList lowestEnergyAtoms(double threshold) {
 	
 	if (size < 10) throw new RuntimeException("very weird");
 	double sum = 0;

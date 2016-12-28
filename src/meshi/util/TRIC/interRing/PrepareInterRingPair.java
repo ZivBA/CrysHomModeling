@@ -9,7 +9,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
-public class PrepareInterRingPair extends MeshiProgram implements Residues {
+class PrepareInterRingPair extends MeshiProgram implements Residues {
    
 	private static String pathToInterRingFolder = null;
 
@@ -25,12 +25,16 @@ public class PrepareInterRingPair extends MeshiProgram implements Residues {
 	init(args); 
 
 	char convertHomologyToThermosome = 0;
-	if (unitLetterHomology.equals("A"))
-		convertHomologyToThermosome = 'I';
-	else if (unitLetterHomology.equals("B"))
-		convertHomologyToThermosome = 'J';
-	else 
-		throw new RuntimeException("Only the letters A and B are allowed as thermosome homology units.");
+	    switch (unitLetterHomology) {
+		    case "A":
+			    convertHomologyToThermosome = 'I';
+			    break;
+		    case "B":
+			    convertHomologyToThermosome = 'J';
+			    break;
+		    default:
+			    throw new RuntimeException("Only the letters A and B are allowed as thermosome homology units.");
+	    }
 
 	String writeDir = pathToInterRingFolder+"/inter_ring/"+unitLetterUP.charAt(0)+
 	unitLetterDOWN.charAt(0);
@@ -106,7 +110,7 @@ public class PrepareInterRingPair extends MeshiProgram implements Residues {
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 

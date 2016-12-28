@@ -25,7 +25,7 @@ import meshi.util.filters.KolDichfin;
 import java.io.IOException;
 
 
-public class RefinePreModel extends MeshiProgram implements Residues, AtomTypes {
+class RefinePreModel extends MeshiProgram implements Residues, AtomTypes {
 
 	private static CommandList commands_init; 
 	private static String modelFileName_init = null;  
@@ -41,7 +41,7 @@ public class RefinePreModel extends MeshiProgram implements Residues, AtomTypes 
 
 
 
-	public static void refine(CommandList commands, String modelFileName, String tempFileName, String outputFileName) throws MinimizerException, LineSearchException {
+	private static void refine(CommandList commands, String modelFileName, String tempFileName, String outputFileName) throws MinimizerException, LineSearchException {
 		Protein model = null;
 		DistanceMatrix distanceMatrix = null;
 		TotalEnergy energy = null;
@@ -130,7 +130,7 @@ public class RefinePreModel extends MeshiProgram implements Residues, AtomTypes 
 				"Usage java -Xmx300m RefinePreModel <commands file name> <PreModelFile with all residues> <PreModelFile with gaps> <output file name>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);

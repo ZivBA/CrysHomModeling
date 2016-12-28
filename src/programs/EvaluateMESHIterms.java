@@ -39,22 +39,15 @@ import meshi.util.rotamericTools.RotamericTools;
  *
  **/
 
-public class EvaluateMESHIterms extends MeshiProgram implements Residues, AtomTypes {
+class EvaluateMESHIterms extends MeshiProgram implements Residues, AtomTypes {
 
 	private static CommandList commands;
-	private static String commandsFileName = null;
-	private static String modelsFileName = null;  
+	private static String modelsFileName = null;
 	private static String refFileName = null;  
 	private static String pathFirstEval = "";  
-	private static String pathSecondEval = "";  
-	private static double Wrg = 0.0;  
-	private static double Wev = 3.0;  
-	private static double Wsolv = 0.5;  
-	private static double Whb = 1.0;  
-	private static double Wprop = 1.0;  
-	private static double Wramach = 0.1;  
-
-
+	private static String pathSecondEval = "";
+	
+	
 	public static void main(String[] args) {
 		init(args); 
 		Protein reference = null;
@@ -222,10 +215,10 @@ private static void init(String[] args) {
 			"<Wrg>  <Wev> <Wsolv> <Whb> <Wprop> <Wramach> \n"+
 	"                    ******************\n");
 
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-	commandsFileName = getOrderedArgument(args);
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+	String commandsFileName = getOrderedArgument(args);
 	if (commandsFileName == null) throw new RuntimeException(errorMessage);
-	System.out.println("# commandsFileName = "+commandsFileName);
+	System.out.println("# commandsFileName = "+ commandsFileName);
 
 	commands = new CommandList(commandsFileName);
 
@@ -241,43 +234,43 @@ private static void init(String[] args) {
 
 	String tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wrg = (new Double(tmpString)).doubleValue();
-	System.out.println("# Wrg is " + Wrg);
+	double wrg = new Double(tmpString);
+	System.out.println("# Wrg is " + wrg);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wev = (new Double(tmpString)).doubleValue();
-	System.out.println("# Wev is " + Wev);
+	double wev = new Double(tmpString);
+	System.out.println("# Wev is " + wev);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wsolv = (new Double(tmpString)).doubleValue();
-	System.out.println("# Wsolv is " + Wsolv);
+	double wsolv = new Double(tmpString);
+	System.out.println("# Wsolv is " + wsolv);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Whb = (new Double(tmpString)).doubleValue();
-	System.out.println("# Whb is " + Whb);
+	double whb = new Double(tmpString);
+	System.out.println("# Whb is " + whb);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wprop = (new Double(tmpString)).doubleValue();
-	System.out.println("# Wprop is " + Wprop);
+	double wprop = new Double(tmpString);
+	System.out.println("# Wprop is " + wprop);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wramach = (new Double(tmpString)).doubleValue();
-	System.out.println("# Wramach is " + Wramach);
+	double wramach = new Double(tmpString);
+	System.out.println("# Wramach is " + wramach);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString!= null) { 
-		pathFirstEval = new String(tmpString.trim());
+		pathFirstEval = tmpString.trim();
 		System.out.println("# pathFirstEval is " + pathFirstEval);
 	}
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString!= null) { 
-		pathSecondEval = new String(tmpString.trim());
+		pathSecondEval = tmpString.trim();
 		System.out.println("# pathSecondEval is " + pathSecondEval);
 	}
 }

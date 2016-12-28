@@ -20,15 +20,13 @@ public class Overlap {
 	private static double [][] coor;
 	private static double [][] coor2;
 	private static double [][] temp;
-	private static String comment; 
-	private static String comment2;
 	private static int npt;
 	private static double [][] help;
 	private static double [] eigenv;
 	private static double[][] eigenVectors;
 	private static double[][] bvector;
 	private static double[][] Umatrix;
-	private static double eps = Math.pow(10,-12);
+	private static final double eps = Math.pow(10,-12);
 	private static double rms;
 
 	public Overlap(double[][] co, double[][] co2,int n, String com, String com2){
@@ -50,8 +48,6 @@ public class Overlap {
 	private static void initiateFields(double[][] co, double[][] co2,int n, String com, String com2){
 		coor = co;
 		coor2 = co2;
-		comment = com;
-		comment2 = com2;
 		npt  = n;//align.length()
 
 
@@ -62,7 +58,7 @@ public class Overlap {
 	 * Uniting the gravity center of both proteins to (0,0,0)
 	 */
 
-	public static void gravityCenter(){
+	private static void gravityCenter(){
 
 		double xcm1 = 0, ycm1 = 0 , zcm1 = 0;
 		double xcm2 = 0, ycm2 = 0, zcm2 = 0;
@@ -104,7 +100,7 @@ public class Overlap {
 	 *at the Kabsch paper (1976)
 	 **/  
 
-	public  static double[][] createR(){
+	private static double[][] createR(){
 		double[][] R = new double[3][3];
 		double [] weight = new double[npt];//this array contain the atom weights, at this point all the weights equal to 1 and the weight array should become a global data member.
 		for(int i=0; i<npt; i++)
@@ -130,7 +126,7 @@ public class Overlap {
 	 *which is  R*Rt(1976)
 	 **/  
 
-	public static double[][] createP(){ 
+	private static double[][] createP(){
 
 		double [][] P = new double[3][3];
 		double [][] temp = createR();
@@ -164,7 +160,7 @@ public class Overlap {
 	 *this function will calculate the characteristic polynom
      after caululating the determinant manually*/
 
-	public static double[] calcCharPol(double [][] mat){
+	private static double[] calcCharPol(double[][] mat){
 		double[] charPol = new double [4];
 		charPol[0] = -1;//the coefficient of x^3
 		charPol[1] = mat[0][0]+mat[1][1]+mat[2][2];//the coefficient of x^2
@@ -181,7 +177,7 @@ public class Overlap {
 	 *In order to find the 3 eigenValues of P, which is <BR>
 	 *a positive definite matrix, we are solving a cubic equation*/
 
-	public static double [] findEigenval(double[] charpol){
+	private static double [] findEigenval(double[] charpol){
 		double [] eigenval = new double[3];//this is an array that will contain the eigenvalues
 
 		/*solving a cubic equation*/
@@ -254,11 +250,11 @@ public class Overlap {
 
 
 
-	public static void checkEigenval(double[] eigenval){
+	private static void checkEigenval(double[] eigenval){
 		if(Math.abs(eigenval[0] - eigenval[1])>eps && Math.abs(eigenval[1]-eigenval[2])>eps && Math.abs(eigenval[0]-eigenval[2]) >eps)
 			findEigenvec1(eigenval);
 		else
-			findEigenvec2(eigenval);
+			findEigenvec2();
 	}//checkEigenval
 
 	/*****************************FIND EIGEN VEC 1*********************************************/
@@ -269,7 +265,7 @@ public class Overlap {
 	 **/
 
 
-	public static double[][] findEigenvec1(double[] eigenval){
+	private static double[][] findEigenvec1(double[] eigenval){
 		double[][] eigenvec = new double[3][3];//each column in this matrix will represent one eigenvector
 		double[][] temp = new double[3][3];//this matrix is used each time for a different eigenval.
 
@@ -398,7 +394,7 @@ public class Overlap {
 	/*****************************FIND EIGEN VEC 2*********************************************/
 
 
-	public static double[][] findEigenvec2(double[] eigenval){
+	private static double[][] findEigenvec2(){
 
 		throw new RuntimeException("\n\nAn exceptional RMS calculation case (likely all atoms are in a plane).\n"+
 				"I think the code for these cases is not numerically reliable.\n\n"+
@@ -608,7 +604,7 @@ public class Overlap {
 	 *we make sure that a1*a2 = a3
 	 **/
 
-	public static void checkEigenVec(){
+	private static void checkEigenVec(){
 
 		double [] vecMul = new double[3];
 		vecMul[0] = (eigenVectors[1][0]*eigenVectors[2][1]) - (eigenVectors[1][1]*eigenVectors[2][0]);
@@ -629,7 +625,7 @@ public class Overlap {
 
 
 
-	public static double[][] calcBvectors(){
+	private static double[][] calcBvectors(){
 
 		double[][] bVectors = new double[3][3];
 		double[][] r = createR();
@@ -661,7 +657,7 @@ public class Overlap {
 	 *of U
 	 **/
 
-	public static void createUmatrix(double[][] bVectors){
+	private static void createUmatrix(double[][] bVectors){
 		double[][] u = new double[3][3];
 		u[0][0] = bVectors[0][0]*eigenVectors[0][0]+bVectors[0][1]*eigenVectors[0][1]+bVectors[0][2]*eigenVectors[0][2];
 		u[0][1] = bVectors[0][0]*eigenVectors[1][0]+bVectors[0][1]*eigenVectors[1][1]+bVectors[0][2]*eigenVectors[1][2];
@@ -686,7 +682,7 @@ public class Overlap {
 
 
 
-	public static void calculateRms(){
+	private static void calculateRms(){
 		temp = new double[3][npt];
 
 
@@ -718,21 +714,21 @@ public class Overlap {
 
 
 
-	public static double findMaxAbs(double a, double b){//a simple function that helps finding the max of 3 nums
+	private static double findMaxAbs(double a, double b){//a simple function that helps finding the max of 3 nums
 		if(Math.abs(a) >=Math.abs(b))
 			return Math.abs(a);
 		else
 			return Math.abs(b);
 	}
 
-	public static double findMin(double a, double b){
+	private static double findMin(double a, double b){
 		if(a <= b)
 			return a;
 		else
 			return b;
 	}
 
-	public static double findMax(double a, double b){
+	private static double findMax(double a, double b){
 		if(a >= b)
 			return a;
 		else
@@ -743,11 +739,10 @@ public class Overlap {
 
 
 
-	public static double[][] copyMat(double [][] mat){//a simple function that copies values from one mat to another.
+	private static double[][] copyMat(double[][] mat){//a simple function that copies values from one mat to another.
 		double[][] mat2 = new double[3][3];
 		for(int i = 0; i<3; i++){
-			for(int j = 0; j<3; j++)
-				mat2[i][j] = mat[i][j];
+			System.arraycopy(mat[i], 0, mat2[i], 0, 3);
 
 		}
 		return mat2;
@@ -764,26 +759,26 @@ public class Overlap {
 	 **/
 
 	public static double fitProteins(AtomList statList, int[] statPartListRes, AtomList moveList, int[] movePartListRes){
-    	Vector<double[]> statArray = new Vector<double[]>();
-    	Vector<double[]> moveArray = new Vector<double[]>();
+    	Vector<double[]> statArray = new Vector<>();
+    	Vector<double[]> moveArray = new Vector<>();
     	int countingRefAtoms = 0;
-    	for (int resC=0 ; resC<movePartListRes.length ; resC++) {
-    		double[] tmpXYZ_move = new double[3];
-    		Atom atom_move = moveList.findAtomInList("CA", movePartListRes[resC]);
-    		tmpXYZ_move[0] =atom_move.x();
-    		tmpXYZ_move[1] =atom_move.y();
-    		tmpXYZ_move[2] =atom_move.z();
-    		moveArray.add(tmpXYZ_move);
-    		countingRefAtoms++;
-    	}
-    	for (int resC=0 ; resC<statPartListRes.length ; resC++) {
-    		double[] tmpXYZ_stat = new double[3];
-    		Atom atom_stat = statList.findAtomInList("CA", statPartListRes[resC]);
-    		tmpXYZ_stat[0] =atom_stat.x();
-    		tmpXYZ_stat[1] =atom_stat.y();
-    		tmpXYZ_stat[2] =atom_stat.z();
-    		statArray.add(tmpXYZ_stat);
-    	}
+		for (int movePartListRe : movePartListRes) {
+			double[] tmpXYZ_move = new double[3];
+			Atom atom_move = moveList.findAtomInList("CA", movePartListRe);
+			tmpXYZ_move[0] = atom_move.x();
+			tmpXYZ_move[1] = atom_move.y();
+			tmpXYZ_move[2] = atom_move.z();
+			moveArray.add(tmpXYZ_move);
+			countingRefAtoms++;
+		}
+		for (int statPartListRe : statPartListRes) {
+			double[] tmpXYZ_stat = new double[3];
+			Atom atom_stat = statList.findAtomInList("CA", statPartListRe);
+			tmpXYZ_stat[0] = atom_stat.x();
+			tmpXYZ_stat[1] = atom_stat.y();
+			tmpXYZ_stat[2] = atom_stat.z();
+			statArray.add(tmpXYZ_stat);
+		}
 
     	for (int atomC=0 ; atomC<moveList.size() ; atomC++) {
     		double[] tmpXYZ_move = new double[3];

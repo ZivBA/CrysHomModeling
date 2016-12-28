@@ -50,11 +50,10 @@ import java.util.StringTokenizer;
  *
  **/
 
-public class EvaluateBatchOfCoarseLoops extends MeshiProgram implements Residues, AtomTypes {
+class EvaluateBatchOfCoarseLoops extends MeshiProgram implements Residues, AtomTypes {
 
 	private static CommandList commands;
-	private static String commandsFileName = null;
-	private static String modelsFileName = null;  
+	private static String modelsFileName = null;
 	private static String dataFileName = null;  
 	private static String refFileName = null;  
 	private static int resStart = -999;
@@ -249,18 +248,18 @@ public class EvaluateBatchOfCoarseLoops extends MeshiProgram implements Residues
 				if (i==-1) {
 					// Setting the minimization energy
 					String[] phipsiData = File2StringArray.f2a(dataFile[0]);
-					for (int c=0 ; c<phipsiData.length ; c++) {
-						StringTokenizer st = new StringTokenizer(phipsiData[c]);
-						int residueNumber = (new Integer(st.nextToken())).intValue();
+					for (String aPhipsiData : phipsiData) {
+						StringTokenizer st = new StringTokenizer(aPhipsiData);
+						int residueNumber = new Integer(st.nextToken());
 						int resType = model.residue(residueNumber).type;
-						double phi = (new Double(st.nextToken())).doubleValue();
-						double psi = (new Double(st.nextToken())).doubleValue();
-//						torsionTerm1.getTorsionEnergyElement(residueNumber, "PHI").setTarget(phi);
-//						torsionTerm1.getTorsionEnergyElement(residueNumber, "PSI").setTarget(psi);
-//						for (int cc=0 ; cc<lib.getChiMax(resType) ; cc++) {
-//							double[] rot = lib.getRotamer(resType, phi, psi, 0);
-//							torsionTerm1.getTorsionEnergyElement(residueNumber, "CHI"+(cc+1)).setTarget(rot[cc]);
-//						}
+						double phi = new Double(st.nextToken());
+						double psi = new Double(st.nextToken());
+						//						torsionTerm1.getTorsionEnergyElement(residueNumber, "PHI").setTarget(phi);
+						//						torsionTerm1.getTorsionEnergyElement(residueNumber, "PSI").setTarget(psi);
+						//						for (int cc=0 ; cc<lib.getChiMax(resType) ; cc++) {
+						//							double[] rot = lib.getRotamer(resType, phi, psi, 0);
+						//							torsionTerm1.getTorsionEnergyElement(residueNumber, "CHI"+(cc+1)).setTarget(rot[cc]);
+						//						}
 					}
 
 					energy.update();
@@ -283,18 +282,18 @@ public class EvaluateBatchOfCoarseLoops extends MeshiProgram implements Residues
 
 					// Setting the minimization energy
 					String[] phipsiData = File2StringArray.f2a(dataFile[i]);
-					for (int c=0 ; c<phipsiData.length ; c++) {
-						StringTokenizer st = new StringTokenizer(phipsiData[c]);
-						int residueNumber = (new Integer(st.nextToken())).intValue();
+					for (String aPhipsiData : phipsiData) {
+						StringTokenizer st = new StringTokenizer(aPhipsiData);
+						int residueNumber = new Integer(st.nextToken());
 						int resType = model.residue(residueNumber).type;
-						double phi = (new Double(st.nextToken())).doubleValue();
-						double psi = (new Double(st.nextToken())).doubleValue();
-//						torsionTerm1.getTorsionEnergyElement(residueNumber, "PHI").setTarget(phi);
-//						torsionTerm1.getTorsionEnergyElement(residueNumber, "PSI").setTarget(psi);
-//						for (int cc=0 ; cc<lib.getChiMax(resType) ; cc++) {
-//							double[] rot = lib.getRotamer(resType, phi, psi, 0);
-//							torsionTerm1.getTorsionEnergyElement(residueNumber, "CHI"+(cc+1)).setTarget(rot[cc]);
-//						}
+						double phi = new Double(st.nextToken());
+						double psi = new Double(st.nextToken());
+						//						torsionTerm1.getTorsionEnergyElement(residueNumber, "PHI").setTarget(phi);
+						//						torsionTerm1.getTorsionEnergyElement(residueNumber, "PSI").setTarget(psi);
+						//						for (int cc=0 ; cc<lib.getChiMax(resType) ; cc++) {
+						//							double[] rot = lib.getRotamer(resType, phi, psi, 0);
+						//							torsionTerm1.getTorsionEnergyElement(residueNumber, "CHI"+(cc+1)).setTarget(rot[cc]);
+						//						}
 					}
 
 					energy.update();
@@ -569,10 +568,10 @@ public class EvaluateBatchOfCoarseLoops extends MeshiProgram implements Residues
 				"<loop starting resisue> <loop ending residue> <Wev> <Whb> <Wtorval> <Wtether> <output PDB extension string>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-		commandsFileName = getOrderedArgument(args);
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
-		System.out.println("# commandsFileName = "+commandsFileName);
+		System.out.println("# commandsFileName = "+ commandsFileName);
 
 		commands = new CommandList(commandsFileName);
 
@@ -592,12 +591,12 @@ public class EvaluateBatchOfCoarseLoops extends MeshiProgram implements Residues
 
 		String tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		resStart = (new Integer(tmpString)).intValue();
+		resStart = new Integer(tmpString);
 		System.out.println("# Starting residue is " + resStart);
 
 		tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		resEnd = (new Integer(tmpString)).intValue();
+		resEnd = new Integer(tmpString);
 		System.out.println("# Ending residue is " + resEnd);
 
 	}

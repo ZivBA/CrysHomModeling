@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 public class ResidueBuilder implements Residues,AtomTypes {
     
-    private static double[] xyza = new double[4];
+    private static final double[] xyza = new double[4];
 
     public ResidueBuilder() {
 	    int zvl = ALA; // force the reading of "meshi.parameters.Residues"
@@ -31,7 +31,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
                  break;
         case 4:  buildPHE( res, chi1to4) ;//F
                  break;
-        case 5:  buildGLY( res) ;//G
+        case 5:  buildGLY() ;//G
                  break;
         case 6:  buildHIS( res, chi1to4) ;//H
                  break;
@@ -68,7 +68,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
     /*
      * Putting the coordinates (in xyza) of the forth atom in a torsion, given the other three.
      */
-    public static void  getAtom_xyza(double[] xyza ,double bond,double angle,double chi,Atom A3,Atom A2,Atom A1){
+    private static void  getAtom_xyza(double[] xyza, double bond, double angle, double chi, Atom A3, Atom A2, Atom A1){
     	if (A3==null) 
     		throw new RuntimeException("Missing atom 3 in the torsion construction");
     	if (A2==null) 
@@ -198,7 +198,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         }        
     }
 
-    protected static void buildALA(Residue originalRes) {
+    private static void buildALA(Residue originalRes) {
     	// Build CB
         double bond=1.54;     
         double angle=(Math.PI/180)*109.8; 
@@ -210,7 +210,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
     }
 
 
-    protected static void buildCYS(Residue originalRes,double[] chi) {
+    private static void buildCYS(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
         //create SG
         double bond=1.808;     /*        CH2E-SG1E */
@@ -222,7 +222,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "SG").setXYZ(xyza[0],  xyza[1], xyza[2]);
     }
 
-    protected static void buildASP(Residue originalRes,double[] chi) {
+    private static void buildASP(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
         /* Atom ASP CG C */
         double bond=1.516;     /*       CH2E-C */
@@ -252,7 +252,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "OD2").setXYZ(xyza[0],  xyza[1], xyza[2]);
     }
 
-    protected static void buildGLU(Residue originalRes,double[] chi) {
+    private static void buildGLU(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
         /* Atom GLU CG CH2E */
         double bond=1.520;     /*       CH2E-CH2E */
@@ -291,7 +291,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "OE2").setXYZ(xyza[0],  xyza[1], xyza[2]);
     }
 
-    protected static void buildPHE(Residue originalRes,double[] chi) {
+    private static void buildPHE(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
         /* Atom PHE CG CF */
         double bond=1.502;     /*       CH2E-CF */
@@ -348,10 +348,10 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "CZ").setXYZ(xyza[0],  xyza[1], xyza[2]);
     }
 
-    protected static void buildGLY(Residue originalRes) {    }
+    private static void buildGLY() {    }
 
 
-    protected static void buildHIS(Residue originalRes,double[] chi) {
+    private static void buildHIS(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
         /* Atom HIS CG C5 */
        double bond=1.497;     /*       CH2E-C5 */
@@ -418,7 +418,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
        getAtom(originalRes.atoms() , "CD2").setXYZ(xyza[0],  xyza[1], xyza[2]);
     }
 
-    protected static void buildILE(Residue originalRes,double[] chi) {
+    private static void buildILE(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
     /* Atom ILE CG1 CH2E */
    double bond=1.530;     /*       CH1E-CH2E */
@@ -448,7 +448,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "CD1").setXYZ(xyza[0],  xyza[1], xyza[2]);
 }
 
- protected static void buildLYS(Residue originalRes,double[] chi) {
+ private static void buildLYS(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
      /* Atom LYS CG CH2E */
      double bond=1.520;     /*       CH2E-CH2E */
@@ -487,7 +487,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "NZ").setXYZ(xyza[0],  xyza[1], xyza[2]);
     }
 
-    protected static void buildLEU(Residue originalRes,double[] chi) {
+    private static void buildLEU(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
         /* Atom LEU CG CH1E */
         double bond = 1.530; /*       CH1E-CH2E */
@@ -517,7 +517,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "CD2").setXYZ(xyza[0],  xyza[1], xyza[2]);
     }
 
-     protected static void buildMET(Residue originalRes,double[] chi) {
+     private static void buildMET(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
          /* Atom MET CG CH2E */
          double  bond=1.520;     /*       CH2E-CH2E */
@@ -547,7 +547,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "CE").setXYZ(xyza[0],  xyza[1], xyza[2]);
  }
 
- protected static void buildASN(Residue originalRes,double[] chi) {
+ private static void buildASN(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
      /* Atom ASN CG C */
      double bond=1.516;     /*       CH2E-C */
@@ -598,7 +598,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
 
  }
 
- protected static void buildPRO(Residue originalRes,double[] chi) {
+ private static void buildPRO(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
      /* Atom PRO CG CH2P */
      double bond=1.492;     /*       CH2E-CH2P */
@@ -619,7 +619,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "CD").setXYZ(xyza[0],  xyza[1], xyza[2]);
   }
 
-  protected static void buildGLN(Residue originalRes,double[] chi) {
+  private static void buildGLN(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
       /* Atom GLN CG CH2E */
       double bond=1.520;     /*       CH2E-CH2E */
@@ -679,7 +679,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
 
 
 
-    protected static void buildARG(Residue originalRes,double[] chi) {
+    private static void buildARG(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
         /* Atom LYS CG CH2E */
         double bond=1.520;     /*       CH2E-CH2E */
@@ -747,7 +747,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "NH2").setXYZ(xyza[0],  xyza[1], xyza[2]);
     }
 
-    protected static void buildSER(Residue originalRes,double[] chi) {
+    private static void buildSER(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
         /* Atom SER OG OH1 */
         double bond=1.417;     /*       CH2E-OH1 */
@@ -760,7 +760,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "OG").setXYZ(xyza[0],  xyza[1], xyza[2]);
     }
 
-    protected static void buildTHR(Residue originalRes,double[] chi) {
+    private static void buildTHR(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
         /* Atom THR OG1 OH1 */
         double bond=1.433;     /*       CH1E-OH1 */
@@ -780,7 +780,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "CG2").setXYZ(xyza[0],  xyza[1], xyza[2]);
     }
 
-    protected static void buildVAL(Residue originalRes,double[] chi) {
+    private static void buildVAL(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
         /* Atom VAL CG1 CH3E */
         double bond=1.521;     /*       CH1E-CH3E */
@@ -800,7 +800,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "CG2").setXYZ(xyza[0],  xyza[1], xyza[2]);
     }
 
-    protected static void buildTRP(Residue originalRes,double[] chi) {
+    private static void buildTRP(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
         /* Atom TRP CG C5W */
         double bond=1.498;     /*       CH2E-C5W */
@@ -894,7 +894,7 @@ public class ResidueBuilder implements Residues,AtomTypes {
         getAtom(originalRes.atoms() , "CH2").setXYZ(xyza[0],  xyza[1], xyza[2]);
     }
 
-    protected static void buildTYR(Residue originalRes,double[] chi) {
+    private static void buildTYR(Residue originalRes, double[] chi) {
     	buildALA(originalRes);
         /* Atom TYR CG CY */
         double bond=1.512;     /*       CH2E-CY */

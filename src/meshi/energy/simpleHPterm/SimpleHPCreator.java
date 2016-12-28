@@ -10,9 +10,9 @@ public class SimpleHPCreator extends EnergyCreator {
 
 	private double weightHydrophobic;
 	private double weightHydrophilic;
-	private double radiusHydrophobic;
-	private double radiusHydrophilic;
-	private boolean toCalcDerivatives;
+	private final double radiusHydrophobic;
+	private final double radiusHydrophilic;
+	private final boolean toCalcDerivatives;
 	
 	public SimpleHPCreator(double weightHydrophobic, double weightHydrophilic, double radiusHydrophobic, double radiusHydrophilic, boolean toCalcDerivatives) {
 		super(weightHydrophobic);

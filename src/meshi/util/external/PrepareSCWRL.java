@@ -8,11 +8,11 @@ import meshi.parameters.Residues;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class PrepareSCWRL implements Residues {
+class PrepareSCWRL implements Residues {
 
 	private AtomList al = null;
 	
-	public PrepareSCWRL(AtomList al) {
+	private PrepareSCWRL(AtomList al) {
 		this.al = al;		
 	}
 	
@@ -72,7 +72,7 @@ public class PrepareSCWRL implements Residues {
 	 * modeling only residues that are not conserved in the alignment.
 	 * Assuming template sequence starts at residue 1.
 	 **/
-		public String getSCWRLsequenceForAlignment(String queryAlignment,String templateAlignment) {
+	private String getSCWRLsequenceForAlignment(String queryAlignment, String templateAlignment) {
 			String output = "";
 			int resCounter = 1;
 			int iden = 0;

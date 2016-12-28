@@ -46,12 +46,12 @@ public class SolvateCreatorWideAttraction extends EnergyCreator implements KeyWo
 	this.sigmoidEndsNoH = sigmoidEndsNoH;
     }
 
-    public SolvateCreatorWideAttraction(double cooperativeSolvateWeight, double simpleHBweight) {
+    private SolvateCreatorWideAttraction(double cooperativeSolvateWeight, double simpleHBweight) {
 	this(cooperativeSolvateWeight);
 	this.simpleHBweight = simpleHBweight;
     }
 
-    public SolvateCreatorWideAttraction(double weight) {
+    private SolvateCreatorWideAttraction(double weight) {
 	super(weight);
     }
     

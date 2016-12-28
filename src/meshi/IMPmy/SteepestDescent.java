@@ -1,9 +1,9 @@
 package meshi.IMPmy;
 
-public class SteepestDescent {
+class SteepestDescent {
 
-	TotalEnergy totalEnergy;
-	DomainList domainsForReporting;
+	private final TotalEnergy totalEnergy;
+	private final DomainList domainsForReporting;
 	
 	public SteepestDescent(TotalEnergy totalEnergy, DomainList domainsForReporting) {
 		this.totalEnergy = totalEnergy;

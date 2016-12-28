@@ -19,7 +19,7 @@ import java.text.DecimalFormat;
 import java.util.StringTokenizer;
 
 
-public class ExtractEVparameters extends MeshiProgram implements Residues, AtomTypes {
+class ExtractEVparameters extends MeshiProgram implements Residues, AtomTypes {
  
     public static void main(String[] args){
     	
@@ -29,7 +29,7 @@ public class ExtractEVparameters extends MeshiProgram implements Residues, AtomT
     	int howmany = 10000000;
     	// ----------------------------------------
     	
-    	init(args); 
+    	init();
     	    	
     	int totalCounter = 0;
     	Protein model = null;
@@ -70,7 +70,7 @@ public class ExtractEVparameters extends MeshiProgram implements Residues, AtomT
     	    while (line != null) {
     	    	stok = new StringTokenizer(line);
     	    	tmp = Atom.type(stok.nextToken().trim());
-    	    	atomicTypeConverter[tmp] = Integer.valueOf(stok.nextToken().trim()).intValue()-1;
+    	    	atomicTypeConverter[tmp] = Integer.valueOf(stok.nextToken().trim()) -1;
     	    	line = br.readLine();
     	    }
     	    br.close();
@@ -113,7 +113,7 @@ public class ExtractEVparameters extends MeshiProgram implements Residues, AtomT
     
     
      
-    protected static void init(String[] args) {
+    private static void init() {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 

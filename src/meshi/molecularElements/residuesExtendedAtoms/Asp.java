@@ -16,8 +16,7 @@ import meshi.molecularElements.AtomList;
  *           OD1
  **/
 public class Asp extends ResidueExtendedAtoms {
-    public final Atom CG, OD1, OD2;
-    public static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
+	private static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
 	"                O\n"+
 	"                |\n"+
 	"       N - CA - C...n\n"+
@@ -40,9 +39,12 @@ public class Asp extends ResidueExtendedAtoms {
 
 	Object[] temp = new Object[3];
 	int i=0;
-	temp[i++] = CG = getAtom("CG",DCG, atomList, this);
-	temp[i++] = OD1 = getAtom("OD1",DOD, atomList, this);
-	temp[i++] = OD2 = getAtom("OD2",DOD, atomList, this);
+	    Atom CG;
+	    temp[i++] = CG = getAtom("CG",DCG, atomList, this);
+	    Atom OD1;
+	    temp[i++] = OD1 = getAtom("OD1",DOD, atomList, this);
+	    Atom OD2;
+	    temp[i++] = OD2 = getAtom("OD2",DOD, atomList, this);
 	for (i = 0; i <temp.length; i++)
 	    if (temp[i] != null) atoms.add(temp[i]);
 

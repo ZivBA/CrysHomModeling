@@ -15,14 +15,14 @@ public abstract class RamachandranSidechainEnergyElement
 	extends EnergyElement
 	implements Residues, CompositeTorsionsDefinitions {
 
-	protected ResidueTorsions residueTorsions;
-	protected RamachandranSidechainParameters rsp;
-	protected double weight;
+	final ResidueTorsions residueTorsions;
+	final RamachandranSidechainParameters rsp;
+	final double weight;
 
-	public RamachandranSidechainEnergyElement(
+	RamachandranSidechainEnergyElement(
 			ResidueTorsions residueTorsions,
 			RamachandranSidechainParameters rsp,
-			double weight ) {
+			double weight) {
 		this.residueTorsions = residueTorsions;
 		this.rsp = rsp;
 		this.weight = weight;
@@ -40,15 +40,7 @@ public abstract class RamachandranSidechainEnergyElement
 	}
 
 	/** Reports energy values. Currently switched off. */
-	protected void monitor( double energy, double ... derivs ) {
-		if( false ) {
-			System.out.println( "[[BEGIN]] RamachandranSidechainEnergy monitor information" );
-			System.out.println( residueTorsions );
-			System.out.println( "total energy = " + energy );
-			for( int i=0; i<derivs.length; i++ )
-				System.out.println( "deriv #" + (i+1) + " = " + derivs[i] );
-			System.out.println( "[[END]] RamachandranSidechainEnergy monitor information" );
-		}
+	void monitor() {
 	}
 	
 	/** verifies residue type is a legal residue types for class. */

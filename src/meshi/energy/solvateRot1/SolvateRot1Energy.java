@@ -110,7 +110,7 @@ public final class SolvateRot1Energy extends CooperativeEnergyTerm implements At
     	return evaluate(false);
     }
 
-    public final double evaluate(boolean updateAtoms) {
+    private double evaluate(boolean updateAtoms) {
 	if (! on) return 0.0;
 	double energy = 0;
 	double atomEnergy=0; 
@@ -227,7 +227,7 @@ oneOverSTDs[atom.residueNumber()][0] , maximalZ));
      * atom2 in the Distance - dis. The results are updated in the fields of the 
      * SolvateDistanceAttribute of dis - sigmaValues.
      **/ 
-    private final void updateSigmVals(Distance dis) {
+    private void updateSigmVals(Distance dis) {
     	SolvateRot1DistanceAttribute sigmaValues =
     		(SolvateRot1DistanceAttribute) dis.getAttribute(SolvateRot1DistanceAttribute.SOLVATE_ROT1_ATTRIBUTE);
     	int TsaiAtomicType1 = parameters.atomicTypeConverter[dis.atom1().type]; // Converting from the 190 atom types to the 14 defined in Tsai 99'
@@ -281,7 +281,7 @@ oneOverSTDs[atom.residueNumber()][0] , maximalZ));
    	} // of updateSigmVals
 
 
-	public void calcMeansAndStd(double[][] pp) {
+	private void calcMeansAndStd(double[][] pp) {
 		means = new double[pp.length][];
 		oneOverSTDs = new double[pp.length][];
 		for (int c=0 ; c<pp.length ; c++) {

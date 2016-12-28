@@ -20,7 +20,7 @@ public class SplinedPolynomialsLoader {
 	private static final double BREAKS_PADDING = 1e-8;
 	
 	/* vector of all splined polynomials loaded from file */
-	private Vector<SplinedPolynomial> splinedPolynomials;
+	private final Vector<SplinedPolynomial> splinedPolynomials;
 	
 	/** Loads polynomials from given file. */
 	public SplinedPolynomialsLoader( String fileName ) throws IOException {
@@ -28,7 +28,7 @@ public class SplinedPolynomialsLoader {
 		MeshiLineReader mlr = new MeshiLineReader( fileName );
 		
 		/* create the vector */
-		splinedPolynomials = new Vector<SplinedPolynomial>();
+		splinedPolynomials = new Vector<>();
 		
 		/* polynomial parameters */
 		int numVariables = -1;
@@ -43,19 +43,19 @@ public class SplinedPolynomialsLoader {
 		/* start reading polynomials */
 		while( mlr.ready() ) {
 			/* read number of variables in polynomial */
-			numVariables = new Integer(mlr.readLine("#")).intValue();
+			numVariables = new Integer(mlr.readLine("#"));
 			
 			/* read amino acid type. we decrease one because Matlab
 			 * enumeration starts with 1, while Java starts with 0. */
-			aac = new Integer(mlr.readLine("#")).intValue()-1;
+			aac = new Integer(mlr.readLine("#")) -1;
 			
 			/* set up torsion angles array and read torsion angles */
 			torsionAngles = new int[numVariables];
 			for( i=0; i<numVariables; i++ )
-				torsionAngles[i] = new Integer(mlr.readLine()).intValue();
+				torsionAngles[i] = new Integer(mlr.readLine());
 			
 			/* read secondary structure types */
-			ssType = new Integer(mlr.readLine()).intValue();
+			ssType = new Integer(mlr.readLine());
 			
 			/* read all breaks arrays */
 			breaks = new double[numVariables][];
@@ -63,12 +63,12 @@ public class SplinedPolynomialsLoader {
 			int numCoefs = 1;
 			for( i=0; i<numVariables; i++ ) {
 				/* read breaks size */
-				breakSize = new Integer(mlr.readLine()).intValue();
+				breakSize = new Integer(mlr.readLine());
 				
 				/* set up breaks array read contents of break */
 				breaks[i] = new double[breakSize];
 				for( j=0; j<breakSize; j++ )
-					breaks[i][j] = new Double(mlr.readLine()).doubleValue();
+					breaks[i][j] = new Double(mlr.readLine());
 				
 				/* apply padding */
 				breaks[i][0] = breaks[i][0] - BREAKS_PADDING;
@@ -100,7 +100,7 @@ public class SplinedPolynomialsLoader {
 			/* set up coefficients array and read all coefficients */
 			coefs = new double[numCoefs];
 			for( i=0; i<numCoefs; i++ )
-				coefs[i] = new Double(mlr.readLine()).doubleValue();
+				coefs[i] = new Double(mlr.readLine());
 			
 			/* add polynomial to vector */
 			splinedPolynomials.add( new SplinedPolynomial(

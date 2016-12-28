@@ -2,11 +2,11 @@ package alignment;
 
 import java.util.Arrays;
 
-public class SmithWatermanSolver {
+class SmithWatermanSolver {
 
-	protected Sequence seq1;
-	protected Sequence seq2;
-	protected ScoringScheme scoring;
+	private final Sequence seq1;
+	private final Sequence seq2;
+	private final ScoringScheme scoring;
 	private double[][] Smatrix;
 	private int[][] Dmatrix;
 	
@@ -21,7 +21,7 @@ public class SmithWatermanSolver {
 	/**
 	 * Returns the top N scores 
 	 **/
-	public double[] topScores(int N) {
+	private double[] topScores(int N) {
 		double[] scores = new double[seq1.size()*seq2.size()];
 		int c=0;
 		for (int i=1 ; i<Smatrix.length ; i++) {
@@ -88,10 +88,10 @@ public class SmithWatermanSolver {
 
 	public double bestAlignmentScore() {
 		double bestScore = -1;
-		for (int i=0 ; i<Smatrix.length ; i++) {
-			for (int j=0 ; j<Smatrix[0].length ; j++) {
-				if (Smatrix[i][j]>bestScore) {
-					bestScore = Smatrix[i][j];
+		for (double[] aSmatrix : Smatrix) {
+			for (int j = 0; j < Smatrix[0].length; j++) {
+				if (aSmatrix[j] > bestScore) {
+					bestScore = aSmatrix[j];
 				}
 			}
 		}

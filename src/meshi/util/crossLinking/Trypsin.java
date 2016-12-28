@@ -8,7 +8,7 @@ import meshi.parameters.Residues;
  * @author Nir
  *
  */
-public class Trypsin extends Peptidase implements Residues {
+class Trypsin extends Peptidase implements Residues {
 
 	public Trypsin() {}
 

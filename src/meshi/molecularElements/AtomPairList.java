@@ -15,7 +15,7 @@ public class AtomPairList extends SortableMeshiList {
     /**
      * An empty AtomPair list
      **/
-    protected AtomPairList(Filter filter) {
+    private AtomPairList(Filter filter) {
 	super(filter);
     }
     public AtomPairList(ResidueList residueList) {
@@ -61,7 +61,7 @@ public class AtomPairList extends SortableMeshiList {
     }
     
           // fastAdd is equal to add(Object element) in MeshiList , but a checking of type is excluded
-    protected boolean fastAdd(AtomPair element) {
+          private boolean fastAdd(AtomPair element) {
 	if (size < capacity) {
 	    internalArray[size] = element;
 	    size++;
@@ -71,8 +71,7 @@ public class AtomPairList extends SortableMeshiList {
 	else {
 	    capacity *= 2;
 	    Object[] newArray = new Object[capacity];
-	    for (int i = 0; i < size; i++)
-		newArray[i] = internalArray[i];
+		System.arraycopy(internalArray, 0, newArray, 0, size);
 	    internalArray = newArray;
 	    return fastAdd(element) ;
 	}

@@ -21,14 +21,14 @@ public class MeshiLineReader extends LineNumberReader {
     // #2 constructors
     // The different constructors are used to funnel the different 
     // java classes for input reading into a single class.
-    public MeshiLineReader(InputStreamReader ISR,String path) { 
+    private MeshiLineReader(InputStreamReader ISR, String path) {
 	super(ISR);
 	setPath(path);
     }
     public MeshiLineReader(InputStreamReader ISR) { 
 	this(ISR,"Unknown path");
     }
-    public MeshiLineReader(FileReader FR,String path) {
+    private MeshiLineReader(FileReader FR, String path) {
 	super(FR);
 	setPath(path);
     }
@@ -105,7 +105,7 @@ public class MeshiLineReader extends LineNumberReader {
 	try {
 	    while ((temp = readLine()) != null) {
 		if (! temp.startsWith(commentString) ) {
-		    if (temp.indexOf(commentString) == -1) return temp;
+		    if (!temp.contains(commentString)) return temp;
 		    else return temp.substring(0,temp.indexOf(commentString));
 		}
 	    }

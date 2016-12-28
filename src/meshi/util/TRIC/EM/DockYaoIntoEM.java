@@ -14,7 +14,7 @@ import java.io.IOException;
  *
  */
 
-public class DockYaoIntoEM {
+class DockYaoIntoEM {
 	
 	public static void main(String[] args) {
 

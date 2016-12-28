@@ -12,17 +12,17 @@ import meshi.util.file.MeshiWriter;
 
 import java.util.Vector;
 
-public class ChopModelInPlaces extends MeshiProgram implements Residues, AtomTypes {
+class ChopModelInPlaces extends MeshiProgram implements Residues, AtomTypes {
 
 
 	public static void main(String[] args) {
-		init(args); 
+		init();
 		
 		String outputFileName = null;
 		Protein output=null;
-		Vector<Protein> loops = new Vector<Protein>();
-		Vector<Integer> froms = new Vector<Integer>();
-		Vector<Integer> tos = new Vector<Integer>();
+		Vector<Protein> loops = new Vector<>();
+		Vector<Integer> froms = new Vector<>();
+		Vector<Integer> tos = new Vector<>();
 		
 		// Reading the command line
 		try {
@@ -49,7 +49,7 @@ public class ChopModelInPlaces extends MeshiProgram implements Residues, AtomTyp
 		// First building all the atom instances
 		AtomList allAtoms = new AtomList();
 		for (int loop=0 ; loop<loops.size() ; loop++){
-			for (int res=froms.get(loop).intValue() ; res<=tos.get(loop).intValue() ; res++) {
+			for (int res = froms.get(loop); res<= tos.get(loop); res++) {
 				if ((loops.get(loop).residue(res)!=null) && (loops.get(loop).residue(res).ca()!=null)) {
 					for (int atomC=0 ; atomC<loops.get(loop).residue(res).atoms().size() ; atomC++) {
 						Atom atom = loops.get(loop).residue(res).atoms().atomAt(atomC);
@@ -91,7 +91,7 @@ public class ChopModelInPlaces extends MeshiProgram implements Residues, AtomTyp
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init() {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 

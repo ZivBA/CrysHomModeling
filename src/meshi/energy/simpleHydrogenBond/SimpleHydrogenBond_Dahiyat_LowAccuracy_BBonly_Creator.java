@@ -13,7 +13,7 @@ public class SimpleHydrogenBond_Dahiyat_LowAccuracy_BBonly_Creator extends Energ
 	private boolean toCalcDerivatives = true;
 	private DahiyatLowAccuracyParameters parameters = null;
 
-	public SimpleHydrogenBond_Dahiyat_LowAccuracy_BBonly_Creator(double weight , boolean toCalcDerivatives) {
+	private SimpleHydrogenBond_Dahiyat_LowAccuracy_BBonly_Creator(double weight, boolean toCalcDerivatives) {
 		super(weight);
 		this.toCalcDerivatives = toCalcDerivatives;
 		parameters = new DahiyatLowAccuracyParameters();

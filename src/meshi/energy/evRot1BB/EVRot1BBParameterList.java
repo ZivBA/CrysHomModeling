@@ -56,16 +56,16 @@ public class EVRot1BBParameterList extends ParametersList {
 			   parametersFileName);
 			   throw e;
 		}
-		
-		for (int c=0 ; c<tmpAr.length ; c++) {
-		   add(tmpAr[c]);
-		   if (tmpAr[c].sigma>maxSig)
-		   		maxSig = tmpAr[c].sigma;
-		}
+	
+	    for (EVRot1BBParameters aTmpAr : tmpAr) {
+		    add(aTmpAr);
+		    if (aTmpAr.sigma > maxSig)
+			    maxSig = aTmpAr.sigma;
+	    }
 		maxEnd = maxSig;
 	}
 
-    public Parameters createParameters(String line) {
+    protected Parameters createParameters(String line) {
 	return new EVRot1BBParameters(new StringTokenizer(line));
     }
     

@@ -14,7 +14,7 @@ public class RandomSolvationCreator extends EnergyCreator {
 	private boolean toCalcDerivatives = true;
 	private AbstractROT1Parameters parameters = null;
 
-	public RandomSolvationCreator(double weight, String cutoff , boolean toCalcDerivatives) {
+	private RandomSolvationCreator(double weight, String cutoff, boolean toCalcDerivatives) {
 		super(weight);
 		this.toCalcDerivatives = toCalcDerivatives;
 		this.cutoff = cutoff;

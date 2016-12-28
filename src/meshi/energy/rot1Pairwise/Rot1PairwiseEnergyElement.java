@@ -15,15 +15,13 @@ WeightsHydrophobicSA {
 	private Rot1PairwiseParametersList parametersList;
 	private double[] EofR;
 	private double maxDis;
-	private double dis = -1;
-	private double SAfactor = -1;
 	// ------------------------------------------------------
 
 	
 	public  Rot1PairwiseEnergyElement() {}
 	
-	public  Rot1PairwiseEnergyElement(Rot1PairwiseParametersList parametersList, 
-			int type, double weight){
+	public  Rot1PairwiseEnergyElement(Rot1PairwiseParametersList parametersList,
+	                                  double weight){
 		this.parametersList = parametersList;
 		this.weight = weight;
 	}
@@ -43,8 +41,8 @@ WeightsHydrophobicSA {
 	}        
 
 	public double evaluate() {
-		dis = distance.distance();
-		if (dis>maxDis)
+		double dis = distance.distance();
+		if (dis >maxDis)
 			return 0.0;
 		if ((atom1.residueNumber() > (atom2.residueNumber()-2)) &&
 				(atom1.residueNumber() < (atom2.residueNumber()+2)))
@@ -65,9 +63,9 @@ WeightsHydrophobicSA {
 //		if (((atom1.residueNumber()==87) && atom1.name().equals("CB")) ||
 //				((atom2.residueNumber()==87) && atom2.name().equals("CB")))
 //			System.out.println(this+""+dis + " " +weight*EofR[(int) Math.round(dis)]);
-
 		
-		SAfactor = -999;
+		
+		double SAfactor = -999;
 		if (atom1.name().equals("CB") && atom2.name().equals("CB")) {
 			if ((weightRepresentativePolars[atom1.type]>0.1) && (weightRepresentativePolars[atom2.type]>0.1)) { // Two philic
 				SAfactor = 0.000000;
@@ -102,12 +100,12 @@ WeightsHydrophobicSA {
 			SAfactor = 0.0;
 		}
 		
-		if (SAfactor<-500)
+		if (SAfactor <-500)
 			throw new RuntimeException("Impossible option:\n" + atom1 + "\n" + atom2+"\n");
 
 		int ind = (int) Math.floor(dis);
-		if (dis<maxDis)
-			return weight*SAfactor*((1-(dis-ind))*EofR[ind] + (dis-ind)*EofR[ind+1]);
+		if (dis <maxDis)
+			return weight* SAfactor *((1-(dis -ind))*EofR[ind] + (dis -ind)*EofR[ind+1]);
 		else
 			return 0.0;
 	}

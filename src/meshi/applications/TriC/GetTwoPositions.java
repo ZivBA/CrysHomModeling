@@ -1,6 +1,6 @@
 package meshi.applications.TriC;
 
-public class GetTwoPositions {
+class GetTwoPositions {
 
 	/**
 	 * @param args

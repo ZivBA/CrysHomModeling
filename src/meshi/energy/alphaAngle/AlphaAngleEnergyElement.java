@@ -9,14 +9,14 @@ import meshi.parameters.MeshiPotential;
 //---------------------------------------------------------------------
 public class AlphaAngleEnergyElement extends EnergyElement implements MeshiPotential {
 	private Atom atom1,atom2,atom3;
-    private Angle angle;
+    private final Angle angle;
     private double loAng,hiAng;
     private double weight;
     private final double BUFF = 0.05;
     private final double INV_BUFF = 1/BUFF;
     private final double infForce = 1.0/7.0; // About ~10 degree around PI and 0 will have affected forces
-    private final double infForce3 = infForce * infForce * infForce;	
-    public double force, force2;
+	private final double force;
+	private final double force2;
 
     /**
      *The constructor needs a CA3 angle. 
@@ -32,22 +32,24 @@ public class AlphaAngleEnergyElement extends EnergyElement implements MeshiPoten
 	if (! angle.getAngleName().equals("CA3"))
 	    throw new RuntimeException("\nError: Only CA3 angles can be treated\n");	        
 	Residue residue = angle.atom2.residue();
-	if (residue.secondaryStructure().equals(HELIX)) {
-		loAng = param.startAlphaHELIX;
-		hiAng = param.endAlphaHELIX;
-	}
-	else if (residue.secondaryStructure().equals(SHEET)) {
-		loAng = param.startAlphaSHEET;
-		hiAng = param.endAlphaSHEET;
-	}
-	else if (residue.secondaryStructure().equals(COIL) || 
-			residue.secondaryStructure().equals(HELIX_OR_COIL) || 
-			residue.secondaryStructure().equals(SHEET_OR_COIL)) {
-		loAng = param.startAlphaCOIL;
-		hiAng = param.endAlphaCOIL;
-	}
-	else
-	    throw new RuntimeException("\nError: residue with unassigned secondary structure\n");
+	    switch (residue.secondaryStructure()) {
+		    case HELIX:
+			    loAng = param.startAlphaHELIX;
+			    hiAng = param.endAlphaHELIX;
+			    break;
+		    case SHEET:
+			    loAng = param.startAlphaSHEET;
+			    hiAng = param.endAlphaSHEET;
+			    break;
+		    case COIL:
+		    case HELIX_OR_COIL:
+		    case SHEET_OR_COIL:
+			    loAng = param.startAlphaCOIL;
+			    hiAng = param.endAlphaCOIL;
+			    break;
+		    default:
+			    throw new RuntimeException("\nError: residue with unassigned secondary structure\n");
+	    }
 	if ((loAng<infForce) || (hiAng<infForce) || (loAng + infForce > Math.PI) || (hiAng + infForce > Math.PI)) 
 	    throw new RuntimeException("The allowed region " + loAng + "-" + hiAng + " is too close to 0 or PI." +
 				       "currently MESHI can not handle those values."); 	    
@@ -71,7 +73,8 @@ public class AlphaAngleEnergyElement extends EnergyElement implements MeshiPoten
 	angleValue = angle.angle();
 	if ((angleValue>loAng) && (angleValue<hiAng))
 	   return 0;
-	if ((angleValue>infForce) && (angleValue<=loAng)) {
+	    double infForce3 = infForce * infForce * infForce;
+	    if ((angleValue>infForce) && (angleValue<=loAng)) {
 	    d = angleValue - loAng;
 	    energy = d * d * force;	
 	    deDd =  -1 * d * force2; // force = -derivative  
@@ -138,9 +141,8 @@ public class AlphaAngleEnergyElement extends EnergyElement implements MeshiPoten
 	    double aux1 = infForce - loAng;
 	    double aux2 = -1 * force * aux1 * infForce3;
 	    double aux3 = force * aux1 * (aux1 + infForce);
-	    double aux4 = angleValue;
-	    energy = aux3 + aux2/(aux4 * aux4);
-	    deDd = 2*aux2/(aux4 * aux4 * aux4);
+		    energy = aux3 + aux2/(angleValue * angleValue);
+	    deDd = 2*aux2/(angleValue * angleValue * angleValue);
 	    if (! atom1.frozen()) {
 		atom1.addToFx(deDd*angle.dangleDx1());  
 		atom1.addToFy(deDd*angle.dangleDy1());    

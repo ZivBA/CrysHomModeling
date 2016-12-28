@@ -55,7 +55,7 @@ public class SmoothRotamerLibraryEnergyElementChi4
 		residueTorsions.applyForce( CHI_3, -chi_3_deriv );
 		residueTorsions.applyForce( CHI_4, -chi_4_deriv );
 
-		monitor( energy, chi_1_deriv, chi_2_deriv, chi_3_deriv, chi_4_deriv );
+		monitor();
 		return energy;
 	}
 

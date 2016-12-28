@@ -8,7 +8,7 @@ import meshi.util.MeshiProgram;
 import meshi.util.dssp.DSSP;
 
 
-public class findCrossLink extends MeshiProgram implements Residues , ResidueMasses { 
+class findCrossLink extends MeshiProgram implements Residues , ResidueMasses {
    
     private static String complexFile = null;
  
@@ -62,7 +62,7 @@ public class findCrossLink extends MeshiProgram implements Residues , ResidueMas
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 

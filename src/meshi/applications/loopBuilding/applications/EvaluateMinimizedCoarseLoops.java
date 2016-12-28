@@ -43,11 +43,10 @@ import java.util.StringTokenizer;
  * 
  **/
 
-public class EvaluateMinimizedCoarseLoops extends MeshiProgram implements Residues, AtomTypes {
+class EvaluateMinimizedCoarseLoops extends MeshiProgram implements Residues, AtomTypes {
 
-	private static CommandList commands; 
-	private static String commandsFileName = null;
-	private static String modelFileName = null;  
+	private static CommandList commands;
+	private static String modelFileName = null;
 	private static String loopsFileName = null;  
 	private static String dataFileName = null;  
 	private static String refFileName = null;  
@@ -189,7 +188,7 @@ public class EvaluateMinimizedCoarseLoops extends MeshiProgram implements Residu
 				try {
 					ResidueBuilder.buildCentroid(reference.residues().residueAt(res));
 				}
-				catch (Exception ee) {}
+				catch (Exception ignored) {}
 			}
 		}		
 		for (int cc=0 ; cc<model.atoms().size() ; cc++)
@@ -244,7 +243,7 @@ public class EvaluateMinimizedCoarseLoops extends MeshiProgram implements Residu
 						try {
 							ResidueBuilder.buildCentroid(model.residues().residueAt(res));
 						}
-						catch (Exception ee) {}
+						catch (Exception ignored) {}
 					}
 				}		
 				energy.update();
@@ -369,10 +368,10 @@ public class EvaluateMinimizedCoarseLoops extends MeshiProgram implements Residu
 				"<loop starting resisue> <loop ending residue> <0 - for cluster evaluation ; 1 - for singlton evaluation>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-		commandsFileName = getOrderedArgument(args);
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
-		System.out.println("# commandsFileName = "+commandsFileName);
+		System.out.println("# commandsFileName = "+ commandsFileName);
 
 		commands = new CommandList(commandsFileName);
 
@@ -396,12 +395,12 @@ public class EvaluateMinimizedCoarseLoops extends MeshiProgram implements Residu
 
 		String tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		resStart = (new Integer(tmpString)).intValue();
+		resStart = new Integer(tmpString);
 		System.out.println("# Starting residue is " + resStart);
 
 		tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		resEnd = (new Integer(tmpString)).intValue();
+		resEnd = new Integer(tmpString);
 		System.out.println("# Ending residue is " + resEnd);
 
 		tmpString = getOrderedArgument(args);

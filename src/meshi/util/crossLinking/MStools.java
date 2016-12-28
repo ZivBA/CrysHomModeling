@@ -2,7 +2,7 @@ package meshi.util.crossLinking;
 
 import meshi.molecularElements.Protein;
 
-public class MStools implements ResidueMasses {
+class MStools implements ResidueMasses {
 	
 	
 	/**
@@ -19,8 +19,7 @@ public class MStools implements ResidueMasses {
 		while (!trypsin.cutC(prot.getSequence(), end)) {
 			end++;
 		}
-		int[] tmp = {start,end};
-		return tmp;
+		return new int[]{start,end};
 	}
 	
 
@@ -29,8 +28,8 @@ public class MStools implements ResidueMasses {
 	 **/
 	public static double massOfPeptide(int[] seq) {
 		double mass = 0.0;
-		for (int c=0 ; c<seq.length ; c++) {
-			mass += MW_AA[seq[c]];
+		for (int aSeq : seq) {
+			mass += MW_AA[aSeq];
 		}
 		return mass;
 	}	

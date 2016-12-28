@@ -13,12 +13,14 @@ public class Angle  implements Updateable {
     public final Atom atom1;
     public final Atom atom2;
     public final Atom atom3;
-    protected String angleName = "";
-    protected int angleCode = -1;
-    protected int angleResNum = -9999;
-    protected String angleResName = "";    
-    protected AtomPair atomPair1, atomPair2;
-    public final Distance DISTANCE1, DISTANCE2;
+    private String angleName = "";
+    private int angleCode = -1;
+    private int angleResNum = -9999;
+    private String angleResName = "";
+    private AtomPair atomPair1;
+	private AtomPair atomPair2;
+    private final Distance DISTANCE1;
+	private final Distance DISTANCE2;
     private double angle,fakeAngle;
     private double dangleDx1, dangleDy1, dangleDz1;
     private double dangleDx2, dangleDy2, dangleDz2;
@@ -26,7 +28,7 @@ public class Angle  implements Updateable {
     private double cosAngle;
     private double sinAngle;
     private double dFakeAngledAngle = 1.0;
-    protected DistanceMatrix distanceMatrix = null;
+    private DistanceMatrix distanceMatrix = null;
     private boolean useFakeAngle = false;
     private int numberOfUpdates = 0;
 
@@ -46,7 +48,7 @@ public class Angle  implements Updateable {
     /**
      * This constructor should be used only by DisposableAngle.
      **/
-    protected Angle(Atom atom1, Atom atom2, Atom atom3, Distance distance1, Distance distance2) {
+    Angle(Atom atom1, Atom atom2, Atom atom3, Distance distance1, Distance distance2) {
 	this.useFakeAngle = false;
 	this.distanceMatrix = null;
 	this.atom1 = atom1;
@@ -59,8 +61,8 @@ public class Angle  implements Updateable {
         update();
     }
 
-    public Angle(AtomPair atomPair1, AtomPair atomPair2, 
-		 DistanceMatrix distanceMatrix,boolean useFakeAngle) {
+    private Angle(AtomPair atomPair1, AtomPair atomPair2,
+                  DistanceMatrix distanceMatrix, boolean useFakeAngle) {
         this.useFakeAngle = useFakeAngle;
 	this.atomPair1 = atomPair1;
 	this.atomPair2 = atomPair2;
@@ -187,7 +189,7 @@ public class Angle  implements Updateable {
 				       "numberOfUpdates = "+numberOfUpdates+" this.numberOfUpdates = "+this.numberOfUpdates);
     }
 
-   protected void update() {
+   private void update() {
 	double dd1Dx = DISTANCE1.dDistanceDx();
 	double dd1Dy = DISTANCE1.dDistanceDy();
 	double dd1Dz = DISTANCE1.dDistanceDz();
@@ -288,8 +290,8 @@ public class Angle  implements Updateable {
      *
      *The names to numbers conversion is:
      *Three consecutive Ca's - 0
-     **/    
-    protected void assignName() {
+     **/
+    private void assignName() {
     	int resNum = atom2.residueNumber();
     	if ((atom1.name().compareTo("CA") == 0) &&                 // CA3
     		(atom2.name().compareTo("CA") == 0) && 

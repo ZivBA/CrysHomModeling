@@ -6,7 +6,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
-public class CreateFullPDBs {
+class CreateFullPDBs {
 	
 	public static void main(String[] args) throws Exception {
 		String fileName= args[0]; // The data file
@@ -86,7 +86,7 @@ public class CreateFullPDBs {
 		}
 	}
 	
-	static String printWithWith5Spaces(int num) {
+	private static String printWithWith5Spaces(int num) {
 		if (num>9999)
 			return ""+num;
 		else if (num>999)

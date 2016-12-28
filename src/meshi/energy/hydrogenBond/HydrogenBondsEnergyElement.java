@@ -32,7 +32,8 @@ public class HydrogenBondsEnergyElement extends NonBondedEnergyElement {
      */
     private double weight;  
     private double energy;
-    protected Atom oAtom, hAtom;
+    private Atom oAtom;
+	private Atom hAtom;
     private double deDxOAtom, deDyOAtom, deDzOAtom;
     private double deDxHAtom, deDyHAtom, deDzHAtom;
     private double dEdD, dEdX, dEdY, dEdZ;
@@ -41,14 +42,14 @@ public class HydrogenBondsEnergyElement extends NonBondedEnergyElement {
     
     //--------- fields needed for energy calculationm -------
 
-    public static final double ALPHA = 0.5;
+    private static final double ALPHA = 0.5;
     private static final double ONE_DIV_SIX = 1.0/6.0;
     private static final double SQR_SIX_OF_TWO = Math.pow(2,ONE_DIV_SIX);
     
     /*
      * when dis > Rmax the energy quench to zero.
      */
-    private double rMax;
+    private final double rMax;
     ///*
     // * ParameterList determine the epsilon and sigma according to the atoms type 
     // */
@@ -273,7 +274,7 @@ public class HydrogenBondsEnergyElement extends NonBondedEnergyElement {
        //return "HydrogenBondsEnergyElement";
    }
 
-    public final double distanceValue() {
+    private double distanceValue() {
         return distance.distance();
     }
     protected void setAtoms(){

@@ -166,14 +166,15 @@ public class Crosslink {
 		absPos2 = Integer.parseInt(st.nextToken());		
 		// Reading column 5.
 		String scoreString = st.nextToken(); // The high/low/bad score
-		if (scoreString.equals("High")) {
-			score = 2;
-		}
-		else if (scoreString.equals("Low")) {
-			score = 1;
-		}
-		else {
-			throw new RuntimeException("This should not happen:  " + scoreString);
+		switch (scoreString) {
+			case "High":
+				score = 2;
+				break;
+			case "Low":
+				score = 1;
+				break;
+			default:
+				throw new RuntimeException("This should not happen:  " + scoreString);
 		}
 		scoreRapp = score;
 		seq1 = "";
@@ -486,11 +487,11 @@ public class Crosslink {
 		return seq2;
 	}
 
-	public int xl_pos_in_seq1() {
+	private int xl_pos_in_seq1() {
 		return xl_pos_in_seq1;
 	}
 
-	public int xl_pos_in_seq2() {
+	private int xl_pos_in_seq2() {
 		return xl_pos_in_seq2;
 	}
 

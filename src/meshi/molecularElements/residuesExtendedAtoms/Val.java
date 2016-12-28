@@ -15,8 +15,7 @@ import meshi.molecularElements.AtomList;
  *
  **/
 public class Val extends ResidueExtendedAtoms {
-    public final Atom CG1, CG2;
-    public static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
+	private static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
  "                O\n"+
  "                |\n"+
  "       N - CA - C...n\n"+
@@ -37,13 +36,15 @@ public class Val extends ResidueExtendedAtoms {
 
 	Object[] temp = new Object[2];
 	int i=0;
-	temp[i++] = CG1 = getAtom("CG1",VCG1, atomList, this);
-	temp[i++] = CG2 = getAtom("CG2",VCG2, atomList, this);
+	    Atom CG1;
+	    temp[i++] = CG1 = getAtom("CG1",VCG1, atomList, this);
+	    Atom CG2;
+	    temp[i++] = CG2 = getAtom("CG2",VCG2, atomList, this);
 	for (i = 0; i <temp.length; i++)
 	    if (temp[i] != null) atoms.add(temp[i]);
 
-	if ((CB  != null)  && (CG1  != null)) bonds.add(CB.bond(CG1));
-	if ((CB  != null)  && (CG2  != null)) bonds.add(CB.bond(CG2));
+	if ((CB  != null)  && (CG1 != null)) bonds.add(CB.bond(CG1));
+	if ((CB  != null)  && (CG2 != null)) bonds.add(CB.bond(CG2));
     }
     public String comment() {
 	return COMMENT;

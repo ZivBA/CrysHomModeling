@@ -11,7 +11,7 @@ import meshi.util.MeshiProgram;
 
 import java.io.IOException;
 
-public class CalcAlignmentGDTs implements Residues {
+class CalcAlignmentGDTs implements Residues {
 
 	public static void main(String[] args) throws MinimizerException, LineSearchException, IOException {
 		String path = "/home/nirka/projects/directRef/"; // if not empty string must ends with '/'

@@ -3,15 +3,26 @@ package meshi.energy.hydrogenBondsPlane;
 import meshi.geometry.DisposableAngle;
 import meshi.molecularElements.Atom;
 
-public class CNPlaneAngle {
-private  final double K = 1;
-private  double MINangle, MAXangle, slope, leftLineBound, rightLineBound;
+class CNPlaneAngle {
+	private final double MINangle;
+	private final double MAXangle;
+	private final double slope;
+	private final double leftLineBound;
+	private final double rightLineBound;
 private DisposableAngle angle;
 private Atom  atom1, atom2, atom3;
 private double energy;
-protected double deDx1, deDy1, deDz1, deDx2, deDy2, deDz2, deDx3, deDy3, deDz3;
+double deDx1;
+	double deDy1;
+	double deDz1;
+	double deDx2;
+	double deDy2;
+	double deDz2;
+	double deDx3;
+	double deDy3;
+	double deDz3;
 
-protected CNPlaneAngle (double MINangle, double MAXangle, double slope) {
+CNPlaneAngle(double MINangle, double MAXangle, double slope) {
     this.MINangle = MINangle;
     this.MAXangle = MAXangle;
     this.slope = slope;
@@ -20,7 +31,7 @@ protected CNPlaneAngle (double MINangle, double MAXangle, double slope) {
 }
 
 
-protected void set(Atom atom1, Atom atom2, Atom atom3, DisposableAngle angle) {
+void set(Atom atom1, Atom atom2, Atom atom3, DisposableAngle angle) {
    this.atom1 = atom1;
    this.atom2 = atom2;
    this.atom3 = atom3;   
@@ -30,12 +41,13 @@ protected void set(Atom atom1, Atom atom2, Atom atom3, DisposableAngle angle) {
   /**
     * energy and dirivarives calculation.
     **/
- protected  double  updateEnergy() {  
+  double  updateEnergy() {
     double angleVal, ang, ang2, de;
     double a, b;
     
-   angleVal = angle.angle();   
-   if ((Math.abs(angleVal) > MAXangle) || (Math.abs(angleVal) < MINangle)){
+   angleVal = angle.angle();
+	 double k = 1;
+	 if ((Math.abs(angleVal) > MAXangle) || (Math.abs(angleVal) < MINangle)){
        energy = 0;
        de = 0;
    }
@@ -45,8 +57,8 @@ protected void set(Atom atom1, Atom atom2, Atom atom3, DisposableAngle angle) {
        b = 3./(slope*slope); 
        ang = angleVal - MINangle;
        ang2 = ang*ang;
-       energy = K*(a*ang2*ang+b*ang2);       
-       de = K*(3*a*ang2+2*b*ang);
+       energy = k *(a*ang2*ang+b*ang2);
+       de = k *(3*a*ang2+2*b*ang);
    }
    else
        if (angleVal > rightLineBound) {
@@ -54,11 +66,11 @@ protected void set(Atom atom1, Atom atom2, Atom atom3, DisposableAngle angle) {
        b = -3./(slope*slope); 
        ang = angleVal - rightLineBound;
        ang2 = ang*ang;
-       energy = K*(a*ang2*ang+b*ang2+1);       
-       de = K*(3*a*ang2+2*b*ang);
+       energy = k *(a*ang2*ang+b*ang2+1);
+       de = k *(3*a*ang2+2*b*ang);
        }
        else {
-          energy = K;
+          energy = k;
           de = 0;
        }
    
@@ -81,7 +93,7 @@ protected void set(Atom atom1, Atom atom2, Atom atom3, DisposableAngle angle) {
  protected Atom atom2() {return atom2;}   
  protected Atom atom3() {return atom3;}   
  protected double angle(){return angle.angle();}
- protected double energy(){return energy;}
+ double energy(){return energy;}
    
  public String toString() {
        return "\nCN AngleElement:\n"+atom1+ "\n"+atom2+ "\n"+atom3 +

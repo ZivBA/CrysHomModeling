@@ -1,5 +1,6 @@
 package meshi.energy.sideChainModelingElectrostatics;
 
+import meshi.energy.CoulombElectrostatics.ChargeParametersList;
 import meshi.energy.NonBondedEnergyElement;
 import meshi.geometry.Distance;
 import meshi.geometry.DistanceMatrix;
@@ -13,19 +14,21 @@ import meshi.molecularElements.Atom;
 public  class CoulombElectrostaticEnergyElement extends NonBondedEnergyElement {
 	
     public static final double MAX_ENERGY = 100;
-    public static final double ALPHA = 0.5;
-    protected DistanceMatrix distanceMatrix;
-    protected Atom atom1, atom2;
-    protected int atom1Number, atom2Number;
-    protected double dielectricConstant, q1, q2 ;//q1 = charge of atom # 1, etc.
+    private static final double ALPHA = 0.5;
+    private DistanceMatrix distanceMatrix;
+    private Atom atom1;
+	private Atom atom2;
+    private int atom1Number;
+	private int atom2Number;
+    private double dielectricConstant;
+	private double q1;
+	private double q2 ;//q1 = charge of atom # 1, etc.
     protected boolean frozen;
-    protected double energy; 
-    protected double weight; 
-    protected double rMax; // The maximum distance between two atoms
-    //that will be considered when calculating the electrostatics energy. 
-    protected double contact;
-    private final int FIRST = 0,SECOND=1;
-    protected ChargeParametersList parametersList; // Holds all the atoms' charges data.
+    private double energy;
+    private double weight;
+    private double rMax; // The maximum distance between two atoms
+	private final int FIRST = 0,SECOND=1;
+    private ChargeParametersList parametersList; // Holds all the atoms' charges data.
 
     /**
      * default constructor
@@ -41,15 +44,15 @@ public  class CoulombElectrostaticEnergyElement extends NonBondedEnergyElement {
      * @param weight
      * @param dielectricConstant
      **/
-    public  CoulombElectrostaticEnergyElement(ChargeParametersList parametersList, DistanceMatrix distanceMatrix, 
-                                              double weight, double dielectricConstant) {
-        this.parametersList = parametersList;
-        this.weight = weight;
-        this.distanceMatrix = distanceMatrix;
-        this.dielectricConstant = dielectricConstant;
-        rMax = DistanceMatrix.rMax();
-    }
-	
+//    public  CoulombElectrostaticEnergyElement(ChargeParametersList parametersList, DistanceMatrix distanceMatrix,
+//                                              double weight, double dielectricConstant) {
+//        this.parametersList = parametersList;
+//        this.weight = weight;
+//        this.distanceMatrix = distanceMatrix;
+//        this.dielectricConstant = dielectricConstant;
+//        rMax = DistanceMatrix.rMax();
+//    }
+//
     /**
      * setAtoms
      **/
@@ -90,8 +93,8 @@ public  class CoulombElectrostaticEnergyElement extends NonBondedEnergyElement {
     /**
      * Updates the energy
      * @return double - energy*weight
-     **/	
-    public double updateEnergy(){
+     **/
+    private double updateEnergy(){
         double EL;	
         double rMaxMinusDis;
 
@@ -112,7 +115,8 @@ public  class CoulombElectrostaticEnergyElement extends NonBondedEnergyElement {
             distance = distanceMatrix.distance(atom1Number, atom2Number);
             dis = distance.distance();
             rMaxMinusDis = rMax - dis;
-            if (rMaxMinusDis <= 0) {
+	        double contact;
+	        if (rMaxMinusDis <= 0) {
                 energy = contact =  0;
                 EL =0;
             }
@@ -138,7 +142,7 @@ public  class CoulombElectrostaticEnergyElement extends NonBondedEnergyElement {
             double rMaxMinusDisSquare = rMaxMinusDis*rMaxMinusDis;
             double rMaxMinusDisSquarePlusAlpha = rMaxMinusDisSquare+ALPHA;
             contact = rMaxMinusDisSquare/rMaxMinusDisSquarePlusAlpha;
-            energy = EL*contact;
+            energy = EL* contact;
 				
         }
         return energy;
@@ -158,7 +162,7 @@ public  class CoulombElectrostaticEnergyElement extends NonBondedEnergyElement {
         Distance distance = distanceMatrix.distance(atom1Number, atom2Number);
         double dis = distance.distance();
         return ("ElectrostaticEnergyElement q1 = "+q1+" q2 = "+ q2 +" dielectricConstant = "+dielectricConstant+" Distance = "+
-                dFormatSrt.f(dis)+" rMax = "+rMax+"\n"+atom1.verbose(1)+"\n"+atom2.verbose(1));
+                dFormatSrt.f(dis)+" rMax = "+rMax+"\n"+atom1.verbose()+"\n"+atom2.verbose());
     }
 
 }

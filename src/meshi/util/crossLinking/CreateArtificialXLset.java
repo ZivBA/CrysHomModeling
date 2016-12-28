@@ -2,18 +2,18 @@ package meshi.util.crossLinking;
 
 import meshi.molecularElements.AtomList;
 
-public class CreateArtificialXLset {
+class CreateArtificialXLset {
 
 	private AtomList atomList = null;
 
 	/**
 	 * The purpose of this class is to create a cross-link set of any size from a certain complex.
 	 */
-	public CreateArtificialXLset(AtomList atomList) {
+	private CreateArtificialXLset(AtomList atomList) {
 		this.atomList = atomList.filter(new AtomList.KCA_Filter());
 	}
 	
-	public String createSet(int setSize , double maxXLdistance) {
+	private String createSet(int setSize, double maxXLdistance) {
 		String outString = "";
 		int maxNumberOfTries = 10;
 		for (int soFarFound = 0; soFarFound<setSize ; ) {

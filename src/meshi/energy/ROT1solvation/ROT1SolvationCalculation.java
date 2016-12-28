@@ -13,7 +13,7 @@ import meshi.energy.ROT1solvation.parameters.AbstractROT1Parameters;
  * @author Nir
  *
  */
-public class ROT1SolvationCalculation {
+class ROT1SolvationCalculation {
 	
 	private double[][] solvArray = null;
 	

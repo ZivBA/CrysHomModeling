@@ -35,7 +35,7 @@ public class CAsolvateCreator extends EnergyCreator implements KeyWords {
 	this.MaxCANeighbors = MaxCANeighbors;
     }
 
-    public CAsolvateCreator(double weight) {
+    private CAsolvateCreator(double weight) {
 	super(weight);
     }
     

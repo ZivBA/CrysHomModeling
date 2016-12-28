@@ -16,42 +16,41 @@ import meshi.molecularElements.AtomList;
 public class HydrogenBondsPlaneEnergyElement extends NonBondedEnergyElement {
 
     //---------------------------------- data filds -----------------------------------
-
-    private DistanceMatrix distanceMatrix;
-
-    private double weight;
+	
+	private final double weight;
     private double energy;
     private double energyDisC1N2, energyDisN1C2, energyTorsion;
-    protected Atom C1, N1, C2, N2;
-    protected CNtwoDistances twoDis;
-
-    protected double force = -5;
+    private Atom C1;
+	private Atom N1;
+	private Atom C2;
+	private Atom N2;
+	
+	private final double force = -5;
 
    //---------fields needed for DistanceTerm----------------------
-    protected static double MINdis = -10, MAXdis, slope = 1;
-    protected final double DEFAULT_MAX_DIS = 5.5;
-    protected Distance distanceN1C2, distanceC1N2;
-    protected int swapFactorN1C2, swapFactorC1N2;
+    private static final double MINdis = -10;
+	private static final double slope = 1;
+	private Distance distanceN1C2;
+	private Distance distanceC1N2;
+    private int swapFactorN1C2;
+	private int swapFactorC1N2;
     private CNPlaneDistance distanceTermC1N2, distanceTermN1C2;
-    //---------fields needed for Angle Term--------------------------
-    private double maxAngleOfDistortion;
-    private double slopeAngle;
-
-    private CNPlaneTorsion torsionTerm;
+	
+	private CNPlaneTorsion torsionTerm;
 
 
     public HydrogenBondsPlaneEnergyElement(DistanceMatrix distanceMatrix,
                                            double weight, double maxAngleOfPlainDistortion) {
-    	if (DistanceMatrix.rMax()< DEFAULT_MAX_DIS)
+	    double DEFAULT_MAX_DIS = 5.5;
+	    double MAXdis;
+	    if (DistanceMatrix.rMax()< DEFAULT_MAX_DIS)
         MAXdis = DistanceMatrix.rMax();
         else MAXdis = DEFAULT_MAX_DIS;
         this.weight = weight;
-        this.maxAngleOfDistortion = maxAngleOfPlainDistortion;
-        slopeAngle = 1.57-maxAngleOfPlainDistortion;
+	    double slopeAngle = 1.57 - maxAngleOfPlainDistortion;
         if (slopeAngle < 0)
             throw new RuntimeException("MaxAngleOfDistortion for HydrogenBondsPlane should be less than 90");
-        this.distanceMatrix = distanceMatrix;
-        torsionTerm = new CNPlaneTorsion(distanceMatrix, this.maxAngleOfDistortion, slopeAngle);
+	    torsionTerm = new CNPlaneTorsion(distanceMatrix, maxAngleOfPlainDistortion, slopeAngle);
         distanceTermC1N2 = new  CNPlaneDistance(MINdis, MAXdis, slope);
         distanceTermN1C2 = new  CNPlaneDistance(MINdis, MAXdis, slope);
     }
@@ -60,7 +59,7 @@ public class HydrogenBondsPlaneEnergyElement extends NonBondedEnergyElement {
      * @parm obj should be Distance
      */
     public void set(Object obj){
-        this.twoDis = (CNtwoDistances)obj;
+	    CNtwoDistances twoDis = (CNtwoDistances) obj;
         distanceN1C2 = twoDis.distance1();
         distanceC1N2 = twoDis.distance2();
      Atom a1, a2, a3, a4;
@@ -124,14 +123,14 @@ public class HydrogenBondsPlaneEnergyElement extends NonBondedEnergyElement {
    /**
     * energy and dirivarives calculation.
     **/
-   public double updateEnergy() {
+   private double updateEnergy() {
        energyDisC1N2 = distanceTermC1N2.updateEnergy();
        energyDisN1C2 = distanceTermN1C2.updateEnergy();
        energyTorsion = torsionTerm.updateEnergy();
        return energyDisC1N2*energyDisN1C2*energyTorsion;
    }
 
-    public void updateAtoms(){
+    private void updateAtoms(){
         double koef = -force*weight;
        if (! N1.frozen()) {
             N1.addToFx(koef* energyDisC1N2*

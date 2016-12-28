@@ -24,20 +24,16 @@ import meshi.util.CommandList;
 import meshi.util.MeshiProgram;
 
 
-public class SimplestMinimizeProtein extends MeshiProgram implements Residues, AtomTypes {
+class SimplestMinimizeProtein extends MeshiProgram implements Residues, AtomTypes {
     private static CommandList commands;
-   
-    private static String commandsFileName = null;
- 
-    private static String modelFileName = null;  
-
-    private static Protein protein;
-
- 
-    public static void main(String[] args) throws MinimizerException, LineSearchException {
-	init(args); 
-
-	protein = new ExtendedAtomsProtein(modelFileName,DO_NOT_ADD_ATOMS);
+	
+	private static String modelFileName = null;
+	
+	
+	public static void main(String[] args) throws MinimizerException, LineSearchException {
+	init(args);
+		
+		Protein protein = new ExtendedAtomsProtein(modelFileName, DO_NOT_ADD_ATOMS);
 	protein.defrost();
 		
 	DistanceMatrix distanceMatrix = new DistanceMatrix(protein.atoms(), 5.5,  2.0,  4);
@@ -80,7 +76,7 @@ public class SimplestMinimizeProtein extends MeshiProgram implements Residues, A
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -96,10 +92,10 @@ public class SimplestMinimizeProtein extends MeshiProgram implements Residues, A
 			       "Usage java -Xmx300m SimplestMinimizeProtein <commands file name> <pdb file name> \n"+
 			       "                    ******************\n");
 			      
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-	commandsFileName = getOrderedArgument(args);
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+	    String commandsFileName = getOrderedArgument(args);
 	if (commandsFileName == null) throw new RuntimeException(errorMessage);
-	System.out.println("# commandsFileName = "+commandsFileName);
+	System.out.println("# commandsFileName = "+ commandsFileName);
 
 	commands = new CommandList(commandsFileName);
 	

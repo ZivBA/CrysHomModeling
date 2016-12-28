@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
 
 
 public class EVenergyParametersList extends ParametersList {
-	private double frac;
+	private final double frac;
 
     public EVenergyParametersList(String parametersFileName) {this(parametersFileName,1.0);}
 
@@ -56,12 +56,12 @@ public class EVenergyParametersList extends ParametersList {
 			   parametersFileName);
 			   throw e;
 		}
-		
-		for (int c=0 ; c<tmpAr.length ; c++)
-		   add(tmpAr[c]);
+	
+	    for (EVenergyParameters aTmpAr : tmpAr)
+		    add(aTmpAr);
 	}
 
-    public Parameters createParameters(String line) {
+    protected Parameters createParameters(String line) {
 	return new EVenergyParameters(new StringTokenizer(line) , frac);
     }
     

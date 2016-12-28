@@ -15,14 +15,14 @@ public abstract class SmoothRotamerLibraryEnergyElement
 	extends EnergyElement
 	implements Residues, CompositeTorsionsDefinitions {
 
-	protected ResidueTorsions residueTorsions;
-	protected SmoothRotamerLibraryParameters srlp;
-	protected double weight;
+	final ResidueTorsions residueTorsions;
+	final SmoothRotamerLibraryParameters srlp;
+	final double weight;
 
-	public SmoothRotamerLibraryEnergyElement(
+	SmoothRotamerLibraryEnergyElement(
 			ResidueTorsions residueTorsions,
 			SmoothRotamerLibraryParameters srlp,
-			double weight ) {
+			double weight) {
 		this.residueTorsions = residueTorsions;
 		this.srlp = srlp;
 		this.weight = weight;
@@ -40,15 +40,7 @@ public abstract class SmoothRotamerLibraryEnergyElement
 	}
 
 	/** Reports energy values. Currently switched off. */
-	protected void monitor( double energy, double ... derivs ) {
-		if( false ) {
-			System.out.println( "[[BEGIN]] SmoothRotamerLibraryEnergy monitor information" );
-			System.out.println( residueTorsions );
-			System.out.println( "total energy = " + energy );
-			for( int i=0; i<derivs.length; i++ )
-				System.out.println( "deriv #" + (i+1) + " = " + derivs[i] );
-			System.out.println( "[[END]] SmoothRotamerLibraryEnergy monitor information" );
-		}
+	void monitor() {
 	}
 	
 	/** verifies residue type is a legal residue types for class. */

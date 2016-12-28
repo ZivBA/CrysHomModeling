@@ -1,10 +1,11 @@
 package meshi.applications.prediction.analysis;
 import java.util.Formatter;
 
-public class ListData {
-    public final double avg, std;
-    public final int number;
-    public final String comment;
+class ListData {
+    private final double avg;
+	private final double std;
+    private final int number;
+    private final String comment;
     public ListData(double avg, double std, int number, String comment) {
 	this.avg = avg;
 	this.std = std;

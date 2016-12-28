@@ -24,7 +24,7 @@ public class TorsionValEnergy extends SimpleEnergyTerm {
  
 
     public EnergyElement createElement(Object baseElement, Parameters parameters) {
-	return new TorsionValEnergyElement(((Torsion)baseElement), parameters, weight);
+	return new TorsionValEnergyElement(((Torsion)baseElement), weight);
     }
 
 

@@ -5,7 +5,7 @@ public class Fint extends Format {
     public static final Fint STANDARD = new Fint(12,-1);
     public static final Fint SHORT = new Fint(8,-1);
     public static final Fint SHORTER = new Fint(7,-1);
-    public Fint(int field, int indent) {
+    private Fint(int field, int indent) {
 	super(field, indent);
     }
     public String f(Object value) {

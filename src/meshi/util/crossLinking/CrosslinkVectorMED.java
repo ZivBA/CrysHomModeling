@@ -2,13 +2,13 @@ package meshi.util.crossLinking;
 
 import meshi.molecularElements.AtomList;
 
-public class CrosslinkVectorMED extends CrosslinkVector {
+class CrosslinkVectorMED extends CrosslinkVector {
 
-	public CrosslinkVectorMED() {
+	private CrosslinkVectorMED() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public CrosslinkVectorMED(String filename , int fileType) {
+	private CrosslinkVectorMED(String filename, int fileType) {
 		super(filename ,  fileType);
 		// TODO Auto-generated constructor stub
 	}

@@ -10,8 +10,8 @@ public class CompositePropensity2DEnergyElement
 	implements Residues, CompositeTorsionsDefinitions {
 
 	public final ResidueTorsions residueTorsions;
-	public final CompositePropensity2DParameters cpp;
-	protected double weight;
+	private final CompositePropensity2DParameters cpp;
+	private final double weight;
 
 	public CompositePropensity2DEnergyElement(
 			ResidueTorsions residueTorsions,

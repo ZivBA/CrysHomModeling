@@ -36,29 +36,28 @@ public abstract class AbstractHydrogenBondList implements Updateable {
 	// Fields:
 	// -------
 	protected int maxAtomNum;
-	protected int atomListSize;
-    protected DistanceMatrix dm=null; 
+	protected DistanceMatrix dm=null;
     protected AtomList atomList=null;
 	private DistanceList newToNonBonded; // A pointer to this list is added to the DistanceMatrix's list of lists (see line 74). This way, only new distances are recognized. 
-    protected Vector<AbstractHydrogenBond> bondList;
+    private Vector<AbstractHydrogenBond> bondList;
     protected int[] lut; 	// The look-up table (lut) converts the atom internal number (field of Atom) to its index in the atom list given to the constructor.      
-    protected AbstractHydrogenBond[][] lutHB; // lutHB[i] is an array of pointers to all the hydrogen bond objects where atom number i is either their donor or acceptor. It is null for non-polar atoms, or atoms not participating in a hydrogen bond.
+    private AbstractHydrogenBond[][] lutHB; // lutHB[i] is an array of pointers to all the hydrogen bond objects where atom number i is either their donor or acceptor. It is null for non-polar atoms, or atoms not participating in a hydrogen bond.
     private int numberOfUpdates = 0; // for the Updateable interface
     private int refreshVectorEvery=200;
 
 
-    public AbstractHydrogenBondList() {}
+    protected AbstractHydrogenBondList() {}
 
-    public AbstractHydrogenBondList(DistanceMatrix dm, AtomList atomList,int refreshVectorEvery) {
+    protected AbstractHydrogenBondList(DistanceMatrix dm, AtomList atomList, int refreshVectorEvery) {
     	this.dm = dm;
     	this.atomList = atomList;
     	this.refreshVectorEvery = refreshVectorEvery;
-    	bondList = new Vector<AbstractHydrogenBond>();
+    	bondList = new Vector<>();
 
 		// Building the look-up tables
 		maxAtomNum=-1;
-		atomListSize = atomList.size();
-		for (int c=0; c<atomListSize ; c++) {
+	    int atomListSize = atomList.size();
+		for (int c = 0; c< atomListSize; c++) {
 		    if (atomList.atomAt(c).number() > maxAtomNum)
 				maxAtomNum = atomList.atomAt(c).number();
 		}
@@ -67,7 +66,7 @@ public abstract class AbstractHydrogenBondList implements Updateable {
 		for (int c=0; c<maxAtomNum ; c++) {
 		    lut[c] = -1;
 		}
-		for (int c=0; c<atomListSize ; c++) {
+		for (int c = 0; c< atomListSize; c++) {
 		    lut[atomList.atomAt(c).number()] = c;
 		}		
 		
@@ -84,9 +83,9 @@ public abstract class AbstractHydrogenBondList implements Updateable {
     public void update(int updateNumber) throws UpdateableException {
         if (updateNumber == numberOfUpdates+1) {
         	if ((updateNumber % refreshVectorEvery == 0) && (updateNumber>0)) 
-        		update(true,updateNumber);
+        		update(true);
         	else
-        		update(false,updateNumber);
+        		update(false);
             this.numberOfUpdates++;
         }
         else if (updateNumber != this.numberOfUpdates)
@@ -98,7 +97,7 @@ public abstract class AbstractHydrogenBondList implements Updateable {
     /** 
      * The 'toRefreshVector' parameter determines if broken H-bonds are removed from the vector.
      **/
-    protected void update(boolean toRefreshVector, int updateNumber) throws UpdateableException {
+    protected void update(boolean toRefreshVector) throws UpdateableException {
     	addNewBondsToList();
         for(AbstractHydrogenBond hb : bondList)
             hb.updateHBvalueAndDerivatives();
@@ -141,7 +140,7 @@ public abstract class AbstractHydrogenBondList implements Updateable {
 	 * so large, they no longer appears in the non-bonded list of the distance matrix.
 	 **/ 
 	private void removeBrokenHB(){
-		Vector<AbstractHydrogenBond> tmpVector = new Vector<AbstractHydrogenBond>();
+		Vector<AbstractHydrogenBond> tmpVector = new Vector<>();
 		AbstractHydrogenBond[][] tmpLutHB = new AbstractHydrogenBond[lutHB.length][];
 		AbstractHydrogenBond hb;
 		DistanceList dislist = dm.nonBondedList();
@@ -189,16 +188,15 @@ public abstract class AbstractHydrogenBondList implements Updateable {
 		}
 		else {
 			AbstractHydrogenBond[] tmp = new AbstractHydrogenBond[vec[atom.number()].length+1];
-			for (int c=0 ; c<vec[atom.number()].length ; c++)
-				tmp[c] = vec[atom.number()][c];
+			System.arraycopy(vec[atom.number()], 0, tmp, 0, vec[atom.number()].length);
 			tmp[vec[atom.number()].length] = hb;
 			vec[atom.number()] = tmp;	
 		}
 	}
 
 	public void print() {
-		for (int c=0 ; c<bondList.size() ; c++) {
-			System.out.println(bondList.get(c));
+		for (AbstractHydrogenBond aBondList : bondList) {
+			System.out.println(aBondList);
 		}
 	}
 

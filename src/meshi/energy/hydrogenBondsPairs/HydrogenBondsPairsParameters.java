@@ -16,7 +16,7 @@ import java.util.StringTokenizer;
  *  To reduce the number of possible sextuplets, |ai-di| is bounded by 6, and|ai-dk| is bounded by 10.
 
  **/
-public class HydrogenBondsPairsParameters extends Parameters implements Comparable {
+class HydrogenBondsPairsParameters extends Parameters implements Comparable {
 
     //------------------------------------ data ------------------------------------
     /**

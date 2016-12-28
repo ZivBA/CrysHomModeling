@@ -23,14 +23,8 @@ public class DistanceConstrainParameters extends Parameters implements Comparabl
      * The force constant for this type of distanceConstrain.
      **/ 
     public final double force;
- 
-    /**
-     * The square of the force constant.
-     * Not a real parameter but saves time.
-     **/ 
-    public final double force2;
-
-    /**
+	
+	/**
      * Residue name of the first atom.
      **/
     public final String residue1Name;
@@ -65,7 +59,7 @@ public class DistanceConstrainParameters extends Parameters implements Comparabl
 	this(new StringTokenizer(line));
     }
     
-    public DistanceConstrainParameters(StringTokenizer line) {
+    private DistanceConstrainParameters(StringTokenizer line) {
 	this(line.nextToken(),             // residue1 name
 	     toInt(line.nextToken()),      // esidue1 number
 	     line.nextToken(),             // atom1 name
@@ -91,7 +85,11 @@ public class DistanceConstrainParameters extends Parameters implements Comparabl
 	this.target = target;
 	this.tolerance = tolerance;
 	this.force = force;
-	force2 = 2.0 * force;
+	/*
+      The square of the force constant.
+      Not a real parameter but saves time.
+     */
+	    double force2 = 2.0 * force;
     }
 
     private  class isA implements Filter {

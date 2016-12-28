@@ -6,7 +6,7 @@ import java.util.Vector;
  * In silico digestion of a single polypeptide
  * @author Nir
  **/
-public class Digestion {
+class Digestion {
 	
 	private String sequence = null;
 	private Peptidase peptidase = null;
@@ -14,7 +14,7 @@ public class Digestion {
 	private int misCleavages = -1;
 	private int minLength = -1;
 
-	public Digestion(FastaSeq fasta, Peptidase peptidase, int misCleavages, int minLength) {
+	private Digestion(FastaSeq fasta, Peptidase peptidase, int misCleavages, int minLength) {
 		sequence = fasta.seq();
 		this.peptidase = peptidase;
 		this.misCleavages = misCleavages;
@@ -23,7 +23,7 @@ public class Digestion {
 	}
 	
 	private int[][] digest() {
-		Vector<int[]> peps = new Vector<int[]>();
+		Vector<int[]> peps = new Vector<>();
 		int startInd = 1;
 		int lastInd = 1;
 		do {
@@ -63,23 +63,22 @@ public class Digestion {
 
 	public String toString() {
 		String out = "";
-		for (int c=0 ; c<peptides.length ; c++)
-			out += ("'"+ sequence.substring(peptides[c][0]-1,peptides[c][1]) + 
+		for (int[] peptide : peptides)
+			out += ("'" + sequence.substring(peptide[0] - 1, peptide[1]) +
 					"',...\n");
 		return out;
 	}
 
 	public String toString(int pepInd) {
-		String out = (peptides[pepInd][0] + "-" + sequence.substring(peptides[pepInd][0]-1,peptides[pepInd][1]) + 
+		return (peptides[pepInd][0] + "-" + sequence.substring(peptides[pepInd][0]-1,peptides[pepInd][1]) +
 				"-" + peptides[pepInd][1] + "\n");
-		return out;
 	}
 	
 	public int[] getLimits(int pepInd) {
 		return peptides[pepInd];
 	}
 	
-	public String getSeq(int pepInd) {
+	private String getSeq(int pepInd) {
 		return sequence.substring(peptides[pepInd][0]-1,peptides[pepInd][1]);
 	}
 	

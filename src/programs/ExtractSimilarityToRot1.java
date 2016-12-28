@@ -16,15 +16,15 @@ import meshi.util.rotamericTools.RotamericTools;
 
 import java.text.DecimalFormat;
 
-public class ExtractSimilarityToRot1 extends MeshiProgram implements Residues, AtomTypes {
+class ExtractSimilarityToRot1 extends MeshiProgram implements Residues, AtomTypes {
 
 	// Parameters: 
 	// ------------
 	// The structure database:
-	static String listOfStructures = "C:/Users/Nir/Loop_Building_Project/listPISCES.txt";
+	private static final String listOfStructures = "C:/Users/Nir/Loop_Building_Project/listPISCES.txt";
 
 	public static void main(String[] args){
-		init(args); 
+		init();
 		
 		// Dunbrack Lib
 		CommandList commands = new CommandList("commands");
@@ -112,7 +112,7 @@ public class ExtractSimilarityToRot1 extends MeshiProgram implements Residues, A
 
 
 
-	protected static void init(String[] args) {
+	private static void init() {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 

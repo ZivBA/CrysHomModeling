@@ -28,20 +28,20 @@ public class HydrogenBondDahiyatList extends AbstractHydrogenBondList implements
 	 * This array stores pointers to the base atoms of every non-hydrogen polar atom in the protein. 
 	 * The indexation is through the atom number (field)   
 	 **/
-    protected Atom[] baseAtom; 
+	private Atom[] baseAtom;
 	/**
 	 * Since currently the hydrogen bond list is only used by the solvate energy, we use the parameters 
 	 * for the hydrogen bond from this class. Later, this can be changed.   
 	 **/
-    protected SolvateParametersList parameters;
+	private SolvateParametersList parameters;
     
     /**
      * In this class are the angle parameters for the HB
      **/
-    protected DahiyatImplementationConstants angleParameters = new DahiyatHighAccuracyAngleParamaters();
+    DahiyatImplementationConstants angleParameters = new DahiyatHighAccuracyAngleParamaters();
 
 
-    public HydrogenBondDahiyatList() {
+    HydrogenBondDahiyatList() {
     	throw new RuntimeException("\nERROR: without parameters the hydrogen bonds cannot be formed.\n");    	
     }
 
@@ -49,7 +49,7 @@ public class HydrogenBondDahiyatList extends AbstractHydrogenBondList implements
     	super(dm, atomList, 30 /* DEFAULT_REFRESH_VECTOR_RATE */);
     	this.parameters = parameters;
     	try {
-    		update(false,0);
+    		update(false);
     	}
     	catch (Exception e) {
     		System.out.print("\nAn error occur while creating the Dahiyat hydrogen bond list.\n\n");

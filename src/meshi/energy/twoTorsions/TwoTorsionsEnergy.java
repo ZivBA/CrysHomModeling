@@ -22,16 +22,14 @@ import meshi.util.filters.Filter;
  
 public class TwoTorsionsEnergy extends SimpleEnergyTerm {
     public static final Filter isTorsionPair = new IsTorsionPair();
-    protected TorsionPairList torsionPairList;
-    protected DistanceMatrix distanceMatrix;
-
-    public TwoTorsionsEnergy() {}
+	
+	public TwoTorsionsEnergy() {}
 
     public TwoTorsionsEnergy(TorsionPairList torsionPairList, DistanceMatrix distanceMatrix,
 		       TwoTorsionsParametersList parametersList, double weight, String comment) {
 	super(toArray(distanceMatrix, torsionPairList), parametersList, weight);
-	this.torsionPairList = torsionPairList;
-	this.distanceMatrix = distanceMatrix;
+	    TorsionPairList torsionPairList1 = torsionPairList;
+	    DistanceMatrix distanceMatrix1 = distanceMatrix;
 	createElementsList(torsionPairList);
 	this.comment = comment;
     }

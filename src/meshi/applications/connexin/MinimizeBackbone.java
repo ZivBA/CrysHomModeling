@@ -28,7 +28,7 @@ import meshi.util.file.File2StringArray;
 import meshi.util.file.MeshiWriter;
 import programs.PutHydrogens;
 
-public class MinimizeBackbone extends MeshiProgram implements Residues, AtomTypes {
+class MinimizeBackbone extends MeshiProgram implements Residues, AtomTypes {
 
     private static CommandList commands; 
 
@@ -43,67 +43,66 @@ public class MinimizeBackbone extends MeshiProgram implements Residues, AtomType
 		
 		
 		String[] pdbs = File2StringArray.f2a("C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\List_of_PDBs.txt");
-		for (int ccc=0 ; ccc<pdbs.length ; ccc++) {
-			System.out.println("Doing: " + pdbs[ccc]);
-			modelFileName = "C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\PDBs\\"+pdbs[ccc]+".pdb";
-			referenceFileName = "C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\PDBs\\"+pdbs[ccc]+".pdb";
-			outFileName = "C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\PDBs\\"+pdbs[ccc]+".MESHI.pdb";
-
-		Protein query = null;
-		Protein reference = null;
-		DistanceMatrix dm = null;
-		
-		// Loading protein and reference
-		Atom.resetNumberOfAtoms();
-		AtomList modelAtoms = (new AtomList(modelFileName)).backbone();
-		modelAtoms.multiChain2meshi();
-		Atom.resetNumberOfAtoms();
-		query = new Protein(modelAtoms, new ResidueExtendedAtoms(ADD_HYDROGENS_AND_FREEZE));
-		PutHydrogens.adjustHydrogens(commands, query);
-		query.defrost();
-		AtomList refAtoms = (new AtomList(referenceFileName)).backbone();
-		Atom.resetNumberOfAtoms();
-		refAtoms.multiChain2meshi();
-		Atom.resetNumberOfAtoms();
-		reference = new Protein(refAtoms, new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
-		System.out.println("999999 0 1111 " + reference.atoms().CAFilter().getRms(getMatchingAtoms(reference,query.atoms()).CAFilter()) + 
-				" " + GDTcalculator.gdt(reference.atoms(),query.atoms(),0.5,1.0,2.0,4.0) +	
-				" " + GDTcalculator.gdt(reference.atoms(),query.atoms(),1.0,2.0,4.0,8.0) + " -1 " +
-				getPercentageOfMatchingAtoms(reference.atoms(), query.atoms()));
-		
-		// Minimizing 
-		EnergyCreator[] energyCreators = {  
-				new BondCreator(1.0),
-				new AngleCreator(1.0),
-				new PlaneCreator(10.0),
-				new OutOfPlaneCreator(1.0),
-				new LennardJonesCreator(0.4),
-				new SimpleHydrogenBond_Dahiyat_HighAccuracy_BBonly_Creator(1.0),
-				new RamachandranCreator(1.0),
-				new TetherCreator(0.3, new AtomList.ClassCAFilter())
-		};	
-		dm = new DistanceMatrix(query.atoms(), 5.5, 2.0, 4);
-		TotalEnergy energy = new TotalEnergy(query, dm, energyCreators, commands);
-		Minimizer minimizer = new LBFGS(energy, 0.05, 10000 , 100);
-		System.out.println(minimizer.minimize());
-		System.out.println("999999 0 3333 " + reference.atoms().CAFilter().getRms(getMatchingAtoms(reference,query.atoms()).CAFilter()) + 
-				" " + GDTcalculator.gdt(reference.atoms(),query.atoms(),0.5,1.0,2.0,4.0) +	
-				" " + GDTcalculator.gdt(reference.atoms(),query.atoms(),1.0,2.0,4.0,8.0) + " -1 " +
-				getPercentageOfMatchingAtoms(reference.atoms(), query.atoms()));
-		
-		// Writing to file
-		Atom.resetNumberOfAtoms();
-		AtomList outList = query.atoms().duplicate();
-		Atom.resetNumberOfAtoms();
-		outList.meshi2multiChain();
-		try {
-			outList.filter(new AtomList.NonHydrogen()).print(new MeshiWriter(outFileName));
-		}
-		catch (Exception e) {
-			System.out.print("\nThere was a problem writing the output:\n" + e + "\n\nContinueing...\n\n");
-		}
-		
-		
+		for (String pdb : pdbs) {
+			System.out.println("Doing: " + pdb);
+			modelFileName = "C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\PDBs\\" + pdb + ".pdb";
+			referenceFileName = "C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\PDBs\\" + pdb + ".pdb";
+			outFileName = "C:\\Users\\Nir\\Check_R_Val\\Large_Scale_Alignment\\PDBs\\" + pdb + ".MESHI.pdb";
+			
+			Protein query = null;
+			Protein reference = null;
+			DistanceMatrix dm = null;
+			
+			// Loading protein and reference
+			Atom.resetNumberOfAtoms();
+			AtomList modelAtoms = (new AtomList(modelFileName)).backbone();
+			modelAtoms.multiChain2meshi();
+			Atom.resetNumberOfAtoms();
+			query = new Protein(modelAtoms, new ResidueExtendedAtoms(ADD_HYDROGENS_AND_FREEZE));
+			PutHydrogens.adjustHydrogens(commands, query);
+			query.defrost();
+			AtomList refAtoms = (new AtomList(referenceFileName)).backbone();
+			Atom.resetNumberOfAtoms();
+			refAtoms.multiChain2meshi();
+			Atom.resetNumberOfAtoms();
+			reference = new Protein(refAtoms, new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
+			System.out.println("999999 0 1111 " + reference.atoms().CAFilter().getRms(getMatchingAtoms(reference, query.atoms()).CAFilter()) +
+					" " + GDTcalculator.gdt(reference.atoms(), query.atoms(), 0.5, 1.0, 2.0, 4.0) +
+					" " + GDTcalculator.gdt(reference.atoms(), query.atoms(), 1.0, 2.0, 4.0, 8.0) + " -1 " +
+					getPercentageOfMatchingAtoms(reference.atoms(), query.atoms()));
+			
+			// Minimizing
+			EnergyCreator[] energyCreators = {
+					new BondCreator(1.0),
+					new AngleCreator(1.0),
+					new PlaneCreator(10.0),
+					new OutOfPlaneCreator(1.0),
+					new LennardJonesCreator(0.4),
+					new SimpleHydrogenBond_Dahiyat_HighAccuracy_BBonly_Creator(1.0),
+					new RamachandranCreator(1.0),
+					new TetherCreator(0.3, new AtomList.ClassCAFilter())
+			};
+			dm = new DistanceMatrix(query.atoms(), 5.5, 2.0, 4);
+			TotalEnergy energy = new TotalEnergy(query, dm, energyCreators, commands);
+			Minimizer minimizer = new LBFGS(energy, 0.05, 10000, 100);
+			System.out.println(minimizer.minimize());
+			System.out.println("999999 0 3333 " + reference.atoms().CAFilter().getRms(getMatchingAtoms(reference, query.atoms()).CAFilter()) +
+					" " + GDTcalculator.gdt(reference.atoms(), query.atoms(), 0.5, 1.0, 2.0, 4.0) +
+					" " + GDTcalculator.gdt(reference.atoms(), query.atoms(), 1.0, 2.0, 4.0, 8.0) + " -1 " +
+					getPercentageOfMatchingAtoms(reference.atoms(), query.atoms()));
+			
+			// Writing to file
+			Atom.resetNumberOfAtoms();
+			AtomList outList = query.atoms().duplicate();
+			Atom.resetNumberOfAtoms();
+			outList.meshi2multiChain();
+			try {
+				outList.filter(new AtomList.NonHydrogen()).print(new MeshiWriter(outFileName));
+			} catch (Exception e) {
+				System.out.print("\nThere was a problem writing the output:\n" + e + "\n\nContinueing...\n\n");
+			}
+			
+			
 		}
 	}
 
@@ -146,7 +145,7 @@ public class MinimizeBackbone extends MeshiProgram implements Residues, AtomType
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -162,7 +161,7 @@ public class MinimizeBackbone extends MeshiProgram implements Residues, AtomType
 				"Usage java -Xmx600m MinimizeBackbone <commands file name> <corpus filename> <alignment file name> <model file> <output file>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);

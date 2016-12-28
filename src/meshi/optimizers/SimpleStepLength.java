@@ -22,15 +22,15 @@ import meshi.energy.TotalEnergy;
 
 public class SimpleStepLength extends LineSearch {
 
-    private double stepSize,stepSizeReduction,stepSizeExpansion;
-    private double old_e,new_e;
-    private double[][] coordinates;	
+    private double stepSize;
+	private final double stepSizeReduction;
+	private final double stepSizeExpansion;
+	private final double[][] coordinates;
     private final double verySmall = Math.exp(-60);
-    private final double INFINITY = 1/0.0;
-    int i;
+    private final double INFINITY = Double.POSITIVE_INFINITY;
 	
-
-    public SimpleStepLength(TotalEnergy energy,  
+	
+	public SimpleStepLength(TotalEnergy energy,
 			    double stepSize1, 
 			    double stepSizeReduction,
 			    double stepSizeExpansion) {
@@ -55,14 +55,15 @@ public class SimpleStepLength extends LineSearch {
 		stepSize = stepSize*stepSizeExpansion/stepSizeReduction;
 		if (stepSizeExpansion <= 0)
 			stepSize = 1;
-		for (i = 0; i < coordinates.length; i++) {
+	    int i;
+	    for (i = 0; i < coordinates.length; i++) {
 			coordinates[i][0] = inputCoordinates[i][0];
 		}
-		old_e = energy.getLastEnergy();			
-		new_e = old_e;	
+	    double old_e = energy.getLastEnergy();
+	    double new_e = old_e;
 		// If no energy reduction is achieved for a specific step size it is reduced 		
 		// until a step that produce reduction in energy is found.
-		while (new_e >=old_e) {
+		while (new_e >= old_e) {
 		    stepSize *= stepSizeReduction;
 		    if (stepSize < verySmall) 
 			throw new LineSearchException(1,"\n\nThe search direction is not a descent direction. \n" + 

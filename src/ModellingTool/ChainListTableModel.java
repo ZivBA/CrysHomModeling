@@ -6,7 +6,7 @@ import java.util.Vector;
 /**
  * Created by zivben on 26/03/16.
  */
-public class ChainListTableModel extends DefaultTableModel {
+class ChainListTableModel extends DefaultTableModel {
 
 
 	public ChainListTableModel() {
@@ -41,7 +41,7 @@ public class ChainListTableModel extends DefaultTableModel {
 	public boolean isCellEditable(int row, int column) {
 		return (column == 2 || column == 3 || column == 4);
 	}
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setValueAt(Object aValue, int row, int column) {
 		if (aValue instanceof Boolean && (column == 2) ) {

@@ -6,9 +6,9 @@ import meshi.util.crossLinking.CrosslinkVector;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class RestraintIMP {
+class RestraintIMP {
 
-	private DomainList domainList;
+	private final DomainList domainList;
 	
 	public RestraintIMP(DomainList domainList) {
 		this.domainList = domainList;

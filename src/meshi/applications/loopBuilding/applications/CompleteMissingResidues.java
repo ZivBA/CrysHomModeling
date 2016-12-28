@@ -31,7 +31,7 @@ public class CompleteMissingResidues extends MeshiProgram implements Residues, A
 
 		// Reading the alignment file
 		String[] alignmentStrings = File2StringArray.f2a(alignmentFile_init);
-		int firstResInQuery = (new Integer(alignmentStrings[1])).intValue();
+		int firstResInQuery = new Integer(alignmentStrings[1]);
 		System.out.println("Alignment in query starts at: " + firstResInQuery);
 		String queryAlignment = alignmentStrings[3].trim().replace("-", "");
 		System.out.println("SEQ: " + queryAlignment);
@@ -121,7 +121,7 @@ public class CompleteMissingResidues extends MeshiProgram implements Residues, A
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -137,7 +137,7 @@ public class CompleteMissingResidues extends MeshiProgram implements Residues, A
 				"Usage java -Xmx600m CompleteMissingResidues <alignment file name> <model filename> <output filename> <complete from> <complete to> \n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		alignmentFile_init = getOrderedArgument(args);
 		if (alignmentFile_init == null) throw new RuntimeException(errorMessage);
@@ -153,12 +153,12 @@ public class CompleteMissingResidues extends MeshiProgram implements Residues, A
 
 		String tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		completeFrom_init = (new Integer(tmp.trim())).intValue();
+		completeFrom_init = new Integer(tmp.trim());
 		System.out.println("# Complete from: "+completeFrom_init);
 
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		completeTo_init = (new Integer(tmp.trim())).intValue();
+		completeTo_init = new Integer(tmp.trim());
 		System.out.println("# Complete to: "+completeTo_init);
 
 		initRandom(999);

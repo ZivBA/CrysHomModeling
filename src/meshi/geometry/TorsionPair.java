@@ -7,7 +7,8 @@ import meshi.util.UpdateableException;
  **/
 public class TorsionPair implements Updateable {
     private int numberOfUpdates = 0;
-	private Torsion torsion1, torsion2;
+	private final Torsion torsion1;
+	private final Torsion torsion2;
 
 	public TorsionPair(Torsion torsion1, Torsion torsion2) {
 	    this.torsion1 = torsion1;

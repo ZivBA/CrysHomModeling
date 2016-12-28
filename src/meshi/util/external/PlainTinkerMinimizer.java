@@ -12,10 +12,10 @@ import meshi.util.file.MeshiWriter;
 
 import java.io.IOException;
 
-public class PlainTinkerMinimizer implements Residues{
+class PlainTinkerMinimizer implements Residues{
 	
 	
-	public static void prepare(String doName , char unitName  , DunbrackLib lib) {
+	private static void prepare(String doName, char unitName, DunbrackLib lib) {
 		TINKERandMESHIcomparison tink = new TINKERandMESHIcomparison(doName+".xyz", doName+".pdb");
 		tink.fixBreaksInXYZ(doName+".tink.xyz");
 		tink.setInactiveSuperPositionAtoms(unitName);
@@ -30,50 +30,52 @@ public class PlainTinkerMinimizer implements Residues{
 	
 	public static void main(String[] args) {
 		MeshiProgram.initRandom(0);
-		if (args[0].equals("1")) {
-			AtomList al = new AtomList(args[1]);
-			al.setChain("A");
-			try {
-				al.print(new MeshiWriter("toMini.pdb"));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		else if (args[0].equals("2")) {
-			String commandString = args[1];
-			String doName = args[2];
-			char unitName = args[3].trim().charAt(0);
-			CommandList commands = new CommandList(commandString);
-			DunbrackLib lib = new DunbrackLib(commands,0.99,100);
-			PlainTinkerMinimizer.prepare(doName, unitName, lib);
-		}
-		else if (args[0].equals("3")) {
-			Protein protOrig = new Protein(new AtomList(args[1]) ,
-					new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
-			Protein protMini = new Protein(new AtomList(args[2]) ,
-					new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
-			int treatingAtom = 0;
-			AtomList newList = new AtomList();
-			for (int resc=0 ; resc<protOrig.residues().size() ; resc++) {
-				if (protOrig.residues().residueAt(resc).ca()!=null) {
-					AtomList resList = protMini.atoms().getNextResidue(treatingAtom);
-					treatingAtom += resList.size();
-					for (int atc=0 ; atc<resList.size() ; atc++) {
-						newList.add( new Atom(resList.atomAt(atc).x(),
-								resList.atomAt(atc).y(), 
-								resList.atomAt(atc).z(), 
-								resList.atomAt(atc).name(), 
-								resList.atomAt(atc).residueName(), 
-								protOrig.residues().residueAt(resc).ca().residueNumber(),
-								-1));
+		switch (args[0]) {
+			case "1":
+				AtomList al = new AtomList(args[1]);
+				al.setChain("A");
+				try {
+					al.print(new MeshiWriter("toMini.pdb"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				break;
+			case "2":
+				String commandString = args[1];
+				String doName = args[2];
+				char unitName = args[3].trim().charAt(0);
+				CommandList commands = new CommandList(commandString);
+				DunbrackLib lib = new DunbrackLib(commands, 0.99, 100);
+				PlainTinkerMinimizer.prepare(doName, unitName, lib);
+				break;
+			case "3":
+				Protein protOrig = new Protein(new AtomList(args[1]),
+						new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
+				Protein protMini = new Protein(new AtomList(args[2]),
+						new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
+				int treatingAtom = 0;
+				AtomList newList = new AtomList();
+				for (int resc = 0; resc < protOrig.residues().size(); resc++) {
+					if (protOrig.residues().residueAt(resc).ca() != null) {
+						AtomList resList = protMini.atoms().getNextResidue(treatingAtom);
+						treatingAtom += resList.size();
+						for (int atc = 0; atc < resList.size(); atc++) {
+							newList.add(new Atom(resList.atomAt(atc).x(),
+									resList.atomAt(atc).y(),
+									resList.atomAt(atc).z(),
+									resList.atomAt(atc).name(),
+									resList.atomAt(atc).residueName(),
+									protOrig.residues().residueAt(resc).ca().residueNumber(),
+									-1));
+						}
 					}
 				}
-			}
-			try {
-				newList.print(new MeshiWriter("toMini.mini.pdb"));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}			
+				try {
+					newList.print(new MeshiWriter("toMini.mini.pdb"));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				break;
 		}
 	}
 

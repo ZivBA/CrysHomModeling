@@ -5,9 +5,9 @@ import meshi.geometry.Distance;
 import meshi.util.filters.Filter;
 
 public class IsGoodCNPair implements Filter{
-    private IsCN isCN = new IsCN();
-    private IsNot13 isNot13 = new IsNot13();
-    private IsGoodSS goodSS = new IsGoodSS();
+    private final IsCN isCN = new IsCN();
+    private final IsNot13 isNot13 = new IsNot13();
+    private final IsGoodSS goodSS = new IsGoodSS();
     	
     public boolean accept(Object obj) {
         Distance dis = (Distance)obj;

@@ -34,12 +34,12 @@ public class MeshiIterator implements Iterator{
     /**
      * The list over which we iterate.  
      **/
-    protected MeshiList list; 
+    private final MeshiList list;
 
     /**
      * of the list.
      **/
-    private int size; // of the list
+    private final int size; // of the list
 
     /**
      * of the list at the time of the
@@ -47,7 +47,7 @@ public class MeshiIterator implements Iterator{
      * is not expected to change while an iterator
      * is living.
      **/
-    private int modCount;
+    private final int modCount;
 
     /**
      * of the iterator.
@@ -97,7 +97,7 @@ public class MeshiIterator implements Iterator{
     /**
      *  Starting point for iterations.
      */
-    protected  void setFirst(int first) { 
+    private void setFirst(int first) {
 	check();
 	this.first = first;
 	currentPosition = first-1;
@@ -107,7 +107,7 @@ public class MeshiIterator implements Iterator{
     /**
      *  Last point for iterations.
      */
-    protected  void setLast(int last) { // end point
+    private void setLast(int last) { // end point
 	check();
 	this.last = last;
 	if (last >= size ) dead = true; 
@@ -176,12 +176,12 @@ public class MeshiIterator implements Iterator{
     /**
      * the iterator (hasNext() returns false)
      **/
-    public void kill() {
+    private void kill() {
 	check();
 	dead = true;
     }
 
-    public boolean dead() { return dead;}
+    private boolean dead() { return dead;}
     
     /**
      * Returns a nested iterator.

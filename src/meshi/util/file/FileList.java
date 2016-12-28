@@ -12,10 +12,10 @@ public class FileList extends MeshiList {
     //#2 constructors
     // generate a file list from either a text file with the names of the 
     // files or from a directory listing.
-  public FileList() {
+    private FileList() {
     super(new IsFile());
   }
-  public FileList(File file) {
+  private FileList(File file) {
     this();
     if (file.isDirectory()) FileListFromDirectory(file);
     else FileListFromFile(file);
@@ -39,7 +39,7 @@ public class FileList extends MeshiList {
 			      "option not yet supported\n"+
 			      "file: "+file+"\n");
     }
-    public void addFormStringList(StringList fileNames) {
+    private void addFormStringList(StringList fileNames) {
 	Iterator iter = fileNames.iterator();
 	String fileName;
 	while ((fileName = (String) iter.next()) != null)

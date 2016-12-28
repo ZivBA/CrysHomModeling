@@ -41,12 +41,12 @@ public class HubbardPosition
 {
     /////////  DATA MEMBERS  \\\\\\\\\\
 
-    double[][] C1;     
-    double[][] C2;     
-    public int[] subset;
-    private double cutoff;
-    public double[] numbers;
-    public int[] order;
+    private final double[][] C1;
+    private final double[][] C2;
+    private int[] subset;
+    private final double cutoff;
+    public final double[] numbers;
+    private final int[] order;
     
     
     /////////  CONSTRUCTOR  \\\\\\\\\\\\
@@ -100,7 +100,7 @@ public class HubbardPosition
     }
     
     //----------------------------------------------------
-    public void doIter()
+    private void doIter()
     {
     	double rms;
     	rms = Overlap.rmsPartial(C1, C2, subset);
@@ -111,7 +111,7 @@ public class HubbardPosition
 
     //----------------------------------------------------
     /**Updateing the subset**/
-    public void updateSubset()
+    private void updateSubset()
     {
     	int[] tmpset = new int[C1[0].length];  
     	int i,j;
@@ -133,7 +133,7 @@ public class HubbardPosition
 
     //----------------------------------------------------
     /**Updateing the numberst**/
-    public void updateNumbers()
+    private void updateNumbers()
     {
     	int i;
     	for (i=0 ; i<C1[0].length ; i++){
@@ -151,7 +151,7 @@ public class HubbardPosition
 // --------------------------------------------------
     // sorting the "numbers" array in ascending order
     // the permutation is preserved in "order"
-    public void sort() 
+private void sort()
     {
 	int min;
 	double temp;

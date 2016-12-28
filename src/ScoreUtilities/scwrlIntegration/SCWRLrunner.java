@@ -13,11 +13,11 @@ import java.util.concurrent.ExecutionException;
  */
 public class SCWRLrunner extends SwingWorker<String[], Void> {
 
-	File scwrlExe;
-	File input;
-	File output;
-	String[] runLog;
-	boolean fakeRun = false;
+	private final File scwrlExe;
+	private final File input;
+	private final File output;
+	private String[] runLog;
+	private boolean fakeRun = false;
 
 	public SCWRLrunner(String pathToScwrlExe, File inputFile, File outputFile) throws IOException {
 
@@ -71,7 +71,7 @@ public class SCWRLrunner extends SwingWorker<String[], Void> {
 	}
 
 	private void prepareNextStep() {
-		MainMenu.filesToSFcheck.add(output);
+		MainMenu.SCWRLfilesToSFcheck.add(output);
 		setProgress(100);
 	}
 

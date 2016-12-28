@@ -14,7 +14,7 @@ public class WorstSolvationCreator extends EnergyCreator {
 	private boolean toCalcDerivatives = true;
 	private AbstractROT1Parameters parameters = null;
 
-	public WorstSolvationCreator(double weight, String cutoff , boolean toCalcDerivatives) {
+	private WorstSolvationCreator(double weight, String cutoff, boolean toCalcDerivatives) {
 		super(weight);
 		this.toCalcDerivatives = toCalcDerivatives;
 		this.cutoff = cutoff;

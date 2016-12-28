@@ -18,19 +18,24 @@ package meshi.util.mathTools;
 
 public class HB_Sigma {	
 	// Sigma parameters
-	private double start,p1,p2,end,valAtp1,valAtp2;
+	private final double start;
+	private final double p1;
+	private final double p2;
+	private final double end;
 	
 	// Auxillary variables:
 	// --------------------
 	// quadratic at [p2,end]
-	private double partC_a;
+	private final double partC_a;
 	
-	// Spline section
-	private double deriv_at_p2,deriv_at_p1;
-	private double a,b,c,d,xMinusP1;
+	private final double a;
+	private final double b;
+	private final double c;
+	private final double d;
+	private double xMinusP1;
 
 	// quadratic at [start,p1]
-	private double partA_a;
+	private final double partA_a;
 
 	public HB_Sigma(double start , double p1, double p2, double end,
 								double valAtp1, double valAtp2) {
@@ -38,16 +43,14 @@ public class HB_Sigma {
 		this.p1 = p1;
 		this.p2 = p2;
 		this.end = end;
-		this.valAtp1 = valAtp1;
-		this.valAtp2 = valAtp2;
 		
 		// quadratic at [p2,end]
 		partC_a = valAtp2/((p2-end)*(p2-end));
-		deriv_at_p2 = 2.0*partC_a*(p2-end);
+		double deriv_at_p2 = 2.0 * partC_a * (p2 - end);
 		
 		// quadratic at [start,p1]
 		partA_a = (1.0-valAtp1)/((p1-start)*(p1-start));
-		deriv_at_p1 = -2.0*partA_a*(p1-start);
+		double deriv_at_p1 = -2.0 * partA_a * (p1 - start);
 		
 		// spline
 		d = valAtp1;

@@ -31,9 +31,9 @@ public abstract class AbstractHydrogenBond {
     **/
     protected double[][] derivatives = null;
 
-    public AbstractHydrogenBond() {}
+    protected AbstractHydrogenBond() {}
 
-    public AbstractHydrogenBond(DistanceMatrix dm, AtomList atomList) {
+    protected AbstractHydrogenBond(DistanceMatrix dm, AtomList atomList) {
     	this.dm = dm;
     	this.atomList = atomList;
     	derivatives = new double[atomList.size()][3];

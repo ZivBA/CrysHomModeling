@@ -42,16 +42,14 @@ import meshi.util.file.File2StringArray;
  *
  **/
 
-public class EvaluateBatchOfLoops extends MeshiProgram implements Residues, AtomTypes {
+class EvaluateBatchOfLoops extends MeshiProgram implements Residues, AtomTypes {
 
     private static CommandList commands;
-    private static String commandsFileName = null;
-    private static String modelsFileName = null;  
+	private static String modelsFileName = null;
     private static String refFileName = null;  
     private static int resStart = -999;
     private static int resEnd = -999;
-    private static double Wrg = 0.0;  
-    private static double Wev = 3.0;  
+	private static double Wev = 3.0;
     private static double Wsolv = 0.5;  
     private static double Whb = 1.0;  
     private static double Wprop = 1.0;  
@@ -233,10 +231,10 @@ public class EvaluateBatchOfLoops extends MeshiProgram implements Residues, Atom
     			       "<loop starting resisue> <loop ending residue> <Wrg>  <Wev> <Wsolv> <Whb> <Wprop> <Wramach> \n"+
     			       "                    ******************\n");
     			      
-    	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-    	commandsFileName = getOrderedArgument(args);
+    	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+	    String commandsFileName = getOrderedArgument(args);
     	if (commandsFileName == null) throw new RuntimeException(errorMessage);
-    	System.out.println("# commandsFileName = "+commandsFileName);
+    	System.out.println("# commandsFileName = "+ commandsFileName);
 
     	commands = new CommandList(commandsFileName);
     	
@@ -252,42 +250,42 @@ public class EvaluateBatchOfLoops extends MeshiProgram implements Residues, Atom
 
     	String tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	resStart = (new Integer(tmpString)).intValue();
+    	resStart = new Integer(tmpString);
     	System.out.println("# Starting residue is " + resStart);
 
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	resEnd = (new Integer(tmpString)).intValue();
+    	resEnd = new Integer(tmpString);
     	System.out.println("# Ending residue is " + resEnd);
     	
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	Wrg = (new Double(tmpString)).doubleValue();
-    	System.out.println("# Wrg is " + Wrg);
+	    double wrg = new Double(tmpString);
+    	System.out.println("# Wrg is " + wrg);
 
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	Wev = (new Double(tmpString)).doubleValue();
+    	Wev = new Double(tmpString);
     	System.out.println("# Wev is " + Wev);
 
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	Wsolv = (new Double(tmpString)).doubleValue();
+    	Wsolv = new Double(tmpString);
     	System.out.println("# Wsolv is " + Wsolv);
 
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	Whb = (new Double(tmpString)).doubleValue();
+    	Whb = new Double(tmpString);
     	System.out.println("# Whb is " + Whb);
 
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	Wprop = (new Double(tmpString)).doubleValue();
+    	Wprop = new Double(tmpString);
     	System.out.println("# Wprop is " + Wprop);
 
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	Wramach = (new Double(tmpString)).doubleValue();
+    	Wramach = new Double(tmpString);
     	System.out.println("# Wramach is " + Wramach);
         }
 }

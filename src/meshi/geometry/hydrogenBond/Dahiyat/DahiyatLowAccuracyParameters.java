@@ -19,7 +19,7 @@ public class DahiyatLowAccuracyParameters implements DahiyatParametersInterface 
 	
     // Donor-Acceptor distance
 	// -----------------------
-	public final double[][] end = 
+	private final double[][] end =
 	{{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 		{0.00, 0.00, 0.00, 0.00, 4.00, 4.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 		{0.00, 0.00, 0.00, 0.00, 4.00, 4.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
@@ -35,7 +35,7 @@ public class DahiyatLowAccuracyParameters implements DahiyatParametersInterface 
 		{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 4.00, 0.00},
 		{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00}};
 	
-	public final double[][] start = 
+	private final double[][] start =
 	{{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 2.76, 2.76, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 2.76, 2.76, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
@@ -51,7 +51,7 @@ public class DahiyatLowAccuracyParameters implements DahiyatParametersInterface 
 			{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 2.15, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00}};
 
-	public final double[][] p1 = 
+	private final double[][] p1 =
 	{{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 3.58, 3.58, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 3.58, 3.58, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
@@ -67,7 +67,7 @@ public class DahiyatLowAccuracyParameters implements DahiyatParametersInterface 
 			{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 2.50, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00}};
 	
-	public final double[][] p2 = 
+	private final double[][] p2 =
 	{{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 3.62, 3.62, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 3.62, 3.62, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
@@ -83,7 +83,7 @@ public class DahiyatLowAccuracyParameters implements DahiyatParametersInterface 
 			{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 2.55, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00}};
 
-	public final double[][] valAtp1 = 
+	private final double[][] valAtp1 =
 	{{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 0.95, 0.95, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 0.95, 0.95, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
@@ -99,7 +99,7 @@ public class DahiyatLowAccuracyParameters implements DahiyatParametersInterface 
 			{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.95, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00}};
 	
-	public final double[][] valAtp2 = 
+	private final double[][] valAtp2 =
 	{{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 0.05, 0.05, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 0.05, 0.05, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
@@ -114,15 +114,9 @@ public class DahiyatLowAccuracyParameters implements DahiyatParametersInterface 
 			{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.05, 0.00},
 			{0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00}};
-
 	
 	
-	public final  double sigmoidBeginsWithH = 90.0;
-    public final  double sigmoidEndsWithH = 110.0;
-    public final  double sigmoidBeginsNoH = 80.0;
-    public final  double sigmoidEndsNoH = 95.0;
-	
-    // Donor-Acceptor distance
+	// Donor-Acceptor distance
 	public final double[][] end() {
 		return end;
 	}
@@ -151,18 +145,22 @@ public class DahiyatLowAccuracyParameters implements DahiyatParametersInterface 
 
 	// Angle dependent
     public final double sigmoidBeginsWithH() {
-		return sigmoidBeginsWithH;
+	    double sigmoidBeginsWithH = 90.0;
+	    return sigmoidBeginsWithH;
 	}
 
 	public final double sigmoidBeginsNoH() {
+		double sigmoidBeginsNoH = 80.0;
 		return sigmoidBeginsNoH;
 	}
 
 	public final double sigmoidEndsWithH() {
+		double sigmoidEndsWithH = 110.0;
 		return sigmoidEndsWithH;
 	}
 
 	public final double sigmoidEndsNoH() {
+		double sigmoidEndsNoH = 95.0;
 		return sigmoidEndsNoH;
 	}
 }

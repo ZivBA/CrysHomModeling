@@ -10,7 +10,7 @@ import java.util.StringTokenizer;
 
 
 public class SoftExcludedVolParametersList extends ParametersList {
-	private double frac;
+	private final double frac;
 
     public SoftExcludedVolParametersList(String parametersFileName) {this(parametersFileName,1.0);}
 
@@ -57,12 +57,12 @@ public class SoftExcludedVolParametersList extends ParametersList {
 			   parametersFileName);
 			   throw e;
 		}
-		
-		for (int c=0 ; c<tmpAr.length ; c++)
-		   add(tmpAr[c]);
+	
+	    for (SoftExcludedVolParameters aTmpAr : tmpAr)
+		    add(aTmpAr);
 	}
 
-    public Parameters createParameters(String line) {
+    protected Parameters createParameters(String line) {
 	return new SoftExcludedVolParameters(new StringTokenizer(line) , frac);
     }
     

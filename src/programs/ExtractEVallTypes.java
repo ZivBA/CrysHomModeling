@@ -16,7 +16,7 @@ import java.io.FileWriter;
 import java.text.DecimalFormat;
 
 
-public class ExtractEVallTypes extends MeshiProgram implements Residues, AtomTypes {
+class ExtractEVallTypes extends MeshiProgram implements Residues, AtomTypes {
  
     public static void main(String[] args){
     	
@@ -26,7 +26,7 @@ public class ExtractEVallTypes extends MeshiProgram implements Residues, AtomTyp
     	// ----------------------------------------
     	double[][][] data;
     	
-    	init(args); 
+    	init();
     	
     	data = new double[Atom.numberOfTypes()][Atom.numberOfTypes()][bins.length];
     	double cutoff = bins[bins.length-1]+0.5*(bins[bins.length-1]-bins[bins.length-2]);
@@ -37,41 +37,41 @@ public class ExtractEVallTypes extends MeshiProgram implements Residues, AtomTyp
     	
     	// Going over the models
     	String[] models = File2StringArray.f2a("C:/Users/Nir/Loop_Building_Project/listPISCES.txt");
-    	for (int i=0 ; i<models.length ; i++) { 		
-			System.out.println("Reading: " + models[i]);
-			Protein model = new Protein(new AtomList("PISCES/"+models[i]), new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
-			DistanceMatrix dm = new DistanceMatrix(model.atoms(), bins[bins.length-1]+1.0 , 2.0, 4);
-			DistanceList dl = dm.nonBondedList();
-			for (int c=0 ; c<dl.size(); c++) {
-				dis = dl.distanceAt(c).distance();
-				if ((dis<cutoff) & (dl.distanceAt(c).atom1().residueNumber() != dl.distanceAt(c).atom2().residueNumber())) {
-					ty1 = dl.distanceAt(c).atom1().type;
-					ty2 = dl.distanceAt(c).atom2().type;
+	    for (String model1 : models) {
+		    System.out.println("Reading: " + model1);
+		    Protein model = new Protein(new AtomList("PISCES/" + model1), new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
+		    DistanceMatrix dm = new DistanceMatrix(model.atoms(), bins[bins.length - 1] + 1.0, 2.0, 4);
+		    DistanceList dl = dm.nonBondedList();
+		    for (int c = 0; c < dl.size(); c++) {
+			    dis = dl.distanceAt(c).distance();
+			    if ((dis < cutoff) & (dl.distanceAt(c).atom1().residueNumber() != dl.distanceAt(c).atom2().residueNumber())) {
+				    ty1 = dl.distanceAt(c).atom1().type;
+				    ty2 = dl.distanceAt(c).atom2().type;
 /*					if ((((ty1==PCD)  && dl.distanceAt(c).atom2().isBackbone && dl.distanceAt(c).atom2().isOxygen) || 
 							((ty2==PCD)  && dl.distanceAt(c).atom1().isBackbone && dl.distanceAt(c).atom1().isOxygen)) &&
 							(Math.abs(dl.distanceAt(c).atom1().residueNumber()-dl.distanceAt(c).atom2().residueNumber()) < 2)) {
 						System.out.println("-----------------------------------------------------------------------------------------");
 						System.out.println(dl.distanceAt(c).atom1() + "\n" + dl.distanceAt(c).atom2());
 					}
-*/					
-					if (ty2>ty1) {
-						ttemp = ty1;
-						ty1 = ty2;
-						ty2 = ttemp;
-					}
-					if (dis>bins[bins.length-1])
-						data[ty1][ty2][bins.length-1]++;
-					else {
-						ind = 0;
-						do {
-							ind++;
-						} while (dis>bins[ind]);
-						data[ty1][ty2][ind] += (dis - bins[ind-1])/(bins[ind] - bins[ind-1]);
-						data[ty1][ty2][ind-1] += (bins[ind] - dis)/(bins[ind] - bins[ind-1]);
-					}
-				}
-			}
-    	}
+*/
+				    if (ty2 > ty1) {
+					    ttemp = ty1;
+					    ty1 = ty2;
+					    ty2 = ttemp;
+				    }
+				    if (dis > bins[bins.length - 1])
+					    data[ty1][ty2][bins.length - 1]++;
+				    else {
+					    ind = 0;
+					    do {
+						    ind++;
+					    } while (dis > bins[ind]);
+					    data[ty1][ty2][ind] += (dis - bins[ind - 1]) / (bins[ind] - bins[ind - 1]);
+					    data[ty1][ty2][ind - 1] += (bins[ind] - dis) / (bins[ind] - bins[ind - 1]);
+				    }
+			    }
+		    }
+	    }
     	
     	// Outputting
     	try{
@@ -98,7 +98,7 @@ public class ExtractEVallTypes extends MeshiProgram implements Residues, AtomTyp
     
     
      
-    protected static void init(String[] args) {
+    private static void init() {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 

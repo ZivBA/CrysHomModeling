@@ -7,18 +7,19 @@ import meshi.util.mathTools.Jama.Matrix;
 
 public class Helixer {
 
-AtomList full = new AtomList();
-AtomList bb = new AtomList();
-double cmx=0,cmy=0,cmz=0;
-double[][] rotBack;
-int nbb,nfull;
-double[][] bbcoor;
-double[][] fullcoor;
+private final AtomList full = new AtomList();
+	private double cmx=0;
+	private double cmy=0;
+	private double cmz=0;
+private final double[][] rotBack;
+	private final int nfull;
+	private final double[][] fullcoor;
 
 
 public Helixer(Protein prot , int resBegin , int resEnd) {
-
-	for (int c=0 ; c<prot.atoms().size() ; c++) 
+	
+	AtomList bb = new AtomList();
+	for (int c = 0; c<prot.atoms().size() ; c++)
 		if ((prot.atoms().atomAt(c).residueNumber()>=resBegin) &&
 			(prot.atoms().atomAt(c).residueNumber()<=resEnd)) {
 			full.add(prot.atoms().atomAt(c));
@@ -29,15 +30,15 @@ public Helixer(Protein prot , int resBegin , int resEnd) {
 				cmz += prot.atoms().atomAt(c).z();
 			}
 	}
-	nbb = bb.size();
+	int nbb = bb.size();
 	nfull = full.size();
 	cmx /= nbb;
 	cmy /= nbb;
 	cmz /= nbb;
 	
-	bbcoor = new double[nbb][3];
+	double[][] bbcoor = new double[nbb][3];
 	fullcoor = new double[nfull][3];
-	for (int c=0 ; c<nbb ; c++) {
+	for (int c = 0; c< nbb; c++) {
 		bbcoor[c][0] = bb.atomAt(c).x()-cmx;
 		bbcoor[c][1] = bb.atomAt(c).y()-cmy;
 		bbcoor[c][2] = bb.atomAt(c).z()-cmz;
@@ -49,16 +50,16 @@ public Helixer(Protein prot , int resBegin , int resEnd) {
 	} 
 	
 	double[][] m  = new double[3][3]; // Covarient matrix
-	for (int c=0 ; c<nbb ; c++) {
-		m[0][0] += bbcoor[c][0]*bbcoor[c][0];
-		m[0][1] += bbcoor[c][0]*bbcoor[c][1];
-		m[0][2] += bbcoor[c][0]*bbcoor[c][2];
+	for (int c = 0; c< nbb; c++) {
+		m[0][0] += bbcoor[c][0]* bbcoor[c][0];
+		m[0][1] += bbcoor[c][0]* bbcoor[c][1];
+		m[0][2] += bbcoor[c][0]* bbcoor[c][2];
 		m[1][0] = m[0][1];
-		m[1][1] += bbcoor[c][1]*bbcoor[c][1];
-		m[1][2] += bbcoor[c][1]*bbcoor[c][2];
+		m[1][1] += bbcoor[c][1]* bbcoor[c][1];
+		m[1][2] += bbcoor[c][1]* bbcoor[c][2];
 		m[2][0] = m[0][2];
 		m[2][1] = m[1][2];
-		m[2][2] += bbcoor[c][2]*bbcoor[c][2];
+		m[2][2] += bbcoor[c][2]* bbcoor[c][2];
 	}
 	
 	Matrix mm = new Matrix(m);
@@ -119,8 +120,8 @@ public Helixer(Protein prot , int resBegin , int resEnd) {
 	rot[2][2] = cosang;
 	
 	// Rotating:
-	for (int c=0 ; c<nbb ; c++) {
-		bbcoor[c] = matTimesVec(rot,bbcoor[c]);
+	for (int c = 0; c< nbb; c++) {
+		bbcoor[c] = matTimesVec(rot, bbcoor[c]);
 	} 
 	for (int c=0 ; c<nfull ; c++) {
 		fullcoor[c] = matTimesVec(rot,fullcoor[c]);
@@ -176,7 +177,7 @@ public void rockNroll(double angx, double angy, double angz, double offsetx, dou
 	
 	
 
-public static double dis(double x1,double y1,double z1,double x2,double y2,double z2) {
+private static double dis(double x1, double y1, double z1, double x2, double y2, double z2) {
 	return Math.sqrt( (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2));
 }
 
@@ -187,10 +188,10 @@ public static double norm(double x,double y,double z) {
 }
 
 
-public static double norm(double[] ar) {
+private static double norm(double[] ar) {
 	double sum = 0.0;
-	for (int c=0 ; c<ar.length ; c++) {
-		sum += ar[c]*ar[c];
+	for (double anAr : ar) {
+		sum += anAr * anAr;
 	}
 	return Math.sqrt(sum);
 }	

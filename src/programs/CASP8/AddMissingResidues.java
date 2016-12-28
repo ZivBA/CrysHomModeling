@@ -14,7 +14,7 @@ import meshi.util.MeshiProgram;
 import meshi.util.file.File2StringArray;
 import meshi.util.file.MeshiWriter;
 
-public class AddMissingResidues extends MeshiProgram implements Residues, AtomTypes {
+class AddMissingResidues extends MeshiProgram implements Residues, AtomTypes {
 
 	private static String alignmentFileName = null;  
 	
@@ -88,7 +88,7 @@ public class AddMissingResidues extends MeshiProgram implements Residues, AtomTy
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -104,7 +104,7 @@ public class AddMissingResidues extends MeshiProgram implements Residues, AtomTy
 				"Usage java -Xmx600m AddMissingResidues <alignment file name> <model filename> <output filename> <complete from> <complete to> \n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		alignmentFileName = getOrderedArgument(args);
 		if (alignmentFileName == null) throw new RuntimeException(errorMessage);
@@ -120,12 +120,12 @@ public class AddMissingResidues extends MeshiProgram implements Residues, AtomTy
 
 		String tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		completeFrom = (new Integer(tmp.trim())).intValue();
+		completeFrom = new Integer(tmp.trim());
 		System.out.println("# Complete from: "+completeFrom);
 
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		completeTo = (new Integer(tmp.trim())).intValue();
+		completeTo = new Integer(tmp.trim());
 		System.out.println("# Complete to: "+completeTo);
 
 		initRandom(999);

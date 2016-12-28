@@ -6,7 +6,7 @@ import meshi.parameters.Residues;
 import meshi.util.CommandList;
 import meshi.util.MeshiProgram;
 
-public class BuildCorpus extends MeshiProgram implements Residues,
+class BuildCorpus extends MeshiProgram implements Residues,
 		AtomTypes { /**
 									 * The implemented
 									 * interfaces defines the 
@@ -16,14 +16,9 @@ public class BuildCorpus extends MeshiProgram implements Residues,
     /**
      * Reads, parse and stores the contents of the commands file. 
      **/ 
-    private static CommandList commands; 
-   
-    /**
-     * A string with the name of the command file.
-     **/
-    private static String commandsFileName = null;
- 
-    /**
+    private static CommandList commands;
+	
+	/**
      * A string with the name of the pdb file to minimize.
      **/
     private static String modelFileName = null;  
@@ -51,7 +46,7 @@ public class BuildCorpus extends MeshiProgram implements Residues,
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -67,10 +62,13 @@ public class BuildCorpus extends MeshiProgram implements Residues,
 			       "Usage java -Xmx300m BuildCorpus <commands file name> <pdb file name> seed\n"+
 			       "                    ******************\n");
 			      
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-	commandsFileName = getOrderedArgument(args);
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+	/*
+      A string with the name of the command file.
+     */
+	    String commandsFileName = getOrderedArgument(args);
 	if (commandsFileName == null) throw new RuntimeException(errorMessage);
-	System.out.println("# commandsFileName = "+commandsFileName);
+	System.out.println("# commandsFileName = "+ commandsFileName);
 
 	commands = new CommandList(commandsFileName);
 	
@@ -80,7 +78,7 @@ public class BuildCorpus extends MeshiProgram implements Residues,
 
 	String seedString = getOrderedArgument(args);
 	if (seedString== null) throw new RuntimeException(errorMessage);
-	int seed = (new Integer(seedString)).intValue();
+	int seed = new Integer(seedString);
 	System.out.println("# seed is "+seed);
 	initRandom(seed);
     }

@@ -30,7 +30,7 @@ public class CompositePropensity2DParametersList extends ParametersList
 			add( createParameters( aac ) );		
 	}
 	
-	public Parameters createParameters( int residueType ) {
+	private Parameters createParameters(int residueType) {
 		return new CompositePropensity2DParameters( residueType, spl );
 	}
 

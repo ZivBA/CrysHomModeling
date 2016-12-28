@@ -32,13 +32,11 @@ import meshi.util.rotamericTools.RotamericTools;
 import programs.PutHydrogens;
 import programs.SCMOD;
 
-public class FinalizeCASP8Models extends MeshiProgram implements Residues, AtomTypes {
+class FinalizeCASP8Models extends MeshiProgram implements Residues, AtomTypes {
 
     private static CommandList commands;
 
-	private static String alignmentFileName = null;  
-
-	private static String fileNameCorpus = null;
+	private static String alignmentFileName = null;
 	
 	private static String modelFileName = null;
 
@@ -186,7 +184,7 @@ public class FinalizeCASP8Models extends MeshiProgram implements Residues, AtomT
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -202,17 +200,17 @@ public class FinalizeCASP8Models extends MeshiProgram implements Residues, AtomT
 				"Usage java -Xmx600m FinalizeCASP8Models <commands file name> <corpus filename> <alignment file name> <model file> <output file>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
 		System.out.println("# commandsFileName = "+commandsFileName);
 
 		commands = new CommandList(commandsFileName);
-
-		fileNameCorpus = getOrderedArgument(args);
+		
+		String fileNameCorpus = getOrderedArgument(args);
 		if (fileNameCorpus == null) throw new RuntimeException(errorMessage);
-		System.out.println("# Corpus file name is "+fileNameCorpus);
+		System.out.println("# Corpus file name is "+ fileNameCorpus);
 
 		alignmentFileName = getOrderedArgument(args);
 		if (alignmentFileName == null) throw new RuntimeException(errorMessage);

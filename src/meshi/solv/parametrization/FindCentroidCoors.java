@@ -19,12 +19,12 @@ import meshi.util.overlap.Overlap;
  * method in 'ResidueBuilder'.
  **/
 
-public class FindCentroidCoors extends MeshiProgram implements Residues{
+class FindCentroidCoors extends MeshiProgram implements Residues{
 
 	// We get these user defined parameters from the command line
 	// ----------------------------------------------------------
 	// The structure database:
-	static String listOfStructures = "listPDBs.txt";
+	private static final String listOfStructures = "listPDBs.txt";
 //	static String listOfStructures = "C:/Users/Nir/Loop_Building_Project/listPISCES.txt";
 
 	public static void main(String[] args){
@@ -79,44 +79,45 @@ public class FindCentroidCoors extends MeshiProgram implements Residues{
 		Atom atomN,atomCA,atomC;
 		Residue residue;
 		String[] models = File2StringArray.f2a(listOfStructures);
-		for (int i=0 ; i<models.length ; i++) { 		
-			System.out.println("Reading: " + models[i]);
-			Protein model = new Protein(new AtomList("proteins/" +models[i]), new ResidueExtendedAtoms(ADD_ATOMS));
-			for (int res=0 ; res<model.residues().size(); res++) {
-				if ((model.residues().residueAt(res).type == doType) &&
-					(model.residues().residueAt(res).atoms().filter(new AtomList.NonHydrogen()).size() == (nHeavyAtom[doType]+4))) {
-					residue = model.residues().residueAt(res);
-					atomN = residue.atoms().findAtomInList("N", residue.number); 
-					atomCA = residue.atoms().findAtomInList("CA", residue.number); 
-					atomC = residue.atoms().findAtomInList("C", residue.number); 
-					shiftingCoors[doType][0][0] = atomN.x();
-					shiftingCoors[doType][1][0] = atomN.y();
-					shiftingCoors[doType][2][0] = atomN.z();
-					shiftingCoors[doType][0][1] = atomCA.x();
-					shiftingCoors[doType][1][1] = atomCA.y();
-					shiftingCoors[doType][2][1] = atomCA.z();
-					shiftingCoors[doType][0][2] = atomC.x();
-					shiftingCoors[doType][1][2] = atomC.y();
-					shiftingCoors[doType][2][2] = atomC.z();
-					int counter = 3;
-					for (int c=0 ; c<residue.atoms().size(); c++) {
-						if (!residue.atoms().atomAt(c).isHydrogen && (!residue.atoms().atomAt(c).isBackbone || residue.atoms().atomAt(c).name().equals("CB"))) {
-							shiftingCoors[doType][0][counter] = residue.atoms().atomAt(c).x();
-							shiftingCoors[doType][1][counter] = residue.atoms().atomAt(c).y();
-							shiftingCoors[doType][2][counter] = residue.atoms().atomAt(c).z();
-							counter++;
+			for (String model1 : models) {
+				System.out.println("Reading: " + model1);
+				Protein model = new Protein(new AtomList("proteins/" + model1), new ResidueExtendedAtoms(ADD_ATOMS));
+				for (int res = 0; res < model.residues().size(); res++) {
+					if ((model.residues().residueAt(res).type == doType) &&
+							(model.residues().residueAt(res).atoms().filter(new AtomList.NonHydrogen()).size() == (nHeavyAtom[doType] + 4))) {
+						residue = model.residues().residueAt(res);
+						atomN = residue.atoms().findAtomInList("N", residue.number);
+						atomCA = residue.atoms().findAtomInList("CA", residue.number);
+						atomC = residue.atoms().findAtomInList("C", residue.number);
+						shiftingCoors[doType][0][0] = atomN.x();
+						shiftingCoors[doType][1][0] = atomN.y();
+						shiftingCoors[doType][2][0] = atomN.z();
+						shiftingCoors[doType][0][1] = atomCA.x();
+						shiftingCoors[doType][1][1] = atomCA.y();
+						shiftingCoors[doType][2][1] = atomCA.z();
+						shiftingCoors[doType][0][2] = atomC.x();
+						shiftingCoors[doType][1][2] = atomC.y();
+						shiftingCoors[doType][2][2] = atomC.z();
+						int counter = 3;
+						for (int c = 0; c < residue.atoms().size(); c++) {
+							if (!residue.atoms().atomAt(c).isHydrogen && (!residue.atoms().atomAt(c).isBackbone || residue.atoms().atomAt(
+									c).name().equals("CB"))) {
+								shiftingCoors[doType][0][counter] = residue.atoms().atomAt(c).x();
+								shiftingCoors[doType][1][counter] = residue.atoms().atomAt(c).y();
+								shiftingCoors[doType][2][counter] = residue.atoms().atomAt(c).z();
+								counter++;
+							}
 						}
-					}
-					Overlap.rmsPartialAltRMS(NCACcoors, shiftingCoors[doType], constantIndices);
-					for (int c=3 ; c<shiftingCoors[doType][0].length; c++) {
-						averageCoors[doType][0] += shiftingCoors[doType][0][c];
-						averageCoors[doType][1] += shiftingCoors[doType][1][c];
-						averageCoors[doType][2] += shiftingCoors[doType][2][c];
-						atomsNumber[doType]++;
+						Overlap.rmsPartialAltRMS(NCACcoors, shiftingCoors[doType], constantIndices);
+						for (int c = 3; c < shiftingCoors[doType][0].length; c++) {
+							averageCoors[doType][0] += shiftingCoors[doType][0][c];
+							averageCoors[doType][1] += shiftingCoors[doType][1][c];
+							averageCoors[doType][2] += shiftingCoors[doType][2][c];
+							atomsNumber[doType]++;
+						}
 					}
 				}
 			}
-		}
 		
 		
 		averageCoors[doType][0] = averageCoors[doType][0]/atomsNumber[doType];

@@ -22,7 +22,7 @@ public class Ramp {
 	public static double r_tag = 0.0; // The derivative of ramp  
 	
 	
-	public static final void ramp(double x, double S, double alpha) {
+	public static void ramp(double x, double S, double alpha) {
 
 		double a1,a2,v1,v2,a,b,c,d; //Auxilary variables 
 							

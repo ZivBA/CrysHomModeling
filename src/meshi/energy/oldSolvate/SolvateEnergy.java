@@ -180,7 +180,7 @@ private boolean updateA;
     	return evaluate(false,weight,simpleHBweight);
     }
 
-    public final double evaluate(boolean updateAtoms, double cooperativeWeight, double simpleHBweight) {
+    private double evaluate(boolean updateAtoms, double cooperativeWeight, double simpleHBweight) {
 //	updateA = updateAtoms;
         if (! on) return 0.0;
 	double energy = 0;
@@ -366,7 +366,7 @@ System.out.println(atomList.atomAt(cc) + "\n" +  envior + " " +  AtomSumSigmC[cc
      * atom2 in the Distance - dis. The results are updated in the fields of the 
      * SolvateDistanceAttribute of dis - sigmaValues.
      **/ 
-    private final void updateSigmVals(Distance dis) {
+    private void updateSigmVals(Distance dis) {
     	SolvateDistanceAttribute sigmaValues = 
     		(SolvateDistanceAttribute) dis.getAttribute(SolvateDistanceAttribute.SOLVATE_ALL_ATOM_ATTRIBUTE); 
     	int TsaiAtomicType1 = parameters.atomicTypeConverter[dis.atom1().type]; // Converting from the 190 atom types to the 14 defined in Tsai 99'
@@ -840,7 +840,7 @@ System.out.println("\n" + tmpSigmaHBatom1 + " " + tmpSigmaHBatom2 + " " +  tmpSi
  * bond angle. This base atom is the attached hydrogen (if present), or the heavy atom to which the polar atom is 
  * attached (when the hydrogen is not present).
  **/
-	private final void setBaseAtom() {
+	private void setBaseAtom() {
 		Atom atom1,atom2;
 		for (int c1=0 ; c1<atomList.size() ; c1++) {
 			atom1 = atomList.atomAt(c1);

@@ -6,7 +6,7 @@ import meshi.molecularElements.AtomList;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class PrepareParticleForSCWRL {
+class PrepareParticleForSCWRL {
 
 	public static void main(String[] args) {
 		AtomList allAtoms = new AtomList("refine_16-half.ENCAD.pdb");
@@ -92,7 +92,7 @@ public class PrepareParticleForSCWRL {
 //		writeChain(allAtoms , "p");
 	}
 
-	public static void writeChain(AtomList allAtoms, String chain) {
+	private static void writeChain(AtomList allAtoms, String chain) {
 		
 		double takeR = 14.0;
 		

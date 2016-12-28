@@ -3,7 +3,7 @@ import meshi.geometry.Distance;
 import meshi.geometry.DistanceMatrix;
 import meshi.molecularElements.Atom;
 
-public class CAlphaGeometry{
+class CAlphaGeometry{
 /*       C        E
  *        \       \
  *         A ---- B
@@ -11,13 +11,34 @@ public class CAlphaGeometry{
  *    D        F
  */
 private final double  MAXabsV2;
-private final double K = 1, KdivMAXabsV4;
+	private final double KdivMAXabsV4;
 private Atom A, B, C, D, E, F;
-protected double energyABCD, energyBAEF; 
-protected double dABCDeDxA, dABCDeDyA, dABCDeDzA, dABCDeDxB, dABCDeDyB, dABCDeDzB,
-                 dABCDeDxC, dABCDeDyC, dABCDeDzC, dABCDeDxD, dABCDeDyD, dABCDeDzD;
-protected double dBAEFeDxA, dBAEFeDyA, dBAEFeDzA, dBAEFeDxB, dBAEFeDyB, dBAEFeDzB,
-                 dBAEFeDxE, dBAEFeDyE, dBAEFeDzE, dBAEFeDxF, dBAEFeDyF, dBAEFeDzF;
+private double energyABCD;
+	private double energyBAEF;
+double dABCDeDxA;
+	double dABCDeDyA;
+	double dABCDeDzA;
+	double dABCDeDxB;
+	double dABCDeDyB;
+	double dABCDeDzB;
+	double dABCDeDxC;
+	double dABCDeDyC;
+	double dABCDeDzC;
+	double dABCDeDxD;
+	double dABCDeDyD;
+	double dABCDeDzD;
+double dBAEFeDxA;
+	double dBAEFeDyA;
+	double dBAEFeDzA;
+	double dBAEFeDxB;
+	double dBAEFeDyB;
+	double dBAEFeDzB;
+	double dBAEFeDxE;
+	double dBAEFeDyE;
+	double dBAEFeDzE;
+	double dBAEFeDxF;
+	double dBAEFeDyF;
+	double dBAEFeDzF;
   
 private double multipABCD, multipBAEF;
 private Distance distanceAB, distanceDC, distanceFE; 
@@ -26,18 +47,18 @@ private double vDC_x, vDC_y, vDC_z;
 private double vBA_x, vBA_y, vBA_z;
 private double vFE_x, vFE_y, vFE_z;
 
-private DistanceMatrix distanceMatrix;
-private final double INFINITE_DISTANCE = Distance.INFINITE_DISTANCE; 
-   
-public CAlphaGeometry(double  MAXabsV2, DistanceMatrix distanceMatrix)
+private final DistanceMatrix distanceMatrix;
+	
+	public CAlphaGeometry(double  MAXabsV2, DistanceMatrix distanceMatrix)
  {                  
- this.MAXabsV2 = MAXabsV2;     
- KdivMAXabsV4 = K/(MAXabsV2*MAXabsV2);
+ this.MAXabsV2 = MAXabsV2;
+	 double k = 1;
+	 KdivMAXabsV4 = k /(MAXabsV2*MAXabsV2);
  this.distanceMatrix = distanceMatrix;
 }       
   
    //checking of  space disposition conditions     
-  protected  void setGeometry(Atom A, Atom B, Atom C, Atom D, Atom E, Atom F,Distance distanceAB){
+   void setGeometry(Atom A, Atom B, Atom C, Atom D, Atom E, Atom F, Distance distanceAB){
     this.A = A;
     this.B = B;
     this.C = C;
@@ -50,7 +71,8 @@ public CAlphaGeometry(double  MAXabsV2, DistanceMatrix distanceMatrix)
    vAB_z = distanceAB.dz();        
 //vectors - DC , AB
   distanceDC = distanceMatrix.distance(D,C);
-  if (distanceDC.distance() == INFINITE_DISTANCE)
+	  double INFINITE_DISTANCE = Distance.INFINITE_DISTANCE;
+	  if (distanceDC.distance() == INFINITE_DISTANCE)
        distanceDC = new Distance(D,C);
    vDC_x = distanceDC.dx();
    vDC_y = distanceDC.dy();
@@ -72,8 +94,8 @@ public CAlphaGeometry(double  MAXabsV2, DistanceMatrix distanceMatrix)
   
    /**
     * energy and dirivarives calculation.
-    **/     
-protected double updateEnergy() {    
+    **/
+   double updateEnergy() {
   double de, x2, delta;
   double dxA, dyA, dzA, dxB, dyB, dzB, dxC, dyC, dzC, dxD, dyD, dzD, dxE, dyE, dzE, dxF, dyF, dzF;
    dxA =  vDC_x;  

@@ -2,19 +2,18 @@ package meshi.applications.prediction.analysis;
 import java.io.File;
 import java.util.Iterator;
 
-public class ExpAlignment extends ModelDataList {
+class ExpAlignment extends ModelDataList {
     public ExpAlignment(File directory) {
 	super("results from "+directory);
 	if (! directory.isDirectory()) throw new RuntimeException(directory+" not a directory");
 	String[] fileNames = directory.list();
-	for (int i = 0; i < fileNames.length; i++) {
-	    String name = fileNames[i];
-	    if (name.startsWith("result") & name.endsWith(".pdb")) {
-		Model temp = new Model(new File(directory,name));
-		if (temp.valid())
-		    add(new ModelData(temp));
+	    for (String name : fileNames) {
+		    if (name.startsWith("result") & name.endsWith(".pdb")) {
+			    Model temp = new Model(new File(directory, name));
+			    if (temp.valid())
+				    add(new ModelData(temp));
+		    }
 	    }
-	}
     }
     
     public void tabulate(String[] keys) {
@@ -41,7 +40,7 @@ public class ExpAlignment extends ModelDataList {
 	return GdtVsSolvate(0);
     }
 
-    public String GdtVsSolvate(double yShift) {
+    private String GdtVsSolvate(double yShift) {
 	String out = "";
 	for (Iterator modelsData = iterator(); modelsData.hasNext();) {
 	    ModelData modelData = (ModelData) modelsData.next();

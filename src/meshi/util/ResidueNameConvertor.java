@@ -3,7 +3,7 @@ package meshi.util;
  * Converts Residue names from three letter to one letter format.
  * 
  */
-public class ResidueNameConvertor {
+class ResidueNameConvertor {
     public static char three2one(String threeLName) {
         char ans = '*';
         threeLName = threeLName.trim();

@@ -37,18 +37,17 @@ public class SteepestDecent extends Minimizer {
     private double[][] bufferCoordinates;
     private int iterationNum;
     private double lastStepLength = 1;
-    private double magnitudeForce = 1000000000;
-    private static final double DEFAULT_TOLERANCE = 0.00001;
+	private static final double DEFAULT_TOLERANCE = 0.00001;
     private static final int DEFAULT_MAX_ITERATION = 100000;
     private static final int DEFAULT_REPORT_EVERY = 1;
-    private int reportEvery; // Default value for the frequency of the reports.
+    private final int reportEvery; // Default value for the frequency of the reports.
     // Default values for the line search:
     private static final double DEFAULT_INITIAL_STEP_LENGTH = 0.00000001;
     private static final double DEFAULT_STEP_SIZE_REDUCTION = 0.5;
     private static final double DEFAULT_STEP_SIZE_EXPENTION = 1.1;
-    private double initialStepLength;
-    private double stepSizeReduction;
-    private double stepSizeExpansion;
+    private final double initialStepLength;
+    private final double stepSizeReduction;
+    private final double stepSizeExpansion;
     //Full constructor
     public SteepestDecent(TotalEnergy energy,
 			  double tolerance, 
@@ -92,7 +91,8 @@ public class SteepestDecent extends Minimizer {
     public String run() throws MinimizerException,LineSearchException {
    	init();
 	isConverged = 0;
-   	while ((iterationNum < maxIteration) && 
+	    double magnitudeForce = 1000000000;
+	    while ((iterationNum < maxIteration) &&
 	       ((magnitudeForce =  TotalEnergy.getGradMagnitude(coordinates)) > tolerance)) {
 	    for (int i = 0; i < coordinates.length; i++) {
 		bufferCoordinates[i][0] = coordinates[i][0];
@@ -108,7 +108,7 @@ public class SteepestDecent extends Minimizer {
             		throw new MinimizerException(1,"\n\n Problem in SteepestDecent."+
 						     " Direction is not a descent direction. \n" + 
 						     "This problem is caused by incorrect differentiation of the energy function.\n"+
-						     "gradient rms is "+magnitudeForce+"\n"+
+						     "gradient rms is "+ magnitudeForce +"\n"+
 						     e.toString());
 		    else
 			throw e;

@@ -17,13 +17,13 @@ public abstract class CooperativeEnergyTerm extends AbstractEnergy {
      **/
     protected AtomList atomList;
 
-    public CooperativeEnergyTerm() {}
+    protected CooperativeEnergyTerm() {}
 
-    public CooperativeEnergyTerm(Object[] updateableResources,
-                                 AtomList atomList,
-                                 DistanceMatrix dm,
-                                 ParametersList parameters, 
-                                 double weight) {
+    protected CooperativeEnergyTerm(Object[] updateableResources,
+                                    AtomList atomList,
+                                    DistanceMatrix dm,
+                                    ParametersList parameters,
+                                    double weight) {
 	super(addDistanceMatrixToUpdateable(updateableResources,dm) , parameters , weight);
 	this.dm = dm;
 	this.atomList = atomList;
@@ -45,14 +45,14 @@ public abstract class CooperativeEnergyTerm extends AbstractEnergy {
         coordinates[1] = atom.Y();
         coordinates[2] = atom.Z();
         for(int i = 0; i< 3; i++) {
-            try{totalEnergy.update();}catch(UpdateableException ue){}
+            try{totalEnergy.update();}catch(UpdateableException ignored){}
             double x = coordinates[i][0];
             coordinates[i][1] = 0;
             double e1 = evaluate();
             double analiticalForce = coordinates[i][1];
             coordinates[i][0] += DX;
             // Whatever should be updated ( such as distance matrix torsion list etc. )
-            try{totalEnergy.update();}catch(UpdateableException ue){}
+            try{totalEnergy.update();}catch(UpdateableException ignored){}
             double e2 = evaluate();
             double de = e2-e1;
             double numericalForce = - de/DX;
@@ -84,7 +84,7 @@ public abstract class CooperativeEnergyTerm extends AbstractEnergy {
      * This auxillary method will add the DistanceMatrix object, dm, to the object list, unless there is already an instance of DistanceMatrix there.
      * It also put the DistanceMatrix object first.
      **/
-    protected static Object[] addDistanceMatrixToUpdateable(Object[] ar, DistanceMatrix dm) {
+    private static Object[] addDistanceMatrixToUpdateable(Object[] ar, DistanceMatrix dm) {
     	if (ar == null)
     		return toArray(dm);
     	boolean dmInArray = false;
@@ -97,8 +97,7 @@ public abstract class CooperativeEnergyTerm extends AbstractEnergy {
     	Object[] newAr;
     	if (dmInArray) {
     		newAr = new Object[ar.length];
-    		for (int c=0 ; c<ar.length ; c++) 
-    			newAr[c] = ar[c];
+		    System.arraycopy(ar, 0, newAr, 0, ar.length);
     		Object tmp = newAr[0];
     		newAr[0] = newAr[indOfDM];
     		newAr[indOfDM] = tmp;
@@ -106,8 +105,7 @@ public abstract class CooperativeEnergyTerm extends AbstractEnergy {
     	else {
     		newAr = new Object[ar.length+1];
     		newAr[0] = dm;
-    		for (int c=0 ; c<ar.length ; c++) 
-    			newAr[c+1] = ar[c];
+		    System.arraycopy(ar, 0, newAr, 1, ar.length);
     	}
     	return newAr;
     }

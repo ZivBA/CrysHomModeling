@@ -13,21 +13,15 @@ import meshi.util.filters.Filter;
 import java.util.Iterator;
 
 public class CNList extends CNtwoDistancesList implements Updateable {
+	
+	private static final CNdistanceList inputNewCNList = new CNdistanceList();
 
-    //--------------------------------- data fields -----------------------------
-    /*
-    * The  PairsList updated every X steps.
-    */
-    private final int UPDATE_EVERY_X_STEPS = 50;
-
-    protected static CNdistanceList inputNewCNList = new CNdistanceList();
-
-    private int residuesSize;
+    private final int residuesSize;
     /*
     * holds the relevant row numbers
     */
-    private MeshiList relevantRows;
-    private DistanceMatrix distanceMatrix;
+    private final MeshiList relevantRows;
+    private final DistanceMatrix distanceMatrix;
 
     /*
      * Used to avoid reupdate in the same minimization step
@@ -47,7 +41,7 @@ public class CNList extends CNtwoDistancesList implements Updateable {
     public final int countUpdates() {return countUpdates;}
 
 
-    private CNtwoDistances [][] pairsAtResidues;
+    private final CNtwoDistances [][] pairsAtResidues;
     private final IsAlive isAlive;
     //-------------------------------- constructors --------------------------------
 
@@ -77,7 +71,8 @@ public class CNList extends CNtwoDistancesList implements Updateable {
 
 
     private void update() {
-        if (countUpdates == UPDATE_EVERY_X_STEPS) {
+	    int UPDATE_EVERY_X_STEPS = 50;
+	    if (countUpdates == UPDATE_EVERY_X_STEPS) {
             //reset();
             countUpdates = 0;
             updateNewOnly(inputNewCNList);
@@ -88,7 +83,7 @@ public class CNList extends CNtwoDistancesList implements Updateable {
         }
         else if (countUpdates > UPDATE_EVERY_X_STEPS)
             throw new RuntimeException("Something weird with HbondList.update()\n"+
-                                       "countUpdates = "+countUpdates+" UPDATE_EVERY_X_STEPS  = "+UPDATE_EVERY_X_STEPS);
+                                       "countUpdates = "+countUpdates+" UPDATE_EVERY_X_STEPS  = "+ UPDATE_EVERY_X_STEPS);
         else {
             countUpdates++;
             updateNewOnly(inputNewCNList);
@@ -114,7 +109,7 @@ public class CNList extends CNtwoDistancesList implements Updateable {
         }
     }
 
-    public void markList_dm(){
+    private void markList_dm(){
            Iterator allPairs = iterator();
            CNtwoDistances pair;
            Distance dis1, dis2;
@@ -130,30 +125,31 @@ public class CNList extends CNtwoDistancesList implements Updateable {
                    if (!isDis1){
                         int res1 = dis1.atom1().residueNumber();
                         int res2 = dis1.atom2().residueNumber();
-                        pairsAtResidues[res1][res2].deleteDistance(dis1);
+                        pairsAtResidues[res1][res2].deleteDistance();
                    }
                    if (!isDis2){
                         int res1 = dis2.atom1().residueNumber();
                         int res2 = dis2.atom2().residueNumber();
-                        pairsAtResidues[res1][res2].deleteDistance(dis2);
+                        pairsAtResidues[res1][res2].deleteDistance();
                    }
                }
               }
             else{
-                if (dis1 == null && dis2 != null)
-                throw new RuntimeException("Wrong order of distances");
+                if (dis1 == null && dis2 != null) {
+                    throw new RuntimeException("Wrong order of distances");
+                }
                 // only both or the second distance can be == null
                 if (pair.counter()!=0){
                     int res1 = dis1.atom1().residueNumber();
                     int res2 = dis1.atom2().residueNumber();
-                    pairsAtResidues[res1][res2].deleteDistance(dis1);
+                    pairsAtResidues[res1][res2].deleteDistance();
                 }
             }
         }
    }
 
 
-    public void cleanList_dm(){
+    private void cleanList_dm(){
            Object[] newInternalArray = new Object[capacity];
            Iterator allPairs = iterator();
            CNtwoDistances pair;
@@ -183,7 +179,7 @@ public class CNList extends CNtwoDistancesList implements Updateable {
                 headAtom = matrixRow.atom;
                 headAttribute = (CN_AtomAttribute) headAtom.getAttribute(CN_AtomAttribute.key);
                 if (headAttribute != null){//meens that it is C or N
-                    relevantRows.fastAdd(new Integer(headAtom.number()));//add the row number
+                    relevantRows.fastAdd(headAtom.number());//add the row number
                     rowIterator = matrixRow.nonBondedIterator();
                     while((dis = (Distance) rowIterator.next()) != null){
                         if(isGoodCNPair.accept(dis)){
@@ -198,7 +194,7 @@ public class CNList extends CNtwoDistancesList implements Updateable {
             Integer current;
             int row;
             while((current = (Integer) relevantRowsIterator.next()) != null){
-                row = current.intValue();
+                row = current;
                 matrixRow = distanceMatrix.rowNumber(row);
                 headAtom = matrixRow.atom;
                 rowIterator = matrixRow.nonBondedIterator();
@@ -226,7 +222,7 @@ public class CNList extends CNtwoDistancesList implements Updateable {
 
 //-----------------------------------------------------------------------------------
     static class IsAlive implements Filter{
-        DistanceMatrix dm;
+        final DistanceMatrix dm;
         public IsAlive(DistanceMatrix  matrix){
             super();
             dm = matrix ;
@@ -243,7 +239,7 @@ public class CNList extends CNtwoDistancesList implements Updateable {
    //--------------------------- internal class WithinRmaxIterator ---------------------------
 
     private  class WithinRmaxIterator extends MeshiIterator  {
-        IsWithInRmax isWithInRmax;
+        final IsWithInRmax isWithInRmax;
 
         public WithinRmaxIterator(MeshiList list){
             super(list);
@@ -261,7 +257,7 @@ public class CNList extends CNtwoDistancesList implements Updateable {
     //--------------------------- internal class IsWithInRmax ---------------------------
 
      class IsWithInRmax implements Filter{
-        private double rMax;
+        private final double rMax;
         public IsWithInRmax(){
             super();
             rMax = DistanceMatrix.rMax();

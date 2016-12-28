@@ -11,13 +11,13 @@ import meshi.util.file.MeshiWriter;
 
 import java.io.IOException;
 
-public class DockThermosomIntoEM implements Residues {
+class DockThermosomIntoEM implements Residues {
 
 	private boolean[] toTake = null;
 	
-	public DockThermosomIntoEM() {}
+	private DockThermosomIntoEM() {}
 
-	public void setToTake(int[][] keepParts , AtomList fullUnit, DSSP dsspUnit, String validSS) {
+	private void setToTake(int[][] keepParts, AtomList fullUnit, DSSP dsspUnit, String validSS) {
 		toTake = new boolean[1000];
 		char chainID  = fullUnit.atomAt(0).chain().trim().charAt(0);
 		boolean[] auxToTake = new boolean[1000];
@@ -25,8 +25,8 @@ public class DockThermosomIntoEM implements Residues {
 			toTake[c] = false;
 			auxToTake[c] = false;
 		}
-		for (int rangeC=0 ; rangeC<keepParts.length ; rangeC++) {
-			for (int c=keepParts[rangeC][0] ; c<=keepParts[rangeC][1] ; c++) {
+		for (int[] keepPart : keepParts) {
+			for (int c = keepPart[0]; c <= keepPart[1]; c++) {
 				auxToTake[c] = true;
 			}
 		}
@@ -102,7 +102,7 @@ public class DockThermosomIntoEM implements Residues {
 	 * @param unitID
 	 * @return
 	 */
-	public AtomList takePartOfUnit(AtomList fullUnit, char unitID) {
+	private AtomList takePartOfUnit(AtomList fullUnit, char unitID) {
 		TricAlignment tricAlignment = new TricAlignment();
 		AtomList sameHomoUnit = new AtomList();
 		for (int c=0 ; c<fullUnit.size() ; c++) {
@@ -122,7 +122,7 @@ public class DockThermosomIntoEM implements Residues {
 	 * @param unitID
 	 * @return
 	 */
-	public AtomList takePartOfUnit(AtomList fullUnit, int[][] keepParts , char unitID) {
+	private AtomList takePartOfUnit(AtomList fullUnit, int[][] keepParts, char unitID) {
 		TricAlignment tricAlignment = new TricAlignment();
 		int[][] newKeepParts = new int[keepParts.length][2];
 		for (int rangeC=0 ; rangeC<keepParts.length ; rangeC++) {
@@ -133,8 +133,8 @@ public class DockThermosomIntoEM implements Residues {
 		for (int c=0 ; c<fullUnit.size() ; c++) {
 			int resNum = fullUnit.atomAt(c).residueNumber();
 			boolean keep = false;
-			for (int rangeC=0 ; rangeC<newKeepParts.length ; rangeC++) {
-				if ((resNum>=newKeepParts[rangeC][0]) && (resNum<=newKeepParts[rangeC][1])) {
+			for (int[] newKeepPart : newKeepParts) {
+				if ((resNum >= newKeepPart[0]) && (resNum <= newKeepPart[1])) {
 					keep = true;
 				}
 			}

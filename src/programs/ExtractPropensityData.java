@@ -15,11 +15,11 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 
-public class ExtractPropensityData extends MeshiProgram implements Residues, AtomTypes {
+class ExtractPropensityData extends MeshiProgram implements Residues, AtomTypes {
  
     public static void main(String[] args){
     	  	
-    	init(args); 
+    	init();
     	  	
     	// Going over the models
     	try{
@@ -68,7 +68,7 @@ public class ExtractPropensityData extends MeshiProgram implements Residues, Ato
     
     
      
-    protected static void init(String[] args) {
+    private static void init() {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 

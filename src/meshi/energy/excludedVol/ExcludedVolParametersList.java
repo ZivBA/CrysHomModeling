@@ -68,12 +68,12 @@ public class ExcludedVolParametersList extends ParametersList {
 			   parametersFileName);
 			   throw e;
 		}
-		
-		for (int c=0 ; c<tmpAr.length ; c++)
-		   add(tmpAr[c]);
+	
+	    for (ExcludedVolParameters aTmpAr : tmpAr)
+		    add(aTmpAr);
 	}
 
-    public Parameters createParameters(String line) {
+    protected Parameters createParameters(String line) {
 	return new ExcludedVolParameters(new StringTokenizer(line));
     }
     

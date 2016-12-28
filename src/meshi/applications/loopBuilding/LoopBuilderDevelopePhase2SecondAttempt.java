@@ -27,44 +27,17 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 	// User-defined CONST:
 	// *******************
 	// for demi-clustering
-	protected final double COVERAGE_CRITERIA = 0.5; 
-	protected final int CLUSTERS_FOR_COVERAGE_CRITERIA = 5; 
-	protected final double CUTOFF_INCREAMENTS = 0.5;
-	// for final clustering
-	protected final double FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER = 0.001; 
-	protected final int NUMBER_OF_CLUSTERS_IN_OUTPUT = 50; 
-	protected final int NUMBER_OF_SINGLE_IN_OUTPUT = 30; 
-
-	// for 'noClust' energy selection on 8mers
-	protected final double Wcent_8 = 1.00;
-	protected final double Whbsr_8 = 0.6;
-	protected final double Whblr_8 = 2.35;
-	protected final double Wev_8 = 2.0;
-	protected final double Wprop_8 = 0.65;
-	protected final double Wclu_8 = -0.55;
-
-	// for 'noClust' energy selection on 12mers                                                                                                                                                              
-	protected final double Wcent_12 = 1.0;
-	protected final double Whbsr_12 = 0.45;
-	protected final double Whblr_12 = 0.9;
-	protected final double Wev_12 = 0.25;
-	protected final double Wprop_12 = 0.1;
-	protected final double Wclu_12 = -0.15;
-
-	protected double Wcent = Double.NaN;
-	protected double Whbsr = Double.NaN;
-	protected double Whblr = Double.NaN;
-	protected double Wev = Double.NaN;
-	protected double Wprop = Double.NaN;
-	protected double Wclu = Double.NaN;
-    
-    
-    
-	protected ROT1SolvationEnergy cent_080 = null;
-	protected SimpleHydrogenBondEnergy hb_sr = null;
-	protected SimpleHydrogenBondEnergy hb_lr = null;
+	protected final double COVERAGE_CRITERIA = 0.5;
 	
-	protected double[][] intial_HM_LoopCoordinates = null;
+	private double Wcent = Double.NaN;
+	private double Whbsr = Double.NaN;
+	private double Whblr = Double.NaN;
+	private double Wev = Double.NaN;
+	private double Wprop = Double.NaN;
+	private double Wclu = Double.NaN;
+	
+	
+	private double[][] intial_HM_LoopCoordinates = null;
 
 	public LoopBuilderDevelopePhase2SecondAttempt(CommandList commands,
 			String writePath, Corpus corpus, Protein prot, Protein ref,
@@ -73,20 +46,32 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 		super(commands, writePath, corpus, prot, ref, resStart, resEnd,
 				rmsMatchCO, rmsCutOff, fragsDescription, closureTolerance);
 		if ((resEnd-resStart+1)>9) {
-			Wcent = Wcent_12;
-			Whbsr = Whbsr_12;
-			Whblr = Whblr_12;
-			Wev = Wev_12;
-			Wprop = Wprop_12;
-			Wclu = Wclu_12*(resEnd-resStart+1)/12.0;
+			double wcent_12 = 1.0;
+			Wcent = wcent_12;
+			double whbsr_12 = 0.45;
+			Whbsr = whbsr_12;
+			double whblr_12 = 0.9;
+			Whblr = whblr_12;
+			double wev_12 = 0.25;
+			Wev = wev_12;
+			double wprop_12 = 0.1;
+			Wprop = wprop_12;
+			double wclu_12 = -0.15;
+			Wclu = wclu_12 *(resEnd-resStart+1)/12.0;
 		}
 		else if ((resEnd-resStart+1)>3) {
-			Wcent = Wcent_8;
-			Whbsr = Whbsr_8;
-			Whblr = Whblr_8;
-			Wev = Wev_8;
-			Wprop = Wprop_8;
-			Wclu = Wclu_8*(resEnd-resStart+1)/8.0;			
+			double wcent_8 = 1.00;
+			Wcent = wcent_8;
+			double whbsr_8 = 0.6;
+			Whbsr = whbsr_8;
+			double whblr_8 = 2.35;
+			Whblr = whblr_8;
+			double wev_8 = 2.0;
+			Wev = wev_8;
+			double wprop_8 = 0.65;
+			Wprop = wprop_8;
+			double wclu_8 = -0.55;
+			Wclu = wclu_8 *(resEnd-resStart+1)/8.0;
 		} 
 		else
 			throw new RuntimeException("Currently handling only more than 3 mers loops.");
@@ -115,13 +100,13 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 						fmt2.format(evEnergy) + " " +
 						fmt2.format(touch) + " " + 
 						fmt2.format(results.bbHBenergy) + "         ");
-				for (int tmpc=0 ; tmpc<fragRank.length ; tmpc++) {
-					System.out.print(fragRank[tmpc]+" ");
+				for (int aFragRank : fragRank) {
+					System.out.print(aFragRank + " ");
 					//score += 0.0*(Math.log(1+fragRank[tmpc]));
 				}
 				System.out.print("       ");
-				for (int tmpc=0 ; tmpc<actuallyTaken.length ; tmpc++) {
-					System.out.print(actuallyTaken[tmpc]+" ");
+				for (int anActuallyTaken : actuallyTaken) {
+					System.out.print(anActuallyTaken + " ");
 				}
 				System.out.println();
 			}
@@ -133,7 +118,7 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 	/** 
 	 * WARNING: prot and ref are changed into their centroid rep!!!
 	 */
-	public void developementAnalysis(int moduleBase) {
+	public void developementAnalysis() {
 		
 		// Building distance matrix between loops
 		double[][] disMat = new double[allResults.size()][allResults.size()];
@@ -198,9 +183,9 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 				new SimpleHydrogenBond_Dahiyat_LowAccuracy_BBonly_ShortRange_Creator(1.0,false)
 		};
 		energy = new TotalEnergy(prot, new DistanceMatrix(prot.atoms(),  8.0, 0.1, 4), energyCreators, commands);
-		cent_080 = (ROT1SolvationEnergy) (energy.getEnergyTerms(new ROT1SolvationEnergy())[0]);
-		hb_lr = (SimpleHydrogenBondEnergy) (energy.getEnergyTerms(new SimpleHydrogenBondEnergy())[0]);
-		hb_sr = (SimpleHydrogenBondEnergy) (energy.getEnergyTerms(new SimpleHydrogenBondEnergy())[1]);
+		ROT1SolvationEnergy cent_080 = (ROT1SolvationEnergy) (energy.getEnergyTerms(new ROT1SolvationEnergy())[0]);
+		SimpleHydrogenBondEnergy hb_lr = (SimpleHydrogenBondEnergy) (energy.getEnergyTerms(new SimpleHydrogenBondEnergy())[0]);
+		SimpleHydrogenBondEnergy hb_sr = (SimpleHydrogenBondEnergy) (energy.getEnergyTerms(new SimpleHydrogenBondEnergy())[1]);
 		// Looping on the loops
 		for (int modelNum=0 ; modelNum<allResults.size() ; modelNum++) {
 			restoreLoopCoordinates(allResults.get(modelNum).coors);
@@ -302,17 +287,18 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 		HierarchicalClusterer clusterer = new HierarchicalClusterer(disMat);
 		clusterer.cluster(rmsClusteringCutoff, Integer.MAX_VALUE);
 		clusterer.initializeSerialTokenizer();
-		Vector<double[]> clusterData = new Vector<double[]>(); 
+		Vector<double[]> clusterData = new Vector<>();
 		int clusterCounter = 0;
-		for (Cluster clust=clusterer.getNextSerialToken() ; (clust!=null) && (clust.getClusterMembers().size()>1) ; clust=clusterer.getNextSerialToken()) {
-			if (clust.getClusterMembers().size()>(allResults.size()*FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER)) {
+		double FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER = 0.001;
+		for (Cluster clust = clusterer.getNextSerialToken(); (clust!=null) && (clust.getClusterMembers().size()>1) ; clust=clusterer.getNextSerialToken()) {
+			if (clust.getClusterMembers().size()>(allResults.size()* FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER)) {
 				double average_Ecent = clust.findPercentileOfTrait(array_Ecent,0.25);
 				double average_Ehb_sr = clust.findPercentileOfTrait(array_Ehb_sr,0.25);
 				double average_Ehb_lr = clust.findPercentileOfTrait(array_Ehb_lr,0.25);
 				double average_Eev = clust.findPercentileOfTrait(array_Eev,0.25);
 				double average_Eprop = clust.findPercentileOfTrait(array_Eprop,0.25);
 				for (int cc=0 ; cc<clust.getClusterMembers().size() ; cc++) {
-					clusterAffiliation[clust.getClusterMembers().get(cc).intValue()] = clusterCounter;
+					clusterAffiliation[clust.getClusterMembers().get(cc)] = clusterCounter;
 				}
 				double[] tmpArray = {average_Ecent, average_Ehb_sr, average_Ehb_lr, average_Eev, average_Eprop, 
 						clust.getClusterMembers().size(), clust.findCenter()};
@@ -336,8 +322,8 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 						fmt2.format(array_Ehb_lr[modelNum]) + " " +
 						fmt2.format(array_Eev[modelNum]) + " " +
 						fmt2.format(array_Eprop[modelNum]) + "   " +
-						fmt2.format(Math.log(allResults.size()*FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER)) + " " +
-						fmt2.format(allResults.size()*FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER) + " " + 
+						fmt2.format(Math.log(allResults.size()* FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER)) + " " +
+						fmt2.format(allResults.size()* FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER) + " " +
 						fmt2.format(clusterAffiliation[modelNum]) + "          ");		
 			}
 			else {
@@ -354,8 +340,8 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 						fmt2.format(clusterAffiliation[modelNum]) + "          ");				
 			}
 			fragRank = allResults.get(modelNum).fragRank;
-			for (int tmpc=0 ; tmpc<fragRank.length ; tmpc++) {
-				System.out.print(fragRank[tmpc]+" ");
+			for (int aFragRank : fragRank) {
+				System.out.print(aFragRank + " ");
 				//score += 0.0*(Math.log(1+fragRank[tmpc]));
 			}
 			System.out.println();
@@ -370,7 +356,7 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 				Whblr*array_Ehb_lr[modelNum] + 
 				Wev*array_Eev[modelNum] + 
 				Wprop*array_Eprop[modelNum]+
-				Wclu*Math.log(allResults.size()*FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER);
+				Wclu*Math.log(allResults.size()* FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER);
 			}
 			else {
 				singleScores[modelNum] = Wcent*array_Ecent[modelNum] + 
@@ -381,6 +367,7 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 				Wclu*Math.log(clusterData.get(clusterAffiliation[modelNum])[5]);				
 			}
 		}
+		int NUMBER_OF_SINGLE_IN_OUTPUT = 30;
 		int[] sortedSingleScores = AbstractLoopBuilder.findTopMinArray(singleScores, NUMBER_OF_SINGLE_IN_OUTPUT, Double.MAX_VALUE);
 		try{
 			for (int writeLoop = 0; writeLoop<sortedSingleScores.length ; writeLoop++) {
@@ -416,7 +403,8 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 			clusterSizes[cc] = -clusterData.get(cc)[5];
 		}
 		int[] sortedClusterSize = AbstractLoopBuilder.findTopMinArray(clusterSizes, clusterSizes.length, Double.MAX_VALUE);
-		for (int cc=0 ; (cc<sortedClusterSize.length) && (cc<NUMBER_OF_CLUSTERS_IN_OUTPUT) ; cc++) {
+		int NUMBER_OF_CLUSTERS_IN_OUTPUT = 50;
+		for (int cc = 0; (cc<sortedClusterSize.length) && (cc< NUMBER_OF_CLUSTERS_IN_OUTPUT) ; cc++) {
 			int affiliationNumber = sortedClusterSize[cc];			
 			int center = (int) Math.round(clusterData.get(affiliationNumber)[6]);
 			System.out.println(headerClusters + " " + cc + " " +
@@ -436,7 +424,7 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 
 		// Writing the '55Clust' loops
 		try{
-			for (int cc=0 ; (cc<sortedClusterSize.length) && (cc<NUMBER_OF_CLUSTERS_IN_OUTPUT) ; cc++) {
+			for (int cc = 0; (cc<sortedClusterSize.length) && (cc< NUMBER_OF_CLUSTERS_IN_OUTPUT) ; cc++) {
 				int affiliationNumber = sortedClusterSize[cc];			
 				int center = (int) Math.round(clusterData.get(affiliationNumber)[6]);
 				restoreLoopCoordinates(allResults.get(center).coors);	
@@ -467,6 +455,7 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 		double initialRMScutOff = 0.0;
 		double sumSize = 0;
 		while (sumSize/allResults.size() < coverage_criteria) {
+			double CUTOFF_INCREAMENTS = 0.5;
 			initialRMScutOff += CUTOFF_INCREAMENTS;
 			HierarchicalClusterer clusterer = new HierarchicalClusterer(disMat);
 			clusterer.cluster(initialRMScutOff, Integer.MAX_VALUE);
@@ -474,7 +463,8 @@ LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 			sumSize = 0;
 			int clusterCounter = 0;
 			System.out.print("Summing clusters: ");
-			for (Cluster clust=clusterer.getNextSizeToken() ; (clust!=null) && (clusterCounter<CLUSTERS_FOR_COVERAGE_CRITERIA) ; clusterCounter++) {
+			int CLUSTERS_FOR_COVERAGE_CRITERIA = 5;
+			for (Cluster clust = clusterer.getNextSizeToken(); (clust!=null) && (clusterCounter< CLUSTERS_FOR_COVERAGE_CRITERIA) ; clusterCounter++) {
 				System.out.print(clust.getClusterMembers().size() + " ");
 				sumSize += clust.getClusterMembers().size();
 				clust=clusterer.getNextSizeToken();

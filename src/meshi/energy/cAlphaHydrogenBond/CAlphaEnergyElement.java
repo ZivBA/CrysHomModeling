@@ -16,22 +16,26 @@ import meshi.molecularElements.ResidueList;
 public class CAlphaEnergyElement extends EnergyElement {
 private  final double weight;
 private Atom A, B, C, D, E, F;
-protected double energy, energyDis, energyGeometry;
+protected double energy;
+	private double energyDis;
+	private double energyGeometry;
 
-protected static final double MINdisCA = 4.5, MAXdisCA = 7.0, slope = 1;
-protected static final double Q_H = -0.6;
-protected final double MAXabsV2 = 13.4*13.4;
-
-private Distance distanceAB;
-private CAlphaDistance distanceElement;
-private CAlphaGeometry geometryElement;
+private static final double MINdisCA = 4.5;
+	private static final double MAXdisCA = 7.0;
+	private static final double slope = 1;
+private static final double Q_H = -0.6;
+	
+	private Distance distanceAB;
+private final CAlphaDistance distanceElement;
+private final CAlphaGeometry geometryElement;
 //private DistanceMatrix distanceMatrix;
 private ResidueList residues;
-int resNumber;
+private int resNumber;
   
 public CAlphaEnergyElement(double weight, DistanceMatrix distanceMatrix,  ResidueList residues) {
     distanceElement = new CAlphaDistance(MINdisCA, MAXdisCA, slope);
-    geometryElement = new CAlphaGeometry(MAXabsV2,distanceMatrix);
+	double MAXabsV2 = 13.4 * 13.4;
+	geometryElement = new CAlphaGeometry(MAXabsV2,distanceMatrix);
     if (DistanceMatrix.rMax() <  MAXdisCA)
         throw new RuntimeException("The current value of distanceMatrix.rMax = "+ DistanceMatrix.rMax()+
                 " is too small for cAlphaHydrogenBond." +
@@ -42,7 +46,7 @@ public CAlphaEnergyElement(double weight, DistanceMatrix distanceMatrix,  Residu
     resNumber = residues.size();
 }
 
-    protected boolean set(Distance distance){
+    boolean set(Distance distance){
     double distanceVal = distance.distance();
     if ((distanceVal < MINdisCA) || (distanceVal >  MAXdisCA)) return false;
         this.distanceAB = distance;
@@ -85,7 +89,7 @@ public CAlphaEnergyElement(double weight, DistanceMatrix distanceMatrix,  Residu
         return energyDis*energyGeometry*Q_H*weight;
    } 
  
-protected void updateAtoms(){
+private void updateAtoms(){
 double koef = Q_H*weight;        
 double deDx, deDy, deDz;
    if (! A.frozen()) {

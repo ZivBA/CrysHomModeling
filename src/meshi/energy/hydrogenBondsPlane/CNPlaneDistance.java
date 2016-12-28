@@ -3,17 +3,24 @@ package meshi.energy.hydrogenBondsPlane;
 import meshi.geometry.Distance;
 import meshi.molecularElements.Atom;
 
-public class CNPlaneDistance {
-private  final double K = 1;
-private  double MINdis, MAXdis, slope, leftLineBound, rightLineBound;
-private double a, b;
-private double distanceVal, dDistanceDx, dDistanceDy, dDistanceDz;
+class CNPlaneDistance {
+	private final double MINdis;
+	private final double MAXdis;
+	private final double slope;
+	private final double leftLineBound;
+	private final double rightLineBound;
+	private double distanceVal, dDistanceDx, dDistanceDy, dDistanceDz;
 private Atom atom1, atom2;
 private double energy;
-protected double deDx1, deDy1, deDz1, deDx2, deDy2, deDz2;
+double deDx1;
+	double deDy1;
+	double deDz1;
+	double deDx2;
+	double deDy2;
+	double deDz2;
 private int swapFactor;
 
- protected CNPlaneDistance(double MINdis, double MAXdis, double slope) {
+ CNPlaneDistance(double MINdis, double MAXdis, double slope) {
     this.MINdis = MINdis;
     this.MAXdis = MAXdis;
     this.slope = slope;
@@ -21,7 +28,7 @@ private int swapFactor;
     rightLineBound = MAXdis-slope;
  }
 
- protected  void set(Atom atom1, Atom atom2, Distance distance, int swapFactor) {
+ void set(Atom atom1, Atom atom2, Distance distance, int swapFactor) {
    this.atom1 = atom1;
    this.atom2 = atom2;
    this.swapFactor = swapFactor;
@@ -34,7 +41,7 @@ private int swapFactor;
     /**
     * energy and dirivarives calculation.
     **/
- protected  double  updateEnergy() {
+    double  updateEnergy() {
     double d, d2, de;
 
     if (distanceVal <= MINdis || distanceVal >= MAXdis) {
@@ -43,13 +50,16 @@ private int swapFactor;
             deDx2 = deDy2 = deDz2 = 0;
             return energy;
     }
-   if (distanceVal < leftLineBound)  {
+	 double b;
+	 double a;
+	 double k = 1;
+	 if (distanceVal < leftLineBound)  {
        a = -2./(slope*slope*slope);
        b = 3./(slope*slope);
        d = distanceVal - MINdis;
        d2 = d*d;
-       energy = K*(a*d2*d+b*d2);
-       de = K*(3*a*d2+2*b*d);
+       energy = k *(a *d2*d+ b *d2);
+       de = k *(3* a *d2+2* b *d);
    }
    else
        if (distanceVal > rightLineBound) {
@@ -57,11 +67,11 @@ private int swapFactor;
        b = -3./(slope*slope);
        d = distanceVal-rightLineBound;
        d2 = d*d;
-       energy = K*(a*d2*d+b*d2+1);
-       de = K*(3*a*d2+2*b*d);
+       energy = k *(a *d2*d+ b *d2+1);
+       de = k *(3* a *d2+2* b *d);
        }
        else {
-          energy = K;
+          energy = k;
           de = 0;
        }
    de = de*swapFactor;

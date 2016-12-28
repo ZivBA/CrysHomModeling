@@ -10,11 +10,11 @@ public class RamachandranAndChi1EnergyElement
 	extends EnergyElement
 	implements Residues, CompositeTorsionsDefinitions {
 
-	public final ResidueTorsions residueTorsions;
-	public final RamachandranAndChi12DParameters cpp2D;
-	public final RamachandranAndChi13DParameters cpp3D;
-	protected double weight;
-	public final boolean is3D;
+	private final ResidueTorsions residueTorsions;
+	private final RamachandranAndChi12DParameters cpp2D;
+	private final RamachandranAndChi13DParameters cpp3D;
+	private final double weight;
+	private final boolean is3D;
 
 	public RamachandranAndChi1EnergyElement(
 			ResidueTorsions residueTorsions,

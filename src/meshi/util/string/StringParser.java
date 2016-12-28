@@ -61,7 +61,7 @@ public class StringParser  {
 	Iterator positionIter = positions.iterator();
  	while ((position = (Integer) positionIter.next()) != null) 
 	    {
-		to = position.intValue();
+		to = position;
 		if (to+1 > parseMe.length())
 		    {
 			newList.add(parseMe.substring(from,parseMe.length()));

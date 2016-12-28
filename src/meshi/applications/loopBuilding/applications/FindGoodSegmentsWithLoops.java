@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
-public class FindGoodSegmentsWithLoops extends MeshiProgram implements Residues, AtomTypes {
+class FindGoodSegmentsWithLoops extends MeshiProgram implements Residues, AtomTypes {
 
 
 	private static String modelFileName = null;
@@ -33,28 +33,26 @@ public class FindGoodSegmentsWithLoops extends MeshiProgram implements Residues,
 			goodRes[c] = false;
 		Protein compareTo = new ExtendedAtomsProtein(compareToFileName,DO_NOT_ADD_ATOMS);
 		String[] gaps = File2StringArray.f2a(gapsFileName);
-		for (int gapC=0 ; gapC<gaps.length ; gapC++) {
-			StringTokenizer st = new StringTokenizer(gaps[gapC]);
-			int gapFrom = (new Integer(st.nextToken())).intValue();
-			int gapTo = (new Integer(st.nextToken())).intValue();
-			for (int predC=0 ; predC<NumPredToConsider ; predC++) {
-				if ((new File(loopDirPath+"/Loop_"+gapFrom+"_"+gapTo+"/phase2/"+predC+".pdb")).exists()) {
-					boolean[] goodInLoop = new boolean[gapTo+1];
-					AtomList gapAtoms = new AtomList(loopDirPath+"/Loop_"+gapFrom+"_"+gapTo+"/phase2/"+predC+".pdb");
+		for (String gap : gaps) {
+			StringTokenizer st = new StringTokenizer(gap);
+			int gapFrom = new Integer(st.nextToken());
+			int gapTo = new Integer(st.nextToken());
+			for (int predC = 0; predC < NumPredToConsider; predC++) {
+				if ((new File(loopDirPath + "/Loop_" + gapFrom + "_" + gapTo + "/phase2/" + predC + ".pdb")).exists()) {
+					boolean[] goodInLoop = new boolean[gapTo + 1];
+					AtomList gapAtoms = new AtomList(loopDirPath + "/Loop_" + gapFrom + "_" + gapTo + "/phase2/" + predC + ".pdb");
 					// Finding consistent atoms between loop and the 'compareTo' protein
-					for (int resInLoop=gapFrom ; resInLoop<=gapTo ; resInLoop++) {
-						if (compareTo.atoms().findAtomInList("CA", resInLoop)==null) {
+					for (int resInLoop = gapFrom; resInLoop <= gapTo; resInLoop++) {
+						if (compareTo.atoms().findAtomInList("CA", resInLoop) == null) {
 							goodInLoop[resInLoop] = false;
-						}
-						else {
+						} else {
 							goodInLoop[resInLoop] = false;
-							if (compareTo.atoms().findAtomInList("CB", resInLoop)!=null) { // NOT a Glycin
+							if (compareTo.atoms().findAtomInList("CB", resInLoop) != null) { // NOT a Glycin
 								goodInLoop[resInLoop] = (compareTo.atoms().findAtomInList("CA", resInLoop).distanceFrom(
 										gapAtoms.findAtomInList("CA", resInLoop)) < goodCutoff) &&
 										(compareTo.atoms().findAtomInList("CB", resInLoop).distanceFrom(
 												gapAtoms.findAtomInList("CB", resInLoop)) < goodCutoff);
-							}
-							else {
+							} else {
 								goodInLoop[resInLoop] = compareTo.atoms().findAtomInList("CA", resInLoop).distanceFrom(
 										gapAtoms.findAtomInList("CA", resInLoop)) < goodCutoff;
 							}
@@ -62,14 +60,16 @@ public class FindGoodSegmentsWithLoops extends MeshiProgram implements Residues,
 					}
 					
 					// Analyzing data - is there a consistent pattern between the loops and the 'compareTo' Protein.
-					for (int  resInLoop=gapFrom+4 ; resInLoop<=(gapTo-4) ; resInLoop++) {
-						if (goodInLoop[resInLoop-1]&&goodInLoop[resInLoop]&&goodInLoop[resInLoop+1]) {
-							goodRes[resInLoop-1] = true;
+					for (int resInLoop = gapFrom + 4; resInLoop <= (gapTo - 4); resInLoop++) {
+						if (goodInLoop[resInLoop - 1] && goodInLoop[resInLoop] && goodInLoop[resInLoop + 1]) {
+							goodRes[resInLoop - 1] = true;
 							goodRes[resInLoop] = true;
-							goodRes[resInLoop+1] = true;
-							System.out.println("The residues " + (resInLoop-1) + " " + (resInLoop) + " " + (resInLoop+1) + " were indicated by model " + predC + " from loop: " + gapFrom + "_" + gapTo);
+							goodRes[resInLoop + 1] = true;
+							System.out.println(
+									"The residues " + (resInLoop - 1) + " " + (resInLoop) + " " + (resInLoop + 1) + " were indicated by model " +
+											predC + " from loop: " + gapFrom + "_" + gapTo);
 						}
-					}					
+					}
 				}
 			}
 		}
@@ -100,7 +100,7 @@ public class FindGoodSegmentsWithLoops extends MeshiProgram implements Residues,
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		String errorMessage = ("\n                  ******************\n"+
 				"Usage java -Xmx300m MinimizeBatchOfCoarseLoops <commands file name> <file with list of pdbs> <file with list of phipsi data> <ref pdb file name> " +
@@ -130,7 +130,7 @@ public class FindGoodSegmentsWithLoops extends MeshiProgram implements Residues,
 
 		String tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		goodCutoff = (new Double(tmpString)).doubleValue();
+		goodCutoff = new Double(tmpString);
 		System.out.println("# Good overlap is below: " + goodCutoff);
 	}	
 

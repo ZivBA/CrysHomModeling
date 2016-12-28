@@ -32,7 +32,7 @@ import java.util.Vector;
  * <-999, >999 , like above but interfacing a fixed frags on the other side. The frag index is found by (X-1000) or (-1000-X) depending on the sign. 
  * 
  */
-public class DoBuildCoarseLoopFinal extends MeshiProgram implements Residues,
+class DoBuildCoarseLoopFinal extends MeshiProgram implements Residues,
 		AtomTypes { /**
  * The implemented
  * interfaces defines the 
@@ -149,7 +149,7 @@ public class DoBuildCoarseLoopFinal extends MeshiProgram implements Residues,
 		loop.setTetherToTemplate(tetherToTemplate);
 		loop.runCoarse(maxNumOfCoarse,0);
 		loop.setProt(evalProt);
-		loop.cbAnalysis(numToPrint);
+		loop.cbAnalysis();
 		loop.setProt(prot);		
 	}
 
@@ -165,7 +165,7 @@ public class DoBuildCoarseLoopFinal extends MeshiProgram implements Residues,
 	}
 
 	private static void makeFragsDescriptionBothEnds() {
-		frags = new Vector<int[]>();
+		frags = new Vector<>();
 		// Two anchors
 		int[] anchorN = {resStart, resStart+FRAGMENT_DEFAULT_SIZE-1, -1, libSize/2};
 		int[] anchorC = {resEnd-FRAGMENT_DEFAULT_SIZE+1, resEnd, 1, libSize/2};
@@ -197,7 +197,7 @@ public class DoBuildCoarseLoopFinal extends MeshiProgram implements Residues,
 	}
 
 	private static void makeFragsDescriptionCterm() {
-		frags = new Vector<int[]>();
+		frags = new Vector<>();
 		// One anchor
 		int[] anchorC = {resEnd-FRAGMENT_DEFAULT_SIZE+1, resEnd, 1, libSize/2};
 		System.out.println("Fragment 1: " + anchorC[0] + "-" + anchorC[1] + " lib size:" + anchorC[3] + "    type:" + anchorC[2]);
@@ -219,7 +219,7 @@ public class DoBuildCoarseLoopFinal extends MeshiProgram implements Residues,
 	}
 
 	private static void makeFragsDescriptionNterm() {
-		frags = new Vector<int[]>();
+		frags = new Vector<>();
 		// one anchor
 		int[] anchorN = {resStart, resStart+FRAGMENT_DEFAULT_SIZE-1, -1, libSize/2};
 		System.out.println("Fragment 1: " + anchorN[0] + "-" + anchorN[1] + " lib size:" + anchorN[3] + "    type:" + anchorN[2]);
@@ -241,7 +241,7 @@ public class DoBuildCoarseLoopFinal extends MeshiProgram implements Residues,
 	}
 	
 	
-	protected static Protein takeNearResidues(Protein tmpprot, int start, int end, double disCO) {
+	private static Protein takeNearResidues(Protein tmpprot, int start, int end, double disCO) {
 		tmpprot.freeze();
 		for (int c=start; c<=end ; c++)
 			tmpprot.residue(c).atoms().defrost();
@@ -274,7 +274,7 @@ public class DoBuildCoarseLoopFinal extends MeshiProgram implements Residues,
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -290,7 +290,7 @@ public class DoBuildCoarseLoopFinal extends MeshiProgram implements Residues,
 				"Usage java -Xmx600m DoLoop <command file> <corpora file> <prot corpus> <prot name> <resStart> <resEnd> \n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
@@ -316,52 +316,52 @@ public class DoBuildCoarseLoopFinal extends MeshiProgram implements Residues,
 
 		String tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		resStart = (new Integer(tmp)).intValue();
+		resStart = new Integer(tmp);
 		System.out.println("# Start resisue  is "+resStart);
 
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		resEnd = (new Integer(tmp)).intValue();
+		resEnd = new Integer(tmp);
 		System.out.println("# end resisue  is "+resEnd);
 
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		libSize = (new Integer(tmp)).intValue();
+		libSize = new Integer(tmp);
 		System.out.println("# Lib size is "+libSize);
 
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		rmsCutOff = (new Double(tmp)).doubleValue();
+		rmsCutOff = new Double(tmp);
 		System.out.println("# rmsCutOff for library building is "+rmsCutOff);
 
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		rmsMatchCO = (new Double(tmp)).doubleValue();
+		rmsMatchCO = new Double(tmp);
 		System.out.println("# rmsMatchCO is "+rmsMatchCO);
 
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		closureTolerance = (new Double(tmp)).doubleValue();
+		closureTolerance = new Double(tmp);
 		System.out.println("# Closure tolerance is "+ closureTolerance);
 
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		tetherToTemplate = (new Double(tmp)).doubleValue();
+		tetherToTemplate = new Double(tmp);
 		System.out.println("# Tether to template is maximal at "+ tetherToTemplate);		
 		
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		TAKE_AROUND_LOOP = (new Double(tmp)).doubleValue();
+		TAKE_AROUND_LOOP = new Double(tmp);
 		System.out.println("# TAKE_AROUND_LOOP is "+TAKE_AROUND_LOOP);
 
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		maxNumOfCoarse = (new Integer(tmp)).intValue();
+		maxNumOfCoarse = new Integer(tmp);
 		System.out.println("# Maximal number of coarse loops: "+maxNumOfCoarse);
 
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		numToPrint = (new Integer(tmp)).intValue();
+		numToPrint = new Integer(tmp);
 		System.out.println("# Number of coarse loops to write to disk: "+numToPrint);
 
 		pathString = getOrderedArgument(args);
@@ -370,8 +370,8 @@ public class DoBuildCoarseLoopFinal extends MeshiProgram implements Residues,
 
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		initRandom((new Integer(tmp)).intValue());
-		System.out.println("# Random Seed is "+ (new Integer(tmp)).intValue());
+		initRandom(new Integer(tmp));
+		System.out.println("# Random Seed is "+ new Integer(tmp));
 
 	}
 }

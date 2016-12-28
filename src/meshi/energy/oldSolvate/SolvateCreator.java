@@ -46,12 +46,12 @@ public class SolvateCreator extends EnergyCreator implements KeyWords {
 	this.sigmoidEndsNoH = sigmoidEndsNoH;
     }
 
-    public SolvateCreator(double cooperativeSolvateWeight, double simpleHBweight) {
+    private SolvateCreator(double cooperativeSolvateWeight, double simpleHBweight) {
 	this(cooperativeSolvateWeight);
 	this.simpleHBweight = simpleHBweight;
     }
 
-    public SolvateCreator(double weight) {
+    private SolvateCreator(double weight) {
 	super(weight);
     }
     

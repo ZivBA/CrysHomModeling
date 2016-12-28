@@ -10,16 +10,14 @@ import meshi.geometry.TorsionList;
  * Plane energy term. 
  **/
 public class PlaneEnergy extends SimpleEnergyTerm{
-    protected TorsionList torsionList;
-    protected DistanceMatrix distanceMatrix;
-
-    public PlaneEnergy() {}
+	
+	public PlaneEnergy() {}
 
     public PlaneEnergy(TorsionList torsionList, DistanceMatrix distanceMatrix, 
 		       PlaneParametersList  parametersList, double weight) {
 	super(toArray(distanceMatrix, torsionList), parametersList, weight);
-	this.torsionList = torsionList;
-	this.distanceMatrix = distanceMatrix;
+	    TorsionList torsionList1 = torsionList;
+	    DistanceMatrix distanceMatrix1 = distanceMatrix;
 	createElementsList(torsionList);
 	comment = "Plane";
     }

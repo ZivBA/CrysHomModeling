@@ -8,7 +8,7 @@ public class Cluster {
 	private double jointDis = -1;
 	private Cluster clusterR=null;
 	private Cluster clusterL=null;
-	private Vector<Integer> clusterMembers = new Vector<Integer>();
+	private Vector<Integer> clusterMembers = new Vector<>();
 	private Cluster sonClust = null;
 	private double[][] largeMatrix = null;
 	private int index = -1;
@@ -22,7 +22,7 @@ public class Cluster {
 	 */
 	public Cluster(double[][] largeMatrix, int i) {
 		this.largeMatrix = largeMatrix;
-		clusterMembers.add(new Integer(i));
+		clusterMembers.add(i);
 		index = i;
 	}
 
@@ -55,13 +55,13 @@ public class Cluster {
 	}
 
 	public void updateClusterMembers() {
-		clusterMembers = new Vector<Integer>();
+		clusterMembers = new Vector<>();
 		if (clusterL==null)
 			return;
 		for (int c=0; c<clusterL.getClusterMembers().size() ; c++) 
-			clusterMembers.add(new Integer(clusterL.getClusterMembers().get(c).intValue()));
+			clusterMembers.add(clusterL.getClusterMembers().get(c).intValue());
 		for (int c=0; c<clusterR.getClusterMembers().size() ; c++) 
-			clusterMembers.add(new Integer(clusterR.getClusterMembers().get(c).intValue()));
+			clusterMembers.add(clusterR.getClusterMembers().get(c).intValue());
 	}
 
 	public Cluster getSonClust() {
@@ -110,7 +110,7 @@ public class Cluster {
 		str += ("Number of members: " + clusterMembers.size() + "\n");
 		System.out.print(findCenter() + ":   ");
 		for (Integer intI : clusterMembers) {
-			System.out.print(intI.intValue() + ", ");
+			System.out.print(intI + ", ");
 		}
 		System.out.println();
 		return str;
@@ -139,32 +139,32 @@ public class Cluster {
 		int minInd = -1;
 		for (int cc=0 ; cc<clusterMembers.size() ; cc++) {
 			sumDis = 0.0;
-			for (int cc1=0 ; cc1<clusterMembers.size() ; cc1++) {
-				sumDis += largeMatrix[clusterMembers.get(cc).intValue()][clusterMembers.get(cc1).intValue()];
+			for (Integer clusterMember : clusterMembers) {
+				sumDis += largeMatrix[clusterMembers.get(cc).intValue()][clusterMember];
 			}
 			if (sumDis<minDis) {
 				minDis = sumDis;
-				minInd = clusterMembers.get(cc).intValue();
+				minInd = clusterMembers.get(cc);
 			}
 		}
 		return minInd;
 	}
 
-	public double findMeanOfTrait(double[] trait) {
+	private double findMeanOfTrait(double[] trait) {
 		double sumEne = 0.0;
 		double sumNum = 0.0;
-		for (int cc=0 ; cc<clusterMembers.size() ; cc++) {
-			sumEne += trait[clusterMembers.get(cc).intValue()];
+		for (Integer clusterMember : clusterMembers) {
+			sumEne += trait[clusterMember];
 			sumNum++;
 		}
 		return sumEne/sumNum;
 	}	
 
-	public double findMinOfTrait(double[] trait) {
+	private double findMinOfTrait(double[] trait) {
 		double minTrait = Double.MAX_VALUE;
-		for (int cc=0 ; cc<clusterMembers.size() ; cc++) {
-			if (minTrait > trait[clusterMembers.get(cc).intValue()]) {
-				minTrait = trait[clusterMembers.get(cc).intValue()];
+		for (Integer clusterMember : clusterMembers) {
+			if (minTrait > trait[clusterMember.intValue()]) {
+				minTrait = trait[clusterMember];
 			}
 		}
 		return minTrait;
@@ -173,7 +173,7 @@ public class Cluster {
 	public double findPercentileOfTrait(double[] trait,double prctile) {
 		double[] traitToSort = new double[clusterMembers.size()];
 		for (int cc=0 ; cc<clusterMembers.size() ; cc++) {
-			traitToSort[cc] = trait[clusterMembers.get(cc).intValue()];
+			traitToSort[cc] = trait[clusterMembers.get(cc)];
 		}
 		Arrays.sort(traitToSort);
 		return traitToSort[(int) (traitToSort.length*prctile)];

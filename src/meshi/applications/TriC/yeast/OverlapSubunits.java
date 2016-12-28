@@ -8,7 +8,7 @@
 
  import java.io.IOException;
 
- public class OverlapSubunits {
+ class OverlapSubunits {
 
 	 // This "main" will overlap the right unit in each of the eight pairs on the equatorial domain of 1Q3R
 	 public static void main(String[] args) {
@@ -30,15 +30,15 @@
 		 ref.chainFilter("A");
  //		ref.chainFilter("E");
 		 int commonAtomNum = 0;
-		 for (int rangeC=0 ; rangeC<alignBy.length ; rangeC++) {
-			 for (int resC=alignBy[rangeC][0] ; resC<=alignBy[rangeC][1] ; resC++) {
+		 for (int[] anAlignBy2 : alignBy) {
+			 for (int resC = anAlignBy2[0]; resC <= anAlignBy2[1]; resC++) {
 				 commonAtomNum++;
 			 }
 		 }
 		 int[] refResNums = new int[commonAtomNum];
 		 int counter = 0;
-		 for (int rangeC=0 ; rangeC<alignBy.length ; rangeC++) {
-			 for (int resC=alignBy[rangeC][0] ; resC<=alignBy[rangeC][1] ; resC++) {
+		 for (int[] anAlignBy1 : alignBy) {
+			 for (int resC = anAlignBy1[0]; resC <= anAlignBy1[1]; resC++) {
 				 refResNums[counter] = resC;
 				 counter++;
 			 }
@@ -56,14 +56,14 @@
 			 pair.add(filterDomainAccordingTo1Q3R(prot1, firstLetterGene.charAt(c), 'E'));
 			 int[] moveResNums = new int[commonAtomNum];
 			 counter = 0;
-			 for (int rangeC=0 ; rangeC<alignBy.length ; rangeC++) {
-				 for (int resC=alignBy[rangeC][0] ; resC<=alignBy[rangeC][1] ; resC++) {
+			 for (int[] anAlignBy : alignBy) {
+				 for (int resC = anAlignBy[0]; resC <= anAlignBy[1]; resC++) {
 					 moveResNums[counter] = alignment.getNewResNum('K', resC, secondLetterGene.charAt(c));
- //					moveResNums[counter] = alignment.getNewResNum('E', resC, secondLetterGene.charAt(c));
- //					System.out.print(alignment.getNewResNum('E', resC, secondLetterGene.charAt(c))+",");
+					 //					moveResNums[counter] = alignment.getNewResNum('E', resC, secondLetterGene.charAt(c));
+					 //					System.out.print(alignment.getNewResNum('E', resC, secondLetterGene.charAt(c))+",");
 					 counter++;
 				 }
- //				System.out.println();
+				 //				System.out.println();
 			 }
 			 double rms = Overlap.fitProteins(ref, refResNums, pair, moveResNums);
 			 System.out.println("The subunit " + secondLetterGene.charAt(c) + " overlap is: " + ((int) (rms*100))/100.0);
@@ -176,17 +176,15 @@
  //	}
 
  //  This is for showing the equatorial and middle together
-	 protected static AtomList filterDomainAccordingTo1Q3R(AtomList fullList, char subunit , char domain) {
+	 private static AtomList filterDomainAccordingTo1Q3R(AtomList fullList, char subunit, char domain) {
 		 int[][] parsingQ3R;
 		 TricYeastAlignment alignments = new TricYeastAlignment();
 		 switch (domain) {
 	     case 'E': // Equatorial
-		     int[][] newParse = {{1,217} , {369,535}};
-		     parsingQ3R = newParse;
+		     parsingQ3R = new int[][]{{1,217} , {369,535}};
 		     break;
 	     case 'A': // Apical
-		     int[][] newParse2 = {{218,368}};
-		     parsingQ3R = newParse2;
+		     parsingQ3R = new int[][]{{218,368}};
 		     break;
 	     default:
 		     throw new RuntimeException("Invalid domain letter {E,A}");
@@ -207,12 +205,12 @@
 		 return filterDomain(fullList, parsing);
 	 }
 
-	 protected static AtomList filterDomain(AtomList fullList, int[][] parsing) {
+	 private static AtomList filterDomain(AtomList fullList, int[][] parsing) {
 		 AtomList newList = new AtomList();
 		 for (int c=0 ; c<fullList.size() ; c++) {
 			 int resNum = fullList.atomAt(c).residueNumber();
-			 for (int segID=0 ; segID<parsing.length ; segID++ ) {
-				 if ((resNum>=parsing[segID][0]) & (resNum<=parsing[segID][1])) {
+			 for (int[] aParsing : parsing) {
+				 if ((resNum >= aParsing[0]) & (resNum <= aParsing[1])) {
 					 newList.add(fullList.atomAt(c));
 				 }
 			 }

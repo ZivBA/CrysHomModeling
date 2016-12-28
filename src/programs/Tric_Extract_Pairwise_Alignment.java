@@ -8,7 +8,7 @@ import java.io.FileWriter;
 import java.util.StringTokenizer;
 
 
-public class Tric_Extract_Pairwise_Alignment extends MeshiProgram {
+class Tric_Extract_Pairwise_Alignment extends MeshiProgram {
    
     private static String allAlignments = null;
  
@@ -29,19 +29,19 @@ public class Tric_Extract_Pairwise_Alignment extends MeshiProgram {
     String bottomString = "";
     
     String[] clustal = File2StringArray.f2a(allAlignments);
-    for (int c=0 ; c<clustal.length ; c++) {
-    	StringTokenizer st = new StringTokenizer(clustal[c]);
-    	if (st.countTokens()>=2) {
-    		String prefix = st.nextToken();
-    		String seq = st.nextToken();
-    		if (prefix.equals(prefixTop)) { 
-    			topString += seq;
-    		}
-    		if (prefix.equals(prefixBottom)) { 
-    			bottomString += seq;
-    		}
-    	}
-    }
+	    for (String aClustal : clustal) {
+		    StringTokenizer st = new StringTokenizer(aClustal);
+		    if (st.countTokens() >= 2) {
+			    String prefix = st.nextToken();
+			    String seq = st.nextToken();
+			    if (prefix.equals(prefixTop)) {
+				    topString += seq;
+			    }
+			    if (prefix.equals(prefixBottom)) {
+				    bottomString += seq;
+			    }
+		    }
+	    }
     
     // Outputing
 	try{
@@ -67,7 +67,7 @@ public class Tric_Extract_Pairwise_Alignment extends MeshiProgram {
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 

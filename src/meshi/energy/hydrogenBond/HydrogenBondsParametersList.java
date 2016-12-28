@@ -18,7 +18,7 @@ import java.util.StringTokenizer;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class HydrogenBondsParametersList extends LennardJonesParametersList {
-	AtomList nitrogens;
+	private AtomList nitrogens;
 	
 	public HydrogenBondsParametersList(String parametersFileName,AtomList nitrogens){
 		super(parametersFileName);

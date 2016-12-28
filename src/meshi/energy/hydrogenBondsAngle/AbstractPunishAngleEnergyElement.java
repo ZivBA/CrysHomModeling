@@ -18,39 +18,53 @@ import meshi.molecularElements.Atom;
 public abstract class AbstractPunishAngleEnergyElement extends NonBondedEnergyElement {
         //-------------------------------- data fields -----------------------------------
 
-    protected Atom oAtom, hAtom, atom1, atom2,theirdAtom;
-    protected double dDistanceEnergy_Ddistance;
-    protected double distanceEnergy;
-    protected Distance distance;
-    protected DistanceMatrix distanceMatrix;
-    protected double distanceValue,distanceValue2;
-    protected final double X_MAX=4, X_MAX2 = X_MAX*X_MAX, X_ANGLE = 150.0*Math.PI/180.0, X_ANGLE2 = X_ANGLE*X_ANGLE;   //TODO try 160
-    protected final double c1=10.0 ,a1=c1/X_MAX2 ,b1=-2.0*c1/X_MAX;
-    protected final double c2=40.0 ,a2=c2/X_ANGLE2 ,b2=-2.0*c2/X_ANGLE;
+    Atom oAtom;
+	Atom hAtom;
+	Atom theirdAtom;
+	double distanceEnergy;
+    private Distance distance;
+    final DistanceMatrix distanceMatrix;
+    double distanceValue;
+	private final double X_MAX=4;
+	private final double X_MAX2 = X_MAX*X_MAX;
+	private final double X_ANGLE = 150.0*Math.PI/180.0;
+	private final double X_ANGLE2 = X_ANGLE*X_ANGLE;   //TODO try 160
+    private final double c1=10.0;
+	private final double c2=40.0;
+	final double a2=c2/X_ANGLE2;
+	final double b2=-2.0*c2/X_ANGLE;
     //new way to look at this function
-
-    protected final double y1X_Angle2 = 40.0/X_ANGLE2;
-
-    protected double weight;
-    protected double dDistanceEnergyDx,dDistanceEnergyDy,dDistanceEnergyDz;
-    protected double dDistanceEnergyDxOAtom,dDistanceEnergyDyOAtom,dDistanceEnergyDzOAtom;
-    protected double dDistanceEnergyDxHAtom,dDistanceEnergyDyHAtom,dDistanceEnergyDzHAtom;
-    protected double energy;
-    protected double angleEnergy;
-    protected double dAngleEnergyDxOAtom,dAngleEnergyDyOAtom,dAngleEnergyDzOAtom;
-    protected double dAngleEnergyDxHAtom,dAngleEnergyDyHAtom,dAngleEnergyDzHAtom;
-    protected double dAngleEnergyDxTheidAtom,dAngleEnergyDyTheidAtom,dAngleEnergyDzTheidAtom;
-    protected int oFactor,hFactor;
-    protected double deDxOAtom,deDyOAtom,deDzOAtom;
-    protected double deDxHAtom,deDyHAtom,deDzHAtom;
-    protected double deDxTheidAtom,deDyTheidAtom,deDzTheidAtom;
-    protected Angle angle;
-    protected double angleValue,angleValue2;
-    protected double dAngleEnergyDAngle;
+	
+	final double weight;
+	double energy;
+    double angleEnergy;
+    double dAngleEnergyDxOAtom;
+	double dAngleEnergyDyOAtom;
+	double dAngleEnergyDzOAtom;
+    double dAngleEnergyDxHAtom;
+	double dAngleEnergyDyHAtom;
+	double dAngleEnergyDzHAtom;
+    double dAngleEnergyDxTheidAtom;
+	double dAngleEnergyDyTheidAtom;
+	double dAngleEnergyDzTheidAtom;
+    private int oFactor;
+	private int hFactor;
+    private double deDxOAtom;
+	private double deDyOAtom;
+	private double deDzOAtom;
+    private double deDxHAtom;
+	private double deDyHAtom;
+	private double deDzHAtom;
+    double deDxTheidAtom;
+	double deDyTheidAtom;
+	double deDzTheidAtom;
+    Angle angle;
+    double angleValue;
+	double dAngleEnergyDAngle;
 
     //----------------------------------- constructors --------------------------------------
 
-    public AbstractPunishAngleEnergyElement(DistanceMatrix distanceMatrix,double weight)
+    AbstractPunishAngleEnergyElement(DistanceMatrix distanceMatrix, double weight)
     {
         this.distanceMatrix = distanceMatrix;
         this.weight = weight;
@@ -59,15 +73,15 @@ public abstract class AbstractPunishAngleEnergyElement extends NonBondedEnergyEl
 
     //---------------------------------- methods --------------------------------------------
 
-    public abstract String comment();
+    protected abstract String comment();
 
-    public abstract void setTheirdAtom();
+    protected abstract void setTheirdAtom();
 
     public void set(Object obj){ //obj should be Distance of hydrogen-oxygen pair
         distance = (Distance) obj;
         atoms = distance.atoms();
-        atom1 = distance.atom1();
-        atom2 = distance.atom2();
+	    Atom atom1 = distance.atom1();
+	    Atom atom2 = distance.atom2();
         HB_AtomAttribute atom1_attribute = (HB_AtomAttribute) atom1.getAttribute(HB_AtomAttribute.key);
         if (atom1_attribute.isH) {
             hFactor = oFactor = -1;
@@ -98,19 +112,19 @@ public abstract class AbstractPunishAngleEnergyElement extends NonBondedEnergyEl
         return energy * weight;
     }
 
-    public abstract void setAngle();
+    protected abstract void setAngle();
 
-    public abstract void setDAngleEnergyDatoms();
+    protected abstract void setDAngleEnergyDatoms();
 
 
     /**
      * energy and dirivarives calculation.
      **/
-    public double updateEnergy() {
+    private double updateEnergy() {
          setAngle();
         //now we take care of the distance part:
         //--------------------------------------
-        dDistanceEnergy_Ddistance=0;
+	    double dDistanceEnergy_Ddistance = 0;
         distanceEnergy = 0;
         angleEnergy=0;
         angleValue =0.1;
@@ -132,28 +146,31 @@ public abstract class AbstractPunishAngleEnergyElement extends NonBondedEnergyEl
             }
         else //bad angle
             {
-                distanceValue2 = distanceValue*distanceValue;
-                distanceEnergy = a1*distanceValue2+b1*distanceValue+c1;
+	            double distanceValue2 = distanceValue * distanceValue;
+	            double b1 = -2.0 * c1 / X_MAX;
+	            double a1 = c1 / X_MAX2;
+	            distanceEnergy = a1 * distanceValue2 + b1 *distanceValue+c1;
 
-                dDistanceEnergy_Ddistance = 2*a1*distanceValue+b1;
-
-                dDistanceEnergyDx = dDistanceEnergy_Ddistance*distance.dDistanceDx();
-                dDistanceEnergyDy = dDistanceEnergy_Ddistance*distance.dDistanceDy();
-                dDistanceEnergyDz = dDistanceEnergy_Ddistance*distance.dDistanceDz();
-
-                dDistanceEnergyDxOAtom = dDistanceEnergyDx * oFactor;
-                dDistanceEnergyDyOAtom = dDistanceEnergyDy * oFactor;
-                dDistanceEnergyDzOAtom = dDistanceEnergyDz * oFactor;
-                dDistanceEnergyDxHAtom = -1* dDistanceEnergyDx * hFactor;
-                dDistanceEnergyDyHAtom = -1* dDistanceEnergyDy * hFactor;
-                dDistanceEnergyDzHAtom = -1* dDistanceEnergyDz * hFactor;
+                dDistanceEnergy_Ddistance = 2* a1 *distanceValue+ b1;
+	
+	            double dDistanceEnergyDx = dDistanceEnergy_Ddistance * distance.dDistanceDx();
+	            double dDistanceEnergyDy = dDistanceEnergy_Ddistance * distance.dDistanceDy();
+	            double dDistanceEnergyDz = dDistanceEnergy_Ddistance * distance.dDistanceDz();
+	
+	            double dDistanceEnergyDxOAtom = dDistanceEnergyDx * oFactor;
+	            double dDistanceEnergyDyOAtom = dDistanceEnergyDy * oFactor;
+	            double dDistanceEnergyDzOAtom = dDistanceEnergyDz * oFactor;
+	            double dDistanceEnergyDxHAtom = -1 * dDistanceEnergyDx * hFactor;
+	            double dDistanceEnergyDyHAtom = -1 * dDistanceEnergyDy * hFactor;
+	            double dDistanceEnergyDzHAtom = -1 * dDistanceEnergyDz * hFactor;
 
                 //AngleElement Part:
                 //-------------------------------------
-                angleValue2 = angleValue*angleValue;
-                angleEnergy = a2*angleValue2+b2*angleValue+c2;
-
-                angleEnergy = y1X_Angle2*(angleValue - X_ANGLE)*(angleValue - X_ANGLE );
+	            double angleValue2 = angleValue * angleValue;
+                angleEnergy = a2* angleValue2 +b2*angleValue+c2;
+	
+	            double y1X_Angle2 = 40.0 / X_ANGLE2;
+	            angleEnergy = y1X_Angle2 *(angleValue - X_ANGLE)*(angleValue - X_ANGLE );
 
                 setDAngleEnergyDatoms();
 
@@ -191,11 +208,11 @@ public abstract class AbstractPunishAngleEnergyElement extends NonBondedEnergyEl
         return energy;
     }
 
-    public void updateAtoms(){
+    private void updateAtoms(){
               updateAtoms(weight);
     }
 
-    public void updateAtoms(double weight){
+    private void updateAtoms(double weight){
         if (! oAtom.frozen()) {
             oAtom.addToFx(-1 * deDxOAtom * weight); // force = -derivative
             oAtom.addToFy(-1 * deDyOAtom * weight); // force = -derivative
@@ -211,7 +228,7 @@ public abstract class AbstractPunishAngleEnergyElement extends NonBondedEnergyEl
 
     }
 
-    public abstract void updateTheirdAtom(double weight);
+    protected abstract void updateTheirdAtom(double weight);
     public abstract void updateTheirdAtom();
 
     protected void setAtoms(){

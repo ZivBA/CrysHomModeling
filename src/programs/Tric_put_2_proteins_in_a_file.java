@@ -9,7 +9,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 
-public class Tric_put_2_proteins_in_a_file extends MeshiProgram implements Residues {
+class Tric_put_2_proteins_in_a_file extends MeshiProgram implements Residues {
    
     private static String leftProtFile = null;
  
@@ -58,7 +58,7 @@ public class Tric_put_2_proteins_in_a_file extends MeshiProgram implements Resid
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 

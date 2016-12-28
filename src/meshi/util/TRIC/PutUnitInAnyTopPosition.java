@@ -174,30 +174,30 @@ public class PutUnitInAnyTopPosition extends MeshiProgram implements Residues {
     	}
 
     	
-    	Vector<double[]> statArray = new Vector<double[]>();
-    	Vector<double[]> moveArray = new Vector<double[]>();
+    	Vector<double[]> statArray = new Vector<>();
+    	Vector<double[]> moveArray = new Vector<>();
     	int countingRefAtoms = 0;
-    	for (int rangeC=0 ; rangeC<moveRange.length ; rangeC++) {
-    		for (int resC=moveRange[rangeC][0] ; resC<=moveRange[rangeC][1] ; resC++) {
-    			double[] tmpXYZ_move = new double[3];
-    			Atom atom_move = moveProt.findAtomInList("CA", resC);
-    			tmpXYZ_move[0] =atom_move.x();
-    			tmpXYZ_move[1] =atom_move.y();
-    			tmpXYZ_move[2] =atom_move.z();
-    			moveArray.add(tmpXYZ_move);
-    			countingRefAtoms++;
-    		}
-    	}
-    	for (int rangeC=0 ; rangeC<statRange.length ; rangeC++) {
-    		for (int resC=statRange[rangeC][0] ; resC<=statRange[rangeC][1] ; resC++) {
-    			double[] tmpXYZ_stat = new double[3];
-    			Atom atom_stat = statProt.findAtomInList("CA", resC);
-    			tmpXYZ_stat[0] =atom_stat.x();
-    			tmpXYZ_stat[1] =atom_stat.y();
-    			tmpXYZ_stat[2] =atom_stat.z();
-    			statArray.add(tmpXYZ_stat);
-    		}
-    	}
+	    for (int[] aMoveRange : moveRange) {
+		    for (int resC = aMoveRange[0]; resC <= aMoveRange[1]; resC++) {
+			    double[] tmpXYZ_move = new double[3];
+			    Atom atom_move = moveProt.findAtomInList("CA", resC);
+			    tmpXYZ_move[0] = atom_move.x();
+			    tmpXYZ_move[1] = atom_move.y();
+			    tmpXYZ_move[2] = atom_move.z();
+			    moveArray.add(tmpXYZ_move);
+			    countingRefAtoms++;
+		    }
+	    }
+	    for (int[] aStatRange : statRange) {
+		    for (int resC = aStatRange[0]; resC <= aStatRange[1]; resC++) {
+			    double[] tmpXYZ_stat = new double[3];
+			    Atom atom_stat = statProt.findAtomInList("CA", resC);
+			    tmpXYZ_stat[0] = atom_stat.x();
+			    tmpXYZ_stat[1] = atom_stat.y();
+			    tmpXYZ_stat[2] = atom_stat.z();
+			    statArray.add(tmpXYZ_stat);
+		    }
+	    }
 
     	for (int atomC=0 ; atomC<moveProt.size() ; atomC++) {
     		double[] tmpXYZ_move = new double[3];
@@ -329,7 +329,7 @@ public class PutUnitInAnyTopPosition extends MeshiProgram implements Residues {
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -354,12 +354,12 @@ public class PutUnitInAnyTopPosition extends MeshiProgram implements Residues {
 
 	String tmpStr = getOrderedArgument(args);
 	if (tmpStr == null) throw new RuntimeException(errorMessage);
-	firstResOfCut = Integer.valueOf(tmpStr).intValue();
+	firstResOfCut = Integer.valueOf(tmpStr);
 	System.out.println("# Cutting from: " + firstResOfCut);
 	
 	tmpStr = getOrderedArgument(args);
 	if (tmpStr == null) throw new RuntimeException(errorMessage);
-	lastResOfCut = Integer.valueOf(tmpStr).intValue();
+	lastResOfCut = Integer.valueOf(tmpStr);
 	System.out.println("# Cutting to: " + lastResOfCut);
 
 	outputFile = getOrderedArgument(args);

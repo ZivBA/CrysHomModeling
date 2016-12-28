@@ -30,11 +30,10 @@ import java.text.DecimalFormat;
 import java.util.Vector;
 
 
-public class EvaluateMinimizedPhase1 extends MeshiProgram implements Residues, AtomTypes {
+class EvaluateMinimizedPhase1 extends MeshiProgram implements Residues, AtomTypes {
 
-	private static CommandList commands; 
-	private static String commandsFileName = null;
-	private static String modelsFileName = null;  
+	private static CommandList commands;
+	private static String modelsFileName = null;
 	private static String modelFileName = null;  
 	private static String refFileName = null;  
 	private static int resStart = -999;
@@ -115,9 +114,9 @@ public class EvaluateMinimizedPhase1 extends MeshiProgram implements Residues, A
 		}
 		
 		// analyzing the clusters with the energies
-		Vector <Cluster> clusters = new Vector <Cluster>();
-		Vector <Double> clustEne = new Vector <Double>();
-		Vector <Integer> clustCenter = new Vector <Integer>();
+		Vector <Cluster> clusters = new Vector<>();
+		Vector <Double> clustEne = new Vector<>();
+		Vector <Integer> clustCenter = new Vector<>();
 		clusterer.initializeSerialTokenizer();
 		for (Cluster clust=clusterer.getNextSerialToken() ; (clust!=null) && (clust.getClusterMembers().size()>1) ; clust=clusterer.getNextSerialToken()) {
 			if (clust.getClusterMembers().size()>lowerSizeClusteringCutoff) {
@@ -128,19 +127,19 @@ public class EvaluateMinimizedPhase1 extends MeshiProgram implements Residues, A
 				double sumDis = 0.0;
 				int minInd = -1;
 				for (int cc=0 ; cc<clust.getClusterMembers().size() ; cc++) {
-					sumEne += eneVal[clust.getClusterMembers().get(cc).intValue()];
+					sumEne += eneVal[clust.getClusterMembers().get(cc)];
 					sumNum++;
 					sumDis = 0.0;
 					for (int cc1=0 ; cc1<clust.getClusterMembers().size() ; cc1++) {
-						sumDis += disMat[clust.getClusterMembers().get(cc).intValue()][clust.getClusterMembers().get(cc1).intValue()];
+						sumDis += disMat[clust.getClusterMembers().get(cc)][clust.getClusterMembers().get(cc1)];
 					}
 					if (sumDis<minDis) {
 						minDis = sumDis;
-						minInd = clust.getClusterMembers().get(cc).intValue();
+						minInd = clust.getClusterMembers().get(cc);
 					}
 				}
-				clustEne.add(new Double(sumEne/sumNum - 0.05*clust.getClusterMembers().size()));
-				clustCenter.add(new Integer(minInd));
+				clustEne.add(sumEne / sumNum - 0.05 * clust.getClusterMembers().size());
+				clustCenter.add(minInd);
 			}
 		}
 		
@@ -149,9 +148,9 @@ public class EvaluateMinimizedPhase1 extends MeshiProgram implements Residues, A
 		}
 		else {
 			for (int cc=0 ; cc<clusters.size() ; cc++) {
-				System.out.println("Cluster: " + cc + "   with Energy: " + clustEne.get(cc).doubleValue() + " and center at: " + clustCenter.get(cc).intValue());
+				System.out.println("Cluster: " + cc + "   with Energy: " + clustEne.get(cc) + " and center at: " + clustCenter.get(cc));
 				for (int ccc=0; ccc<clusters.get(cc).getClusterMembers().size() ; ccc++) {
-					int ind = clusters.get(cc).getClusterMembers().get(ccc).intValue();
+					int ind = clusters.get(cc).getClusterMembers().get(ccc);
 					System.out.println(ind + " " + models[ind] + " " + rmsBB[ind] + " " + rmsAllAtoms[ind] + " " + eneVal[ind]);
 				}
 			}
@@ -161,11 +160,11 @@ public class EvaluateMinimizedPhase1 extends MeshiProgram implements Residues, A
 		// Outputing:
 		double[] clusterEnergies = new double[clusters.size()];
 		for (int cc=0 ; cc<clusters.size() ; cc++) {
-			clusterEnergies[cc] = clustEne.get(cc).doubleValue();
+			clusterEnergies[cc] = clustEne.get(cc);
 		}
 		int[] sortedClusterIndices = AbstractLoopBuilder.findTopMinArray(clusterEnergies, clusters.size(), Double.MAX_VALUE);
 		for (int cc=0 ; (cc<clusters.size()) && (cc<Noutputs) ; cc++) {
-			int ind = clustCenter.get(sortedClusterIndices[cc]).intValue();
+			int ind = clustCenter.get(sortedClusterIndices[cc]);
 			System.out.println("Printing to disk model " + cc + " that came from:" + models[ind] + " of cluster:" + sortedClusterIndices[cc] + " and the following RMS (BB and all-atom):" + rmsBB[ind] + " " + rmsAllAtoms[ind]);
 			try {
 				loops[ind].atoms().noOXTFilter().print(new MeshiWriter(outputPath+"/"+cc+".pdb"));
@@ -258,10 +257,10 @@ public class EvaluateMinimizedPhase1 extends MeshiProgram implements Residues, A
 				"<loop starting resisue> <loop ending residue> <Wev> <Whb> <Wtorval> <Wtether> <output PDB extension string>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-		commandsFileName = getOrderedArgument(args);
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
-		System.out.println("# commandsFileName = "+commandsFileName);
+		System.out.println("# commandsFileName = "+ commandsFileName);
 
 		commands = new CommandList(commandsFileName);
 
@@ -281,17 +280,17 @@ public class EvaluateMinimizedPhase1 extends MeshiProgram implements Residues, A
 
 		String tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		resStart = (new Integer(tmpString)).intValue();
+		resStart = new Integer(tmpString);
 		System.out.println("# Starting residue is " + resStart);
 
 		tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		resEnd = (new Integer(tmpString)).intValue();
+		resEnd = new Integer(tmpString);
 		System.out.println("# Ending residue is " + resEnd);
 		
 		tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		Noutputs = (new Integer(tmpString)).intValue();
+		Noutputs = new Integer(tmpString);
 		System.out.println("# Number of output models: " + Noutputs);
 		
 		outputPath = getOrderedArgument(args);

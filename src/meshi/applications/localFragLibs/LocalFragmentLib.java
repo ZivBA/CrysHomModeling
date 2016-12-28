@@ -36,11 +36,11 @@ KeyWords {
 	private int fragL = 0;
 	private int libSize = 0;
 	private int desiredLibSize = -1;  // The desired lib size set by the user. 
-	private double rmsCutOff;
+	private final double rmsCutOff;
 	private int[] seq = null;
 	private int[] libOrig = null;  // This is the lib core. The indices here point to the fragments in the corpus. The size of this array is the lib size.
 	private double[] libEnergy = null;  // This is the energy ascociated with a fragment. The size of this array is the lib size.
-	protected boolean[] similarToLib = null; // This marks (true values) fragments that are already selected, or are very similar to fragments alreay in the lib. The size of this array is as curpus.ungapped
+	boolean[] similarToLib = null; // This marks (true values) fragments that are already selected, or are very similar to fragments alreay in the lib. The size of this array is as curpus.ungapped
 	private int trueFragStart = -999;  // The place in the truncated (no extension) sequence where the true frag (no overlap) starts
 	private int trueFragEnd = -999;  // The place in the truncated (no extension) sequence where the true frag (no overlap) ends
 	private int fragStartInSeq = -999;	// See the definition of this field in the constructor documentation.
@@ -54,7 +54,7 @@ KeyWords {
 	private int residueFragStart = -999;
 	private int overlap = -999;
 	private int manner = -999; 
-	protected double overlapSimilarityTH = 0.0;
+	double overlapSimilarityTH = 0.0;
 	
 	/* This constructor is able to construct a frag-lib, with some lateral addendums on the fragment as follows:
 	 * 
@@ -109,8 +109,7 @@ KeyWords {
 		// After the threading energy was calculated, the sequence can be cut to the essentials. 
 		this.seq = new int[fragEndInSeq-fragStartInSeq+1];
 		fragL = this.seq.length;
-		for (int c=0 ; c<fragL ; c++)
-			this.seq[c] = seq[fragStartInSeq+c];
+		System.arraycopy(seq, fragStartInSeq + 0, this.seq, 0, fragL);
 		
 		// And now building the lib
 		System.out.println("Start building lib.");
@@ -153,8 +152,7 @@ KeyWords {
 		// After the threading energy was calculated, the sequence can be cut to the essentials. 
 		this.seq = new int[fragEndInSeq-fragStartInSeq+1];
 		fragL = this.seq.length;
-		for (int c=0 ; c<fragL ; c++)
-			this.seq[c] = seq[fragStartInSeq+c];
+		System.arraycopy(seq, fragStartInSeq + 0, this.seq, 0, fragL);
 
 		// And now building the lib
 		System.out.println("Start building lib.");
@@ -480,7 +478,7 @@ KeyWords {
 	}
 
 	
-	protected void buildLib(boolean filterStalks) {
+	void buildLib(boolean filterStalks) {
 		
 		// Initialization:
 		int[] tmpIndices = new int[desiredLibSize];
@@ -601,9 +599,8 @@ KeyWords {
 				if ( (energies[i]<lowestEnergy) && !similarToLib[i] ) {
 					if (!filterStalks /* || (currentLibSize < 0.5*desiredLibSize) */ || isFragCompatibleForConstruction(corpus.ungapped[i] + fragStartInSeq , overlapSimilarityTH)) {
 						if ((prevLib==null) || 
-								isFragCompatibleToPrevLib(corpus.ungapped[i] + fragStartInSeq, 
-										prevLib.libSize*currentLibSize/desiredLibSize, 
-										overlap, manner, overlapSimilarityTH)) { // I added this on 4/26/2010
+								isFragCompatibleToPrevLib(
+								)) { // I added this on 4/26/2010
 							lowestEnergy = energies[i];
 							lowestEnergyInd = i;
 						}
@@ -633,7 +630,7 @@ The protein torsions themself is taken from the Isite lib.
 		return isFragCompatibleCorpusIndex(libOrig[indInLib], residueFragStart, overlap, manner, overlapTH);
 	} 
 
-	protected boolean isFragCompatibleCorpusIndex(int indInCorpus, int residueFragStart, int overlap, int manner, double overlapTH) {
+	boolean isFragCompatibleCorpusIndex(int indInCorpus, int residueFragStart, int overlap, int manner, double overlapTH) {
 		if (manner==-1) {
 			for (int c=0 ; c<overlap ; c++) {
 				if(IsiteLib.torsionDiff(corpus.torsions[indInCorpus+c][1],
@@ -673,14 +670,14 @@ The protein torsions themself is taken from the Isite lib.
 	/**
 	 *This method is used only during the construction when 'libOrig' is not yet ready. 
 	 **/
-	protected boolean isFragCompatibleForConstruction(int indInCorpus, double overlapTH) {
+	boolean isFragCompatibleForConstruction(int indInCorpus, double overlapTH) {
 		if (libOrig!=null)
 			throw new RuntimeException("\nERROR to the programer: you should call this method only if libOrig is still unavailable (i.e. ==null) because the constructor is running. \n");
 		return isFragCompatibleCorpusIndex(indInCorpus, residueFragStart, overlap, manner,  overlapTH);
 	} 	
 	
 
-	protected boolean isFragCompatibleToPrevLib(int indInCorpus, int indInOtherLib, int overlap, int manner, double overlapTH) {
+	private boolean isFragCompatibleToPrevLib() {
 		return true;
 		
 		
@@ -779,8 +776,8 @@ The protein torsions themself is taken from the Isite lib.
 
 	/**
 	 *  A warning issued if the lib failed to reach the desired size.
-	 */  
-	protected void issueSmallLibWarning(int currentLibSize) {
+	 */
+	void issueSmallLibWarning(int currentLibSize) {
 		System.out.println("WARNINIG!!! The corpus is too small to create such a large library. So Far created " + currentLibSize);
 	}
 
@@ -789,7 +786,7 @@ The protein torsions themself is taken from the Isite lib.
 	 * NOT to be considered in the lib. This means that manipulating the entries in this array is a great way to
 	 * direct which fragments are optional from the corpus.
 	 */
-	protected void initializeSimilarToLib() {
+	void initializeSimilarToLib() {
 		similarToLib = new boolean[corpus.ungapped.length];
 		for (int c=0; c<corpus.ungapped.length ; c++)
 			similarToLib[c] = false;	
@@ -797,10 +794,10 @@ The protein torsions themself is taken from the Isite lib.
 	
 
 //	Getters...
-	protected Corpus corpus() {return corpus;}   // For the inheriting classes
+Corpus corpus() {return corpus;}   // For the inheriting classes
 	protected Protein prot() {return prot;}   // For the inheriting classes
-	protected int fragL() {return fragL;}   // For the inheriting classes
-	public int manner() {return manner;}   
+	int fragL() {return fragL;}   // For the inheriting classes
+	int manner() {return manner;}
 	public int overlap() {return overlap;}   
 	public double libEnergy(int ind) { return libEnergy[ind];}
 	public int libSize() { return libSize;}
@@ -817,7 +814,7 @@ The protein torsions themself is taken from the Isite lib.
 		else
 			return trueFragEnd; 
 	}
-	public int residueFragStart() { 
+	int residueFragStart() {
 		if (prot==null)
 			throw new RuntimeException("\nThis methods can be run only for instances that were initiated with constructor No. 1\n");
 		else

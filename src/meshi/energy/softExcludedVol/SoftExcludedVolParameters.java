@@ -10,11 +10,7 @@ public class SoftExcludedVolParameters extends Parameters {
     public final double  sigma;
     public final int smallType;
     public final int largeType;
-    /** 
-    * ALPHA is the transition zone (in Ang) where the energy change in the forth power 0.0 to 1.0.
-    **/    
-    public final double  ALPHA = 1.0; 
-    /**
+	/**
     * C is the parameter of  EV = C*(d-sigma)^4 in the range [0,sigma]
     **/    
     public final double  C;
@@ -27,7 +23,7 @@ public class SoftExcludedVolParameters extends Parameters {
 	C =  -1;
     }
 
-    public SoftExcludedVolParameters(StringTokenizer st) {this(st,1.0);}
+    private SoftExcludedVolParameters(StringTokenizer st) {this(st,1.0);}
 
     public SoftExcludedVolParameters(StringTokenizer st,double frac) {
     int first = Atom.type(st.nextToken());
@@ -41,7 +37,11 @@ public class SoftExcludedVolParameters extends Parameters {
         largeType = second;
     }	
 	sigma = toDouble(st.nextToken())*frac;
-	C =  1/(ALPHA*ALPHA);
+	/*
+     ALPHA is the transition zone (in Ang) where the energy change in the forth power 0.0 to 1.0.
+    */
+	    double ALPHA = 1.0;
+	    C =  1/(ALPHA * ALPHA);
     }
     
     public Filter isA() {return (new isA());}

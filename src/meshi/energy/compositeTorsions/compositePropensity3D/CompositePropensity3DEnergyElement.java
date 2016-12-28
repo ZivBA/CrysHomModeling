@@ -10,11 +10,11 @@ public class CompositePropensity3DEnergyElement
 	extends EnergyElement
 	implements Residues, CompositeTorsionsDefinitions {
 
-	public final ResidueTorsions residueTorsions;
-	public final CompositePropensity2DParameters cpp2D;
-	public final CompositePropensity3DParameters cpp3D;
-	protected double weight;
-	public final boolean is3D;
+	private final ResidueTorsions residueTorsions;
+	private final CompositePropensity2DParameters cpp2D;
+	private final CompositePropensity3DParameters cpp3D;
+	private final double weight;
+	private final boolean is3D;
 
 	public CompositePropensity3DEnergyElement(
 			ResidueTorsions residueTorsions,

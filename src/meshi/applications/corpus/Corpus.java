@@ -37,23 +37,23 @@ public class Corpus implements Residues,AtomTypes,CompositeTorsionsDefinitions,M
 		KeyWords {
 
 public String[] proteinNames = new String[0];
-public String[] energyNames = new String[0];
-public int Nenergies = 0;
+private String[] energyNames = new String[0];
+private int Nenergies = 0;
 public int Nres = 0;
 public int[] protInd = new int[0]; 
 public int[] resNum = new int[0]; 
 public int[] resType = new int[0]; 
-public double[] prePro = new double[0];
-public double[][][] energies = new double[0][][]; // Indexing-[residue index][energy index][mutatation type] 
-public double[][][] coors = new double[0][][]; // Indexing-[residue index][atom: N=0 ; Ca=1 ; C=2][coordinates x=0;y=1;z=2]
+private double[] prePro = new double[0];
+private double[][][] energies = new double[0][][]; // Indexing-[residue index][energy index][mutatation type]
+private double[][][] coors = new double[0][][]; // Indexing-[residue index][atom: N=0 ; Ca=1 ; C=2][coordinates x=0;y=1;z=2]
 public double[][] torsions = new double[0][]; // Indexing-[residue index][torsion: omg=0, phi=1, psi=2]
-public boolean[] resHasAllEne = new boolean[0];
+private boolean[] resHasAllEne = new boolean[0];
 public int[] ungapped = null;
-public String[] excludedProteinsFromUngapped = null;
+private String[] excludedProteinsFromUngapped = null;
 public IsiteLib iSiteLib = null;
 
-protected double[][] forAlign1=null;
-protected double[][] forAlign2=null;
+private double[][] forAlign1=null;
+private double[][] forAlign2=null;
 
 
 public Corpus(String PDBfile , CommandList commands , EnergyCreator[] energyCreators){
@@ -158,16 +158,16 @@ public Corpus(String exsitingCorpusFile) {
 try {
 	BufferedReader br =  new BufferedReader(new FileReader(exsitingCorpusFile));
     String line = br.readLine();
-    Nenergies = (new Integer(line)).intValue();
+    Nenergies = new Integer(line);
     energyNames = new String[Nenergies];
     for (int Eind=0 ; Eind<Nenergies ; Eind++)
     	energyNames[Eind] = br.readLine().trim();
     line = br.readLine();
-    proteinNames = new String[(new Integer(line)).intValue()];
+    proteinNames = new String[new Integer(line)];
 	for (int nProt=0 ; nProt<proteinNames.length ; nProt++) 
 		proteinNames[nProt] = br.readLine().trim();
 	line = br.readLine();
-	Nres = (new Integer(line)).intValue();
+	Nres = new Integer(line);
 	protInd = new int[Nres]; 
 	resHasAllEne = new boolean[Nres]; 
 	for (int c=0 ; c<Nres ; c++)
@@ -180,19 +180,19 @@ try {
 	prePro = new double[Nres];
 	for (int c=0; c<Nres ; c++) {
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		protInd[c] = (new Integer(st.nextToken())).intValue();
-		resNum[c] = (new Integer(st.nextToken())).intValue();		
-		resType[c] = (new Integer(st.nextToken())).intValue();
+		protInd[c] = new Integer(st.nextToken());
+		resNum[c] = new Integer(st.nextToken());
+		resType[c] = new Integer(st.nextToken());
 		for (int c1=0; c1<3 ; c1++)
 			for (int c2=0; c2<3 ; c2++)
-				coors[c][c1][c2] = (new Double(st.nextToken())).doubleValue();
+				coors[c][c1][c2] = new Double(st.nextToken());
 		for (int c1=0; c1<3 ; c1++)
-			torsions[c][c1] = (new Double(st.nextToken())).doubleValue();
-		prePro[c] = (new Double(st.nextToken())).doubleValue();
+			torsions[c][c1] = new Double(st.nextToken());
+		prePro[c] = new Double(st.nextToken());
 		for (int Eind=0 ; Eind<Nenergies ; Eind++) {
 			st = new StringTokenizer(br.readLine());
 			for (int mutateTo=0 ; mutateTo<20 ; mutateTo++)
-				energies[c][Eind][mutateTo] = (new Double(st.nextToken())).doubleValue();
+				energies[c][Eind][mutateTo] = new Double(st.nextToken());
 		}
 	}	
     br.close( ); 
@@ -237,8 +237,8 @@ private void writeToDisk(String fileName , boolean[] toWrite) {
 	for (int Eind=0 ; Eind<Nenergies ; Eind++) 
 		pw.println(energyNames[Eind]);
 	pw.println(proteinNames.length);
-	for (int nProt=0 ; nProt<proteinNames.length ; nProt++) 
-		pw.println(proteinNames[nProt]);
+		for (String proteinName : proteinNames)
+			pw.println(proteinName);
 	pw.println(TrueNres);
 	for (int c=0; c<Nres ; c++) 
 	if (toWrite[c]) {
@@ -268,8 +268,7 @@ private void writeToDisk(String fileName , boolean[] toWrite) {
 */
 public void writeToDisk(String fileName) {
 	boolean[] toWrite=new boolean[Nres];
-	for (int c=0 ; c<Nres ; c++)
-		toWrite[c] = resHasAllEne[c];
+	System.arraycopy(resHasAllEne, 0, toWrite, 0, Nres);
 	writeToDisk(fileName, toWrite);
 }
 
@@ -278,7 +277,7 @@ public void writeToDisk(String fileName) {
 * the fragments whos indices are given in the input array. This is useful to create 
 * more compact libraries from a big one. The format is as for the other method.
 **/ 
-public void writeToDisk(String fileName, int indAr, int fragL) {
+public void writeToDisk() {
 }
 
 public void merge(Corpus corpus) {
@@ -301,51 +300,34 @@ public void merge(Corpus corpus) {
 	double[][] tmp_torsions = new double[torsions.length + corpus.torsions.length][]; 
 	double[] tmp_prePro = new double[prePro.length + corpus.prePro.length]; 
 	boolean[] tmp_resHasAllEne = new boolean[resHasAllEne.length + corpus.resHasAllEne.length];
-
-	for (int c=0 ; c<proteinNames.length ; c++) 
-		tmp_proteinNames[c] = proteinNames[c];
-	for (int c=0 ; c<corpus.proteinNames.length ; c++) 
-		tmp_proteinNames[c+proteinNames.length] = corpus.proteinNames[c];
-
-	for (int c=0 ; c<protInd.length ; c++) 
-		tmp_protInd[c] = protInd[c];
+	
+	System.arraycopy(proteinNames, 0, tmp_proteinNames, 0, proteinNames.length);
+	System.arraycopy(corpus.proteinNames, 0, tmp_proteinNames, 0 + proteinNames.length, corpus.proteinNames.length);
+	
+	System.arraycopy(protInd, 0, tmp_protInd, 0, protInd.length);
 	for (int c=0 ; c<corpus.protInd.length ; c++) 
 		tmp_protInd[c+protInd.length] = corpus.protInd[c]+proteinNames.length;
 	
-	for (int c=0 ; c<resNum.length ; c++) 
-		tmp_resNum[c] = resNum[c];
-	for (int c=0 ; c<corpus.resNum.length ; c++) 
-		tmp_resNum[c+resNum.length] = corpus.resNum[c];
+	System.arraycopy(resNum, 0, tmp_resNum, 0, resNum.length);
+	System.arraycopy(corpus.resNum, 0, tmp_resNum, 0 + resNum.length, corpus.resNum.length);
 	
-	for (int c=0 ; c<resType.length ; c++) 
-		tmp_resType[c] = resType[c];
-	for (int c=0 ; c<corpus.resType.length ; c++) 
-		tmp_resType[c+resType.length] = corpus.resType[c];
-
-	for (int c=0 ; c<prePro.length ; c++) 
-		tmp_prePro[c] = prePro[c];
-	for (int c=0 ; c<corpus.prePro.length ; c++) 
-		tmp_prePro[c+prePro.length] = corpus.prePro[c];
-
-	for (int c=0 ; c<energies.length ; c++) 
-		tmp_energies[c] = energies[c];
-	for (int c=0 ; c<corpus.energies.length ; c++) 
-		tmp_energies[c+energies.length] = corpus.energies[c];
-
-	for (int c=0 ; c<coors.length ; c++) 
-		tmp_coors[c] = coors[c];
-	for (int c=0 ; c<corpus.coors.length ; c++) 
-		tmp_coors[c+coors.length] = corpus.coors[c];
-
-	for (int c=0 ; c<torsions.length ; c++) 
-		tmp_torsions[c] = torsions[c];
-	for (int c=0 ; c<corpus.torsions.length ; c++) 
-		tmp_torsions[c+torsions.length] = corpus.torsions[c];
-
-	for (int c=0 ; c<resHasAllEne.length ; c++) 
-		tmp_resHasAllEne[c] = resHasAllEne[c];
-	for (int c=0 ; c<corpus.resHasAllEne.length ; c++) 
-		tmp_resHasAllEne[c+resHasAllEne.length] = corpus.resHasAllEne[c];
+	System.arraycopy(resType, 0, tmp_resType, 0, resType.length);
+	System.arraycopy(corpus.resType, 0, tmp_resType, 0 + resType.length, corpus.resType.length);
+	
+	System.arraycopy(prePro, 0, tmp_prePro, 0, prePro.length);
+	System.arraycopy(corpus.prePro, 0, tmp_prePro, 0 + prePro.length, corpus.prePro.length);
+	
+	System.arraycopy(energies, 0, tmp_energies, 0, energies.length);
+	System.arraycopy(corpus.energies, 0, tmp_energies, 0 + energies.length, corpus.energies.length);
+	
+	System.arraycopy(coors, 0, tmp_coors, 0, coors.length);
+	System.arraycopy(corpus.coors, 0, tmp_coors, 0 + coors.length, corpus.coors.length);
+	
+	System.arraycopy(torsions, 0, tmp_torsions, 0, torsions.length);
+	System.arraycopy(corpus.torsions, 0, tmp_torsions, 0 + torsions.length, corpus.torsions.length);
+	
+	System.arraycopy(resHasAllEne, 0, tmp_resHasAllEne, 0, resHasAllEne.length);
+	System.arraycopy(corpus.resHasAllEne, 0, tmp_resHasAllEne, 0 + resHasAllEne.length, corpus.resHasAllEne.length);
 
 	proteinNames = tmp_proteinNames;
 	Nres = tmp_Nres;
@@ -368,15 +350,15 @@ public void buildUngappedArray(int fragL) {
  * Building the ungapped array for fragments of length fragL. 
  * Fragments from the proteins in the provided list are excluded. 
  */
-public void buildUngappedArray(int fragL, String[] excludeProteins) {
+private void buildUngappedArray(int fragL, String[] excludeProteins) {
 	int Nfrag = 0;
 	if (excludeProteins==null)
 		excludeProteins=new String[0];
 	boolean inExcluded = false;
 	for (int c=0 ; c<Nres-fragL+1 ; c++) {
 		inExcluded = false;
-		for (int d=0; d<excludeProteins.length ; d++)
-			if (proteinNames[protInd[c]].indexOf(excludeProteins[d])>-1)
+		for (String excludeProtein : excludeProteins)
+			if (proteinNames[protInd[c]].contains(excludeProtein))
 				inExcluded = true;
 		if (!inExcluded && (protInd[c] == protInd[c+fragL-1]) && ((resNum[c]+fragL-1) == resNum[c+fragL-1]))
 			Nfrag++;
@@ -385,8 +367,8 @@ public void buildUngappedArray(int fragL, String[] excludeProteins) {
 	Nfrag = 0;
 	for (int c=0 ; c<Nres-fragL+1 ; c++) {
 		inExcluded = false;
-		for (int d=0; d<excludeProteins.length ; d++)
-			if (proteinNames[protInd[c]].indexOf(excludeProteins[d])>-1)
+		for (String excludeProtein : excludeProteins)
+			if (proteinNames[protInd[c]].contains(excludeProtein))
 				inExcluded = true;
 		if (!inExcluded && (protInd[c] == protInd[c+fragL-1]) && ((resNum[c]+fragL-1) == resNum[c+fragL-1])) {
 			ungapped[Nfrag] = c;
@@ -489,8 +471,7 @@ public void GeneralThreadingExperiment (int fragL, int Ninstances, String header
 	boolean[] pp = new boolean[fragL];
 	for (int e=0; e<fragL ; e++)
 		pp[e] = false;
-	for (int e=0; e<fragL ; e++)
-		seq[e] = resType[ungapped[natInd]+e];
+	System.arraycopy(resType, ungapped[natInd] + 0, seq, 0, fragL);
 	for (int e=0; e<fragL-1 ; e++)
 		pp[e] = (seq[e + 1] == 12) && (seq[e] != 5) && (seq[e] != 12);
 	pp[fragL-1]=false;
@@ -543,7 +524,7 @@ private static void extractCoordinatesOfRes(Residue res , double[][] co) {
 
 // Method for calculating Solvate Rot1 in the 20 mutations
 // ************************
-protected void calculateSolRot1(String PDBfile , CommandList commands) {
+private void calculateSolRot1(String PDBfile, CommandList commands) {
 	// making the auxilary protein, and putting it in Rot1
 	AtomList al1 = new AtomList(PDBfile);
 	al1.moveCMtoOrigin();
@@ -725,7 +706,7 @@ public double calcRmsBetweenStruct(int ind1, int ind2, int fragL, int manner , i
 
 
 
-public void buildUngappedArraynoPG(int fragL) {
+private void buildUngappedArraynoPG(int fragL) {
 	int Nfrag = 0;
 	for (int c=0 ; c<Nres-fragL ; c++) 
 		if ((protInd[c] == protInd[c+fragL-1]) && ((resNum[c]+fragL-1) == resNum[c+fragL-1])) {

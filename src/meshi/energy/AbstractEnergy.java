@@ -37,19 +37,21 @@ public abstract class AbstractEnergy implements Updateable  {
     /**
      * 1/0 good for dubugging.
      **/
-    public static final double INFINITY = 1/0.0; 
+    public static final double INFINITY = Double.POSITIVE_INFINITY;
     /**
      * sqrt(-1) good for dubugging.
      **/
     public static final double NaN = Math.sqrt(-1.0); 
 
-    // For derivation error testing:
-    protected double[][] coordinates = new double[3][];
-    public final double  DX = 1e-7;  /* should be roughly the sqrare root of the machine's relative precision. 
+// --Commented out by Inspection START (16:35 31/10/16):
+//    // For derivation error testing:
+//    protected double[][] coordinates = new double[3][];
+// --Commented out by Inspection STOP (16:35 31/10/16)
+    protected final double  DX = 1e-7;  /* should be roughly the sqrare root of the machine's relative precision.
 					In java this is about sqrt(1e-15) */
-    public final double relativeDiffTolerance = 0.01; // should be 3-4 orders of magnitude higher than DX.
-    public final double verySmall = Math.exp(-15);
-    public final String XYZ = "XYZ";
+    protected final double relativeDiffTolerance = 0.01; // should be 3-4 orders of magnitude higher than DX.
+    protected final double verySmall = Math.exp(-15);
+    protected final String XYZ = "XYZ";
     
     /**
      * A list of all the parameters needed by the energy term.
@@ -59,21 +61,21 @@ public abstract class AbstractEnergy implements Updateable  {
     /*
      * A list of all the updateable resources needed by the energy term. For a detailed description 
      * of MESHI's treatment of updatable resources see the documentation of TotalEnergy.
-     **/  
-    protected UpdateableList updateableResources;
+     **/
+    private UpdateableList updateableResources;
 
     /**
      * Construct a dummy object that cannot be evaluated. Such an object is useful as a key 
      * during searches.
      **/
-    public AbstractEnergy() {}
+    protected AbstractEnergy() {}
 
     /** 
      * construct An energy term. 
-     **/ 
-    public AbstractEnergy(Object[] updateableResources,
-			  ParametersList  parametersList, 
-			  double weight) {
+     **/
+    protected AbstractEnergy(Object[] updateableResources,
+                             ParametersList parametersList,
+                             double weight) {
 	this.updateableResources = new UpdateableList(updateableResources);
 	this.weight = weight;
 	this.parametersList = parametersList;
@@ -82,8 +84,8 @@ public abstract class AbstractEnergy implements Updateable  {
     /**
      * construct An energy term without parameters List.
      **/
-    public AbstractEnergy(Object[] updateableResources,
-                          double weight) {
+    protected AbstractEnergy(Object[] updateableResources,
+                             double weight) {
 	this(updateableResources, null, weight);
     }
 
@@ -127,7 +129,7 @@ public abstract class AbstractEnergy implements Updateable  {
 
 
     //----------------------------------------- housekeeping ---------------------------------------------
-    public void handleMissingParameters(Object obj) {
+    protected void handleMissingParameters(Object obj) {
 	throw new RuntimeException("Missing parameters for:\n"+obj);
     }
 
@@ -142,38 +144,36 @@ public abstract class AbstractEnergy implements Updateable  {
      * Generates an empty array.
      **/
     protected static Object[] toArray() {
-	Object[] out = {};
-	return out;
+	    return new Object[]{};
     }
 
      /**
      * Generates an aray with one element - the parameter.
      **/
    protected static Object[] toArray(Object o1) {
-	Object[] out = {o1};
-	return out;
+	   return new Object[]{o1};
     }
     protected static Object[] toArray(Object o1,Object o2) {
-	Object[] out = {o1,o2};
-	return out;
+	    return new Object[]{o1,o2};
     }
     protected static Object[] toArray(Object o1,Object o2,Object o3) {
-	Object[] out = {o1,o2,o3};
-	return out;
+	    return new Object[]{o1,o2,o3};
     }
     // ------------------------------------- internal auxiliary classes -----------------------------------------
 
     /**
      * A list of updateable elements (implementing the meshi.util.Updateable interface). 
      **/
-    protected class UpdateableList extends MeshiList {
+    class UpdateableList extends MeshiList {
 	public UpdateableList(Object[] array) {
 	    super(new IsUpdatable(), array);
 	}
 
-	public UpdateableList() {
-	    super(new IsUpdatable());
-	}
+// --Commented out by Inspection START (16:35 31/10/16):
+//	public UpdateableList() {
+//	    super(new IsUpdatable());
+//	}
+// --Commented out by Inspection STOP (16:35 31/10/16)
 
 	/**
 	 * Iterates over the list updates each of its elements.

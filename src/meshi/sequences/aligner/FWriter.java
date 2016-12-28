@@ -8,39 +8,37 @@ package meshi.sequences.aligner;
  * To change this template use File | Settings | File Templates.
  */
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 
-
-public class FWriter {
-    PrintWriter os;
-
-    public FWriter(String out){
-     try {
-	 	FileWriter fi = new FileWriter(out);
-  	 	 os = new PrintWriter(fi);
-     }
-	  catch(IOException e) {
-  	 	System.out.print("Error while writing: " + e);
-  	  	System.exit(1);
-   		}
-}
-
-public void write(String word){
-    os.print(word);
-}
-
-public void write(char word){
-    os.print(word);
-}
-    public void writeln(){
-    os.println();
-}
-    public void writeln(String line){
-    os.println(line);
-}
-    public void close(){
-        os.close();
-    }
-}
+// --Commented out by Inspection START (16:34 31/10/16):
+//class FWriter {
+//    private PrintWriter os;
+//
+//    public FWriter(String out){
+//     try {
+//	 	FileWriter fi = new FileWriter(out);
+//  	 	 os = new PrintWriter(fi);
+//     }
+//	  catch(IOException e) {
+//  	 	System.out.print("Error while writing: " + e);
+//  	  	System.exit(1);
+//   		}
+//}
+//
+//public void write(String word){
+//    os.print(word);
+//}
+//
+//public void write(char word){
+//    os.print(word);
+//}
+//    public void writeln(){
+//    os.println();
+//}
+//    public void writeln(String line){
+//    os.println(line);
+//}
+//    public void close(){
+//        os.close();
+//    }
+// --Commented out by Inspection STOP (16:34 31/10/16)
+//}

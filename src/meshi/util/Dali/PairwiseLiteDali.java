@@ -21,26 +21,20 @@ import java.util.Vector;
 
 public class PairwiseLiteDali implements Residues, Filter {
 	
-	/**
-	 * This class reads and parses the structural alignment data that 'Pairwise' DaliLight V3.1
-	 * produces for the first hit.  
-	 * 
-	 * @param filename
-	 */
-	
-	protected String rangeFileName = null;
-	protected double Zscore = -999;	
-	protected int alignmentLength = -999;
-	protected double seqIdentity = -999;
-	protected int[][] queryRanges = null;
-	protected int[][] templateRanges = null;
-	protected String queryString = null;
-	protected String templateString = null;
+	private int[][] queryRanges = null;
+	private int[][] templateRanges = null;
+	private String queryString = null;
+	private String templateString = null;
 	private int[] queryMatch =null;
 	private boolean[] okResidues = null;
 	
-	public PairwiseLiteDali(String filename) {
-		rangeFileName = filename;
+	private PairwiseLiteDali(String filename) {
+		/*
+	  This class reads and parses the structural alignment data that 'Pairwise' DaliLight V3.1
+	  produces for the first hit.
+	  
+	  */
+		String rangeFileName = filename;
 		System.out.println("Reading the top hit in LiteDali file: " + rangeFileName);
 		Vector<String> ranges = getTextFromDaliRangeFile(filename , 1);
 		parseHeaderLine(ranges.firstElement());
@@ -64,7 +58,7 @@ public class PairwiseLiteDali implements Residues, Filter {
 		}
 	}
 	
-	public String makeAlignmentString(String fullQuerySeq, Protein nat, Protein template, int queryStartRes) {
+	private String makeAlignmentString(String fullQuerySeq, Protein nat, Protein template, int queryStartRes) {
 		queryMatch = new int[queryStartRes+fullQuerySeq.length()+9999/*Just to pad it in the end*/];
 		for (int c=0 ; c<queryMatch.length ; c++) {
 			queryMatch[c] = -999;
@@ -171,17 +165,17 @@ public class PairwiseLiteDali implements Residues, Filter {
 	
 	private Vector<String> getTextFromDaliRangeFile(String filename ,int  daliHit) {
 		String line;
-		Vector<String> returnStrings = new Vector<String>();
+		Vector<String> returnStrings = new Vector<>();
 		String lookForString = "Alignment number = " + daliHit;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			line = br.readLine(); 
-			while (line.indexOf(lookForString)==-1) {
+			while (!line.contains(lookForString)) {
 				line = br.readLine();
 			}
 			returnStrings.add(line);
 			line = br.readLine();
-			while ((line!=null) && (line.indexOf("Alignment number =")==-1) && (line.indexOf("<=>")>-1)) {
+			while ((line!=null) && (!line.contains("Alignment number =")) && (line.contains("<=>"))) {
 				returnStrings.add(line);
 				line = br.readLine();
 			}
@@ -201,15 +195,15 @@ public class PairwiseLiteDali implements Residues, Filter {
 		st.nextToken();st.nextToken();st.nextToken();
 		String tmpString = st.nextToken();
 		String ZscoreString = tmpString.substring(0, tmpString.length()-1); // removing the end comma
-		Zscore = Double.parseDouble(ZscoreString);
-		System.out.println("Zscore: " + Zscore);
+		double zscore = Double.parseDouble(ZscoreString);
+		System.out.println("Zscore: " + zscore);
 		st.nextToken();st.nextToken();st.nextToken();st.nextToken();
 		tmpString = st.nextToken();
 		String alignmentLengthString = tmpString.substring(0, tmpString.length()-1); // removing the end comma
-		alignmentLength = Integer.parseInt(alignmentLengthString);
+		int alignmentLength = Integer.parseInt(alignmentLengthString);
 		System.out.println("Alignment Length: " + alignmentLength);
 		st.nextToken();st.nextToken();st.nextToken();
-		seqIdentity = Double.parseDouble(st.nextToken());
+		double seqIdentity = Double.parseDouble(st.nextToken());
 		System.out.println("Sequence identity: " + seqIdentity + "%");
 	}
     
@@ -218,7 +212,7 @@ public class PairwiseLiteDali implements Residues, Filter {
      * This method return the residue type (in one letter) of 'resNum' in 'prot'. If This residue is not in 
      * prot it returns "X" if it is in the middle of the protein or "-" if it is past its termini.
      */
-    public static String getResTypeFromTemplate(Protein prot, int resNum) {
+    private static String getResTypeFromTemplate(Protein prot, int resNum) {
     	if ((prot.residue(resNum)!=null) && (prot.residue(resNum).ca()!=null)) {
     		return Residue.nameOneLetter(prot.residue(resNum).type);
     	}
@@ -343,10 +337,10 @@ public class PairwiseLiteDali implements Residues, Filter {
     }
 
     
-    protected int[] getQueryMatch() {return queryMatch;}
-    protected boolean[] getOkResidues() {return okResidues;}
-    protected String getQueryString() {return queryString;}
-    protected String getTemplateString() {return templateString;}
+    private int[] getQueryMatch() {return queryMatch;}
+    private boolean[] getOkResidues() {return okResidues;}
+    private String getQueryString() {return queryString;}
+    private String getTemplateString() {return templateString;}
     
     public boolean accept(Object obj) {
     	Atom atom = (Atom) obj;

@@ -17,8 +17,7 @@ import meshi.molecularElements.AtomList;
  *                        NH2
   **/
 public class Arg extends ResidueExtendedAtoms {
-    public final Atom CG, CD, NE, HE, CZ, NH1, NH2;
-    public static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
+	private static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
 	"              O\n"+
 	"              |\n"+
 	"     N - CA - C...n\n"+
@@ -40,15 +39,22 @@ public class Arg extends ResidueExtendedAtoms {
 	super(ARG, atomList, number, mode,  addAtomsFlag);
 	Object[] temp = new Object[7];
 	int i=0;
-	temp[i++] = CG = getAtom("CG",RCG, atomList, this);
-	temp[i++] = CD = getAtom("CD",RCD, atomList, this);
-	temp[i++] = NE = getAtom("NE",RNE, atomList, this);
-	if (NE != null) 
+	    Atom CG;
+	    temp[i++] = CG = getAtom("CG",RCG, atomList, this);
+	    Atom CD;
+	    temp[i++] = CD = getAtom("CD",RCD, atomList, this);
+	    Atom NE;
+	    temp[i++] = NE = getAtom("NE",RNE, atomList, this);
+	    Atom HE;
+	    if (NE != null)
 	    temp[i++] = HE = getAtom("HE",RHE, atomList, this);
 	else HE = null;
-	temp[i++] = CZ = getAtom("CZ",RCZ, atomList, this);
-	temp[i++] = NH1 = getAtom("NH1",RNH, atomList, this);
-	temp[i++] = NH2 = getAtom("NH2",RNH, atomList, this);
+	    Atom CZ;
+	    temp[i++] = CZ = getAtom("CZ",RCZ, atomList, this);
+	    Atom NH1;
+	    temp[i++] = NH1 = getAtom("NH1",RNH, atomList, this);
+	    Atom NH2;
+	    temp[i++] = NH2 = getAtom("NH2",RNH, atomList, this);
 	for (i = 0; i <temp.length; i++)
 	    if (temp[i] != null) atoms.add(temp[i]);
 	

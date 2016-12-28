@@ -99,9 +99,8 @@ public class DahiyatHydrogenBond extends AbstractHydrogenBond {
 	private double	DsigmCosAng2Dz4;
 
 	// Variables used by the distance sigmoid
-	private double	hbDisScore;    
-	private double  hbDisScoreDerivative;
-	private double	DhbDisScoreDx1; 
+	private double	hbDisScore;
+	private double	DhbDisScoreDx1;
 	private double	DhbDisScoreDy1; 
 	private double	DhbDisScoreDz1; 
 	private double	DhbDisScoreDx2; 
@@ -116,11 +115,11 @@ public class DahiyatHydrogenBond extends AbstractHydrogenBond {
 
 	// These distances are used in the calculations of the angles and distance sigmoids. 
 	// The numbering of the atoms (1 to 4) is as describe in the top of the class.
-	Distance disAng1atoms12;
-	Distance disAng1atoms32;
-	Distance disAng2atoms23;
-	Distance disAng2atoms43;
-	Distance disDonorAcceptor;
+	private Distance disAng1atoms12;
+	private Distance disAng1atoms32;
+	private Distance disAng2atoms23;
+	private Distance disAng2atoms43;
+	private Distance disDonorAcceptor;
 	
 	// The 4 atoms in atom list a referenced by these fields, according to the numbering of the 
 	// atoms (1 to 4) that is described at the top of the class.
@@ -136,7 +135,7 @@ public class DahiyatHydrogenBond extends AbstractHydrogenBond {
 	private int a4toAtomList;
 		
 		
-    public DahiyatHydrogenBond() {
+    DahiyatHydrogenBond() {
     	throw new RuntimeException("\nERROR: without parameters the hydrogen bonds cannot be formed.\n");
     }
 
@@ -219,16 +218,16 @@ public class DahiyatHydrogenBond extends AbstractHydrogenBond {
 	* This method update the distance sigmoid and all the relevent derivatives. 
 	* The numbering of the atoms (1 to 4) is as describe in the top of the class.
 	**/   
-	private final void updateDis() {	
+	private void updateDis() {
     	hbDisScore = sigmaDis.s(disDonorAcceptor.distance());
-    	hbDisScoreDerivative = sigmaDis.s_tag(disDonorAcceptor.distance());
+		double hbDisScoreDerivative = sigmaDis.s_tag(disDonorAcceptor.distance());
     	if (!a2.isHydrogen && !a3.isHydrogen) {  // case 1:   base---O...O---base    or    base---O...N---base 
 			DhbDisScoreDx1=0; 
 			DhbDisScoreDy1=0; 
 			DhbDisScoreDz1=0; 
-			DhbDisScoreDx2=hbDisScoreDerivative*disDonorAcceptor.dDistanceDx(); 
-			DhbDisScoreDy2=hbDisScoreDerivative*disDonorAcceptor.dDistanceDy(); 
-			DhbDisScoreDz2=hbDisScoreDerivative*disDonorAcceptor.dDistanceDz(); 
+			DhbDisScoreDx2= hbDisScoreDerivative *disDonorAcceptor.dDistanceDx();
+			DhbDisScoreDy2= hbDisScoreDerivative *disDonorAcceptor.dDistanceDy();
+			DhbDisScoreDz2= hbDisScoreDerivative *disDonorAcceptor.dDistanceDz();
 			DhbDisScoreDx3=-DhbDisScoreDx2; 
 			DhbDisScoreDy3=-DhbDisScoreDy2; 
 			DhbDisScoreDz3=-DhbDisScoreDz2; 
@@ -240,9 +239,9 @@ public class DahiyatHydrogenBond extends AbstractHydrogenBond {
 			DhbDisScoreDx1=0; 
 			DhbDisScoreDy1=0; 
 			DhbDisScoreDz1=0; 
-			DhbDisScoreDx2=hbDisScoreDerivative*disDonorAcceptor.dDistanceDx(); 
-			DhbDisScoreDy2=hbDisScoreDerivative*disDonorAcceptor.dDistanceDy(); 
-			DhbDisScoreDz2=hbDisScoreDerivative*disDonorAcceptor.dDistanceDz(); 
+			DhbDisScoreDx2= hbDisScoreDerivative *disDonorAcceptor.dDistanceDx();
+			DhbDisScoreDy2= hbDisScoreDerivative *disDonorAcceptor.dDistanceDy();
+			DhbDisScoreDz2= hbDisScoreDerivative *disDonorAcceptor.dDistanceDz();
 			DhbDisScoreDx3=0; 
 			DhbDisScoreDy3=0; 
 			DhbDisScoreDz3=0; 
@@ -251,9 +250,9 @@ public class DahiyatHydrogenBond extends AbstractHydrogenBond {
 			DhbDisScoreDz4=-DhbDisScoreDz2;     	
     	} 
     	else if (a2.isHydrogen && !a3.isHydrogen) { // case 3:   N---H...O---base
-			DhbDisScoreDx1=hbDisScoreDerivative*disDonorAcceptor.dDistanceDx(); 
-			DhbDisScoreDy1=hbDisScoreDerivative*disDonorAcceptor.dDistanceDy(); 
-			DhbDisScoreDz1=hbDisScoreDerivative*disDonorAcceptor.dDistanceDz(); 
+			DhbDisScoreDx1= hbDisScoreDerivative *disDonorAcceptor.dDistanceDx();
+			DhbDisScoreDy1= hbDisScoreDerivative *disDonorAcceptor.dDistanceDy();
+			DhbDisScoreDz1= hbDisScoreDerivative *disDonorAcceptor.dDistanceDz();
 			DhbDisScoreDx2=0; 
 			DhbDisScoreDy2=0; 
 			DhbDisScoreDz2=0; 
@@ -265,9 +264,9 @@ public class DahiyatHydrogenBond extends AbstractHydrogenBond {
 			DhbDisScoreDz4=0;    	
     	}
     	else if (a2.isHydrogen && a3.isHydrogen) { // case 4:   N---H...H---N
-			DhbDisScoreDx1=hbDisScoreDerivative*disDonorAcceptor.dDistanceDx(); 
-			DhbDisScoreDy1=hbDisScoreDerivative*disDonorAcceptor.dDistanceDy(); 
-			DhbDisScoreDz1=hbDisScoreDerivative*disDonorAcceptor.dDistanceDz(); 
+			DhbDisScoreDx1= hbDisScoreDerivative *disDonorAcceptor.dDistanceDx();
+			DhbDisScoreDy1= hbDisScoreDerivative *disDonorAcceptor.dDistanceDy();
+			DhbDisScoreDz1= hbDisScoreDerivative *disDonorAcceptor.dDistanceDz();
 			DhbDisScoreDx2=0; 
 			DhbDisScoreDy2=0; 
 			DhbDisScoreDz2=0; 
@@ -288,7 +287,7 @@ public class DahiyatHydrogenBond extends AbstractHydrogenBond {
 	* and all the relevent derivatives. The numbering of the atoms (1 to 4) is as describe in the top
 	* of the class.
 	**/   
-	private final void updateAngProduct1234() {	
+	private void updateAngProduct1234() {
 		
 		updateAng123();
 		updateAng234();
@@ -319,7 +318,7 @@ public class DahiyatHydrogenBond extends AbstractHydrogenBond {
 	}
 
 	// Auxilary method to 'updateAngProduct1234'
-	private final void updateAng123() {
+	private void updateAng123() {
 		cosAng = disAng1atoms12.dDistanceDx()*disAng1atoms32.dDistanceDx() + 
 						disAng1atoms12.dDistanceDy()*disAng1atoms32.dDistanceDy() + 
 						disAng1atoms12.dDistanceDz()*disAng1atoms32.dDistanceDz();
@@ -353,7 +352,7 @@ public class DahiyatHydrogenBond extends AbstractHydrogenBond {
 	}
 
 	// Auxilary method to 'updateAngProduct1234'
-	private final void updateAng234() {
+	private void updateAng234() {
 		cosAng = disAng2atoms23.dDistanceDx()*disAng2atoms43.dDistanceDx() + disAng2atoms23.dDistanceDy()*disAng2atoms43.dDistanceDy() + disAng2atoms23.dDistanceDz()*disAng2atoms43.dDistanceDz();
 		if (Double.isNaN(cosAng)) {
 			System.out.println("Warning: Overlapping atoms detected during hydrogen bond list update.\n" +
@@ -384,7 +383,7 @@ public class DahiyatHydrogenBond extends AbstractHydrogenBond {
 		}			
 	}
 
-	private final void atomListTo1_4numbering() {
+	private void atomListTo1_4numbering() {
     	if (!atomList.atomAt(2).isHydrogen && !atomList.atomAt(3).isHydrogen) {  // case 1:   base---O...O---base    or    base---O...N---base 
 			a1 = atomList.atomAt(2);
 			a2 = atomList.atomAt(0);

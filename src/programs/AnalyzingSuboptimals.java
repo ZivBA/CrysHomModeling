@@ -28,19 +28,19 @@ import meshi.util.rotamericTools.RotamericTools;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class AnalyzingSuboptimals extends MeshiProgram implements Residues,
+class AnalyzingSuboptimals extends MeshiProgram implements Residues,
 		AtomTypes, KeyWords, MeshiPotential {
 	
 	
-	static String commandsFileName;
-	static String dirName;
+	private static String commandsFileName;
+	private static String dirName;
 
 		public static void main(String[] args)  {
 			init(args); 
 			CommandList commands = new CommandList(commandsFileName);
 			ProbA probA = new ProbA(dirName + "/probA_output");
 			String[] probA_input = File2StringArray.f2a(dirName + "/probA_input");
-			int templateStart = (new Integer(probA_input[5])).intValue();
+			int templateStart = new Integer(probA_input[5]);
 			Protein solution = new Protein(new AtomList(dirName+"/Native.pdb"),new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
 			Protein template = new Protein(new AtomList(dirName+"/Template.pdb"),new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
 			DunbrackLib lib = new DunbrackLib(commands, 1.0, 1);
@@ -58,7 +58,7 @@ public class AnalyzingSuboptimals extends MeshiProgram implements Residues,
 			System.out.println("PsiBlast GDT3: " + psiblastGDT3);
 			try {
 			psiblastHomology.atoms().print(new MeshiWriter(dirName+"/psiHomology.pdb"));
-		} catch (Exception e) {			}
+		} catch (Exception ignored) {			}
 			
 			String[] structuralAlignment = File2StringArray.f2a(dirName + "/structural");
 			Protein structuralHomology = TrivialHomologyModeling.trivialHomology(template, templateStart,
@@ -72,7 +72,7 @@ public class AnalyzingSuboptimals extends MeshiProgram implements Residues,
 			System.out.println("structural GDT3: " + structuralGDT3);
 			try {
 				structuralHomology.atoms().print(new MeshiWriter(dirName+"/strHomology.pdb"));
-			} catch (Exception e) {			}
+			} catch (Exception ignored) {			}
 
 //			DSSP dssp = new DSSP(dirName+"/Template.dssp");
 			int[][] tmpMapping;
@@ -310,8 +310,8 @@ public class AnalyzingSuboptimals extends MeshiProgram implements Residues,
 			int[] matchingResNums = GDTcalculator.findAligningResidues(solution.atoms(), structuralHomology.atoms(), 2.0);
 			for (int c=0; c<matchingRes.length ; c++)
 				matchingRes[c] = false;
-			for (int c=0; c<matchingResNums.length ; c++)
-				matchingRes[matchingResNums[c]] = true;
+			for (int matchingResNum : matchingResNums)
+				matchingRes[matchingResNum] = true;
 			for (int c=0; c<structuralHomology.residues().size() ; c++) {
 				if (matchingRes[structuralHomology.residues().residueAt(c).number])
 					System.out.println(structuralHomology.residues().residueAt(c).number + " 1 " +
@@ -558,7 +558,7 @@ public class AnalyzingSuboptimals extends MeshiProgram implements Residues,
 		 *that MinimizeProtein inherits.
 		 **/
 
-		protected static void init(String[] args) {
+		private static void init(String[] args) {
 
 			int zvl = ALA; // force the reading of "meshi.parameters.Residues"
 			zvl = ACA;// force the reading of "meshi.parameters.AtomTypes"
@@ -568,7 +568,7 @@ public class AnalyzingSuboptimals extends MeshiProgram implements Residues,
 					"Usage java -Xmx300m AnalyzingSuboptimal <commands file name> \n"+
 			"                    ******************\n");
 
-			if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+			if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 			commandsFileName = getOrderedArgument(args);
 			if (commandsFileName == null) throw new RuntimeException(errorMessage);

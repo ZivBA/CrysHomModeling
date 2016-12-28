@@ -27,16 +27,15 @@ import meshi.util.file.File2StringArray;
  *
  **/
 
-public class EvaluateForKB01_breakSS extends MeshiProgram implements Residues, AtomTypes {
+class EvaluateForKB01_breakSS extends MeshiProgram implements Residues, AtomTypes {
 
 	private static String modelsFileName = null;  
 	private static String refFileName = null;  
 	private static String dsspFileName = null;  
 	private static String pathFirstEval = "";  
-	private static String pathSecondEval = "";  
-	private static double maxsubCutoff = 8.0;
-
-
+	private static String pathSecondEval = "";
+	
+	
 	public static void main(String[] args) {
 		init(args); 
 		Protein reference = null;
@@ -172,29 +171,30 @@ private static String printSSbreakdown(Protein reference, Protein model, DSSP ds
 		}
 	}
 	double numberOfCoil = numberOfResidues - numberOfHelix - numberOfSheet;
-
+	
+	double maxsubCutoff = 8.0;
 	int[] aligned = GDTcalculator.findAligningResidues(reference.atoms(), model.atoms(), maxsubCutoff);
 	
 	double alignedOfHelix = 0.0;
-	for (int c=0 ; c<aligned.length ; c++) {
-		if (dssp.SSofRes(aligned[c], ' ') == 'H') {
+	for (int anAligned2 : aligned) {
+		if (dssp.SSofRes(anAligned2, ' ') == 'H') {
 			alignedOfHelix++;
 		}
 	}
 	alignedOfHelix = 100.0*alignedOfHelix/(0.0000001+numberOfHelix);	
 
 	double alignedOfSheet = 0.0;
-	for (int c=0 ; c<aligned.length ; c++) {
-		if (dssp.SSofRes(aligned[c], ' ') == 'E') {
+	for (int anAligned1 : aligned) {
+		if (dssp.SSofRes(anAligned1, ' ') == 'E') {
 			alignedOfSheet++;
 		}
 	}
 	alignedOfSheet = 100.0*alignedOfSheet/(0.0000001+numberOfSheet);	
 
 	double alignedOfCoil = 0.0;
-	for (int c=0 ; c<aligned.length ; c++) {
-		if ((dssp.SSofRes(aligned[c], ' ') != 'E') &&
-				(dssp.SSofRes(aligned[c], ' ') != 'H')){
+	for (int anAligned : aligned) {
+		if ((dssp.SSofRes(anAligned, ' ') != 'E') &&
+				(dssp.SSofRes(anAligned, ' ') != 'H')) {
 			alignedOfCoil++;
 		}
 	}
@@ -233,7 +233,7 @@ private static void init(String[] args) {
 			"<Wrg>  <Wev> <Wsolv> <Whb> <Wprop> <Wramach> \n"+
 	"                    ******************\n");
 
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 	modelsFileName = getOrderedArgument(args);
 	if (modelsFileName == null) throw new RuntimeException(errorMessage);
@@ -251,13 +251,13 @@ private static void init(String[] args) {
 
 	String tmpString = getOrderedArgument(args);
 	if (tmpString!= null) { 
-		pathFirstEval = new String(tmpString.trim());
+		pathFirstEval = tmpString.trim();
 		System.out.println("# pathFirstEval is " + pathFirstEval);
 	}
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString!= null) { 
-		pathSecondEval = new String(tmpString.trim());
+		pathSecondEval = tmpString.trim();
 		System.out.println("# pathSecondEval is " + pathSecondEval);
 	}
 }

@@ -4,9 +4,9 @@ package meshi.IMP;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class DisplayIMP {
+class DisplayIMP {
 
-	private DomainList domainList;
+	private final DomainList domainList;
 	
 	public DisplayIMP(DomainList domainList) {
 		this.domainList = domainList;
@@ -58,7 +58,7 @@ public class DisplayIMP {
 				bw.write("    <Protein id=\""+ domain.proteinName() + "_" + domain.domainName() +"\">\n");
 				bw.write("        <Chain>\n");
 				bw.write("            <Fragment id=\""+ domain.proteinName() + "_" + domain.domainName() +"_frag\">\n");
-				bw.write("                <Color r=\""+red+"\" g=\""+green+"\" b=\""+(0.15+Double.valueOf(domain.domainName()).doubleValue()/2.5)+"\"/>\n");
+				bw.write("                <Color r=\""+red+"\" g=\""+green+"\" b=\""+(0.15+ Double.valueOf(domain.domainName()) /2.5)+"\"/>\n");
 				bw.write("            </Fragment>\n");
 				bw.write("        </Chain>\n");
 				bw.write("    </Protein>\n");

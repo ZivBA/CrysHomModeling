@@ -46,11 +46,10 @@ import meshi.util.file.MeshiWriter;
  *
  **/
 
-public class MinimizeBatchOfProteinsForPerfectSets extends MeshiProgram implements Residues, AtomTypes {
+class MinimizeBatchOfProteinsForPerfectSets extends MeshiProgram implements Residues, AtomTypes {
 
     private static CommandList commands;
-    private static String commandsFileName = null;
-    private static String modelsFileName = null;  
+	private static String modelsFileName = null;
     private static String refFileName = null;  
     private static double Wrg = 0.0;  
     private static double Wev = 3.0;  
@@ -176,10 +175,10 @@ public class MinimizeBatchOfProteinsForPerfectSets extends MeshiProgram implemen
     			       "<Wrg>  <Wev> <Wsolv> <Whb> <Wprop> <Wramach> \n"+
     			       "                    ******************\n");
     			      
-    	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-    	commandsFileName = getOrderedArgument(args);
+    	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+	    String commandsFileName = getOrderedArgument(args);
     	if (commandsFileName == null) throw new RuntimeException(errorMessage);
-    	System.out.println("# commandsFileName = "+commandsFileName);
+    	System.out.println("# commandsFileName = "+ commandsFileName);
 
     	commands = new CommandList(commandsFileName);
     	
@@ -195,32 +194,32 @@ public class MinimizeBatchOfProteinsForPerfectSets extends MeshiProgram implemen
 
     	String tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	Wrg = (new Double(tmpString)).doubleValue();
+    	Wrg = new Double(tmpString);
     	System.out.println("# Wrg is " + Wrg);
 
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	Wev = (new Double(tmpString)).doubleValue();
+    	Wev = new Double(tmpString);
     	System.out.println("# Wev is " + Wev);
 
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	Wsolv = (new Double(tmpString)).doubleValue();
+    	Wsolv = new Double(tmpString);
     	System.out.println("# Wsolv is " + Wsolv);
 
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	Whb = (new Double(tmpString)).doubleValue();
+    	Whb = new Double(tmpString);
     	System.out.println("# Whb is " + Whb);
 
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	Wprop = (new Double(tmpString)).doubleValue();
+    	Wprop = new Double(tmpString);
     	System.out.println("# Wprop is " + Wprop);
 
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	Wramach = (new Double(tmpString)).doubleValue();
+    	Wramach = new Double(tmpString);
     	System.out.println("# Wramach is " + Wramach);
         }
 }

@@ -10,7 +10,7 @@ import meshi.util.dssp.DSSP;
 import java.text.DecimalFormat;
 
 
-public class crossLinkingTools implements Residues, AtomTypes, KeyWords, ResidueMasses {
+class crossLinkingTools implements Residues, AtomTypes, KeyWords, ResidueMasses {
 	
 	public static void findCandidates(Protein prot1, Protein prot2, DSSP dssp, String chain1, String chain2, double lowDisTH, double highDisTH, double accessibilityTH) { 
 		int NallCL = 0;
@@ -48,17 +48,16 @@ public class crossLinkingTools implements Residues, AtomTypes, KeyWords, Residue
 
 	}
 
-	public static double massOfCrossLinkedPeptide(Protein prot1, int resCLinProt1, Protein prot2, int resCLinProt2) {
+	private static double massOfCrossLinkedPeptide(Protein prot1, int resCLinProt1, Protein prot2, int resCLinProt2) {
 		int[] firstPeptide = MStools.trypsinCutAroundModifiedResidue(prot1, resCLinProt1);
 		int[] secondPeptide = MStools.trypsinCutAroundModifiedResidue(prot2, resCLinProt2);
 		int[] seq1 = Protein.getSeqOfProt(prot1, firstPeptide[0], firstPeptide[1]);
 		int[] seq2 = Protein.getSeqOfProt(prot2, secondPeptide[0], secondPeptide[1]);
-		double totalMass = MW_CL + MStools.massOfPeptide(seq1) + MStools.massOfPeptide(seq2) + 2*MW_OH + 2*MW_H;
-		return totalMass;
+		return MW_CL + MStools.massOfPeptide(seq1) + MStools.massOfPeptide(seq2) + 2*MW_OH + 2*MW_H;
 	}
 	
 	
-	public static double scoreCrossLink(Protein prot1, int resCLinProt1, Protein prot2, int resCLinProt2, DSSP dssp) {
+	private static double scoreCrossLink(Protein prot1, int resCLinProt1, Protein prot2, int resCLinProt2, DSSP dssp) {
 		double score = 0;
 		Trypsin tripsin = new Trypsin();
 		int[] firstPeptide = MStools.trypsinCutAroundModifiedResidue(prot1, resCLinProt1);

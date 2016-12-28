@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CHModellingTool:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CHModellingTool_jar</output-path>
+    <root id="archive" name="CHModellingTool.jar">
+      <element id="module-output" name="CHModellingTool" />
+    </root>
+  </artifact>
+</component>

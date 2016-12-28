@@ -104,24 +104,13 @@ import java.util.StringTokenizer;
 
 public class SolvateParametersList extends ParametersList {
 	
-	public final int NTsai = 14; // The number of atom types used in Tsai 99'. Any Hydrogen is type 14.
-    public final int[] atomicTypeConverter; // From MESHI atom types to Tsai 99'.
-    public final double maxEnd; // The maximal distance where any sigmoid is not zero. This value must be less than the Rmax in the distance matrix. 
+	private final int NTsai = 14; // The number of atom types used in Tsai 99'. Any Hydrogen is type 14.
+	public final double maxEnd; // The maximal distance where any sigmoid is not zero. This value must be less than the Rmax in the distance matrix.
     public final Spline2D[] scPolarSplines;
     public final Spline2D[] bbSplines;
     public final Spline1D[] scCarbonSplines;
-    public final double[][] Cend;     
-    public final double[][] Cp1;
-    public final double[][] Cp2;
-    public final double[][] CvalAtp1;
-    public final double[][] CvalAtp2;
-    public final double[][] HBend;     
-    public final double[][] HBp1;
-    public final double[][] HBp2;
-    public final double[][] HBvalAtp1;
-    public final double[][] HBvalAtp2;
-
-/**
+	
+	/**
  * The parameter to the constructor is an array of 14 Strings, giving the 14 files required as parameters.
  * See the MeshiPotential class for a detailed list.
  **/    
@@ -132,43 +121,43 @@ public class SolvateParametersList extends ParametersList {
 	BufferedReader br;
     StringTokenizer stok;
     String line = "";
-		
-	Cend = new double[NTsai][NTsai];
-	readSigmoidValueFile(Cend,parameterFiles[0]);
-
-	Cp1 = new double[NTsai][NTsai];
-	readSigmoidValueFile(Cp1,parameterFiles[1]);
-
-	Cp2 = new double[NTsai][NTsai];
-	readSigmoidValueFile(Cp2,parameterFiles[2]);
-
-	CvalAtp1 = new double[NTsai][NTsai];
-	readSigmoidValueFile(CvalAtp1,parameterFiles[3]);
-
-	CvalAtp2 = new double[NTsai][NTsai];
-	readSigmoidValueFile(CvalAtp2,parameterFiles[4]);
-
-	HBend = new double[NTsai][NTsai];
+	
+	    double[][] cend = new double[NTsai][NTsai];
+	readSigmoidValueFile(cend,parameterFiles[0]);
+	
+	    double[][] cp1 = new double[NTsai][NTsai];
+	readSigmoidValueFile(cp1,parameterFiles[1]);
+	
+	    double[][] cp2 = new double[NTsai][NTsai];
+	readSigmoidValueFile(cp2,parameterFiles[2]);
+	
+	    double[][] cvalAtp1 = new double[NTsai][NTsai];
+	readSigmoidValueFile(cvalAtp1,parameterFiles[3]);
+	
+	    double[][] cvalAtp2 = new double[NTsai][NTsai];
+	readSigmoidValueFile(cvalAtp2,parameterFiles[4]);
+	
+	    double[][] HBend = new double[NTsai][NTsai];
 	readSigmoidValueFile(HBend,parameterFiles[5]);
-
-	HBp1 = new double[NTsai][NTsai];
+	
+	    double[][] HBp1 = new double[NTsai][NTsai];
 	readSigmoidValueFile(HBp1,parameterFiles[6]);
-
-	HBp2 = new double[NTsai][NTsai];
+	
+	    double[][] HBp2 = new double[NTsai][NTsai];
 	readSigmoidValueFile(HBp2,parameterFiles[7]);
-
-	HBvalAtp1 = new double[NTsai][NTsai];
+	
+	    double[][] HBvalAtp1 = new double[NTsai][NTsai];
 	readSigmoidValueFile(HBvalAtp1,parameterFiles[8]);
-
-	HBvalAtp2 = new double[NTsai][NTsai];
+	
+	    double[][] HBvalAtp2 = new double[NTsai][NTsai];
 	readSigmoidValueFile(HBvalAtp2,parameterFiles[9]);
 		
 	// Finding the largest ending distance
 	double maxEndTmp = -1.0;
 	for (int c1=0 ; c1<NTsai ; c1++) 
 	for (int c2=0 ; c2<NTsai ; c2++) {
-	   if (Cend[c1][c2]>maxEndTmp)
-	      maxEndTmp = Cend[c1][c2];
+	   if (cend[c1][c2]>maxEndTmp)
+	      maxEndTmp = cend[c1][c2];
 	   if (HBend[c1][c2]>maxEndTmp)
 	      maxEndTmp = HBend[c1][c2];
 	}
@@ -188,8 +177,8 @@ public class SolvateParametersList extends ParametersList {
 	    	line = br.readLine();
 	    }
 	    br.close();
-	    atomicTypeConverter = new int[maxAtomType+1];
-	    for(int c=0 ; c<atomicTypeConverter.length; c++)
+		int[] atomicTypeConverter = new int[maxAtomType + 1];
+	    for(int c = 0; c< atomicTypeConverter.length; c++)
 	    	atomicTypeConverter[c] = -1; 
 		// second pass on the file - reading the new types
 		br = new BufferedReader(new FileReader(parameterFiles[10]));
@@ -197,7 +186,7 @@ public class SolvateParametersList extends ParametersList {
 	    while (line != null) {
 	    	stok = new StringTokenizer(line);
 	    	tmp = Atom.type(stok.nextToken().trim());
-	    	atomicTypeConverter[tmp] = Integer.valueOf(stok.nextToken().trim()).intValue()-1;
+	    	atomicTypeConverter[tmp] = Integer.valueOf(stok.nextToken().trim()) -1;
 	    	line = br.readLine();
 	    }
 	    br.close();
@@ -290,7 +279,7 @@ public class SolvateParametersList extends ParametersList {
 					NTsai + " array of doubles");
 				stok = new StringTokenizer(line);
 				for (int ind2=0 ; ind2<NTsai ; ind2++) 
-					ar[ind1][ind2] = Double.valueOf(stok.nextToken().trim()).doubleValue();
+					ar[ind1][ind2] = Double.valueOf(stok.nextToken().trim());
 			}
 			br.close();
 		}

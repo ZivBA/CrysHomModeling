@@ -9,13 +9,11 @@ import meshi.parameters.MeshiPotential;
 //---------------------------------------------------------------------
 public class AlphaTorsionEnergyElement extends EnergyElement implements MeshiPotential {
     private Atom atom1,atom2,atom3,atom4;
-    private Torsion torsion;
+    private final Torsion torsion;
     private double loTor,hiTor,midTor,cyclicMidTor;
-    private double weight;
-    private final double BUFF = 0.05; // the size of the smoothing region
-    private final double INV_BUFF = 1/BUFF; 
-
-    /**
+    private final double weight;
+	
+	/**
      *An energy element handling one alpha torsion. 
      *It checks for the secondary structure the torsion is in, and then assign the proper 
      *CA torsion range.
@@ -28,16 +26,18 @@ public class AlphaTorsionEnergyElement extends EnergyElement implements MeshiPot
 	if (! torsion.getTorsionName().equals("ALPHA"))
 	    throw new RuntimeException("\nError: Only CA torsions can be treated\n");	        
 	Residue residue = torsion.atom2.residue();
-	if (residue.secondaryStructure().equals(HELIX)) {
-		loTor = param.startAlphaHELIX;
-		hiTor = param.endAlphaHELIX;
-	}
-	else if (residue.secondaryStructure().equals(SHEET)) {
-		loTor = param.startAlphaSHEET;
-		hiTor = param.endAlphaSHEET;
-	}
-	else
-	    throw new RuntimeException("\nError: CA torsion is valid only to HELIX or SHEET secondary structure\n");
+	    switch (residue.secondaryStructure()) {
+		    case HELIX:
+			    loTor = param.startAlphaHELIX;
+			    hiTor = param.endAlphaHELIX;
+			    break;
+		    case SHEET:
+			    loTor = param.startAlphaSHEET;
+			    hiTor = param.endAlphaSHEET;
+			    break;
+		    default:
+			    throw new RuntimeException("\nError: CA torsion is valid only to HELIX or SHEET secondary structure\n");
+	    }
     midTor = (hiTor+loTor)/2;
     cyclicMidTor = (hiTor-2*Math.PI+loTor)/2;
     setAtoms();
@@ -47,32 +47,34 @@ public class AlphaTorsionEnergyElement extends EnergyElement implements MeshiPot
 	
 	private int calc(double tor, double loTor, double hiTor, double[] ans) {
 	   ans[0] = 0.0;
-	   ans[1] = 0.0; 	
-	   
-	   if (loTor>hiTor) {
+	   ans[1] = 0.0;
+		
+		double BUFF = 0.05;
+		double INV_BUFF = 1 / BUFF;
+		if (loTor>hiTor) {
 	   	  if ((tor<hiTor) | (tor>loTor))
 	   	     return 0;
-	   	  if ((loTor-hiTor)<4*BUFF)
+	   	  if ((loTor-hiTor)<4* BUFF)
 	   	     return 0;
-	   	  if ((tor>=hiTor) && (tor<hiTor+BUFF)) {
-	   	  	ans[0] = 0.5*INV_BUFF*(tor-hiTor)*(tor-hiTor);
-	   	  	ans[1] = INV_BUFF*(tor-hiTor);
+	   	  if ((tor>=hiTor) && (tor<hiTor+ BUFF)) {
+	   	  	ans[0] = 0.5* INV_BUFF *(tor-hiTor)*(tor-hiTor);
+	   	  	ans[1] = INV_BUFF *(tor-hiTor);
 	   	  }
-	   	  else if ((tor>=hiTor+BUFF) && (tor<midTor-BUFF)) {
-	   	  	ans[0] = 0.5*BUFF + (tor - hiTor - BUFF);
+	   	  else if ((tor>=hiTor+ BUFF) && (tor<midTor- BUFF)) {
+	   	  	ans[0] = 0.5* BUFF + (tor - hiTor - BUFF);
 	   	  	ans[1] = 1.0;
 	   	  }
-	   	  else if ((tor>=midTor-BUFF) && (tor<midTor+BUFF)) {
-	   	  	ans[0] = -0.5*INV_BUFF*(tor-midTor)*(tor-midTor) + (midTor - hiTor - BUFF);
-	   	  	ans[1] = -INV_BUFF*(tor-midTor);
+	   	  else if ((tor>=midTor- BUFF) && (tor<midTor+ BUFF)) {
+	   	  	ans[0] = -0.5* INV_BUFF *(tor-midTor)*(tor-midTor) + (midTor - hiTor - BUFF);
+	   	  	ans[1] = -INV_BUFF *(tor-midTor);
 	   	  }
-	   	  else if ((tor>=midTor+BUFF) && (tor<loTor-BUFF)) {
-	   	  	ans[0] = 0.5*BUFF - (tor - loTor + BUFF);
+	   	  else if ((tor>=midTor+ BUFF) && (tor<loTor- BUFF)) {
+	   	  	ans[0] = 0.5* BUFF - (tor - loTor + BUFF);
 	   	  	ans[1] = -1.0;	   	  	
 	   	  }
-	   	  else if (tor>=loTor-BUFF) {
-	   	  	ans[0] = 0.5*INV_BUFF*(tor-loTor)*(tor-loTor);
-	   	  	ans[1] = INV_BUFF*(tor-loTor);	   	  	
+	   	  else if (tor>=loTor- BUFF) {
+	   	  	ans[0] = 0.5* INV_BUFF *(tor-loTor)*(tor-loTor);
+	   	  	ans[1] = INV_BUFF *(tor-loTor);
 	   	  }
 	   	  return 0;
 	   }
@@ -82,27 +84,27 @@ public class AlphaTorsionEnergyElement extends EnergyElement implements MeshiPot
           if (tor>hiTor)
 	   	     tor -= 2*Math.PI;
 	   	  hiTor -= 2*Math.PI;
-	   	  if ((loTor-hiTor)<4*BUFF)
+	   	  if ((loTor-hiTor)<4* BUFF)
 	   	     return 0;
-	   	  if ((tor>=hiTor) && (tor<hiTor+BUFF)) {
-	   	  	ans[0] = 0.5*INV_BUFF*(tor-hiTor)*(tor-hiTor);
-	   	  	ans[1] = INV_BUFF*(tor-hiTor);
+	   	  if ((tor>=hiTor) && (tor<hiTor+ BUFF)) {
+	   	  	ans[0] = 0.5* INV_BUFF *(tor-hiTor)*(tor-hiTor);
+	   	  	ans[1] = INV_BUFF *(tor-hiTor);
 	   	  }
-	   	  else if ((tor>=hiTor+BUFF) && (tor<cyclicMidTor-BUFF)) {
-	   	  	ans[0] = 0.5*BUFF + (tor - hiTor - BUFF);
+	   	  else if ((tor>=hiTor+ BUFF) && (tor<cyclicMidTor- BUFF)) {
+	   	  	ans[0] = 0.5* BUFF + (tor - hiTor - BUFF);
 	   	  	ans[1] = 1.0;
 	   	  }
-	   	  else if ((tor>=cyclicMidTor-BUFF) && (tor<cyclicMidTor+BUFF)) {
-	   	  	ans[0] = -0.5*INV_BUFF*(tor-cyclicMidTor)*(tor-cyclicMidTor) + (cyclicMidTor - hiTor - BUFF);
-	   	  	ans[1] = -INV_BUFF*(tor-cyclicMidTor);
+	   	  else if ((tor>=cyclicMidTor- BUFF) && (tor<cyclicMidTor+ BUFF)) {
+	   	  	ans[0] = -0.5* INV_BUFF *(tor-cyclicMidTor)*(tor-cyclicMidTor) + (cyclicMidTor - hiTor - BUFF);
+	   	  	ans[1] = -INV_BUFF *(tor-cyclicMidTor);
 	   	  }
-	   	  else if ((tor>=cyclicMidTor+BUFF) && (tor<loTor-BUFF)) {
-	   	  	ans[0] = 0.5*BUFF - (tor - loTor + BUFF);
+	   	  else if ((tor>=cyclicMidTor+ BUFF) && (tor<loTor- BUFF)) {
+	   	  	ans[0] = 0.5* BUFF - (tor - loTor + BUFF);
 	   	  	ans[1] = -1.0;	   	  	
 	   	  }
-	   	  else if (tor>=loTor-BUFF) {
-	   	  	ans[0] = 0.5*INV_BUFF*(tor-loTor)*(tor-loTor);
-	   	  	ans[1] = INV_BUFF*(tor-loTor);	   	  	
+	   	  else if (tor>=loTor- BUFF) {
+	   	  	ans[0] = 0.5* INV_BUFF *(tor-loTor)*(tor-loTor);
+	   	  	ans[1] = INV_BUFF *(tor-loTor);
 	   	  }	   	
 	   	  return 0;
 	   }
@@ -123,22 +125,22 @@ public class AlphaTorsionEnergyElement extends EnergyElement implements MeshiPot
 	dEdTorsion1 = -weight*ans[1];  // minus - so it is force
     
 
-	if (atom1.frozen() == false) {
+	if (!atom1.frozen()) {
 	    atom1.addToFx(dEdTorsion1*torsion.dTorsionDx1());
 	    atom1.addToFy(dEdTorsion1*torsion.dTorsionDy1());
 	    atom1.addToFz(dEdTorsion1*torsion.dTorsionDz1());
 	}
-	if (atom2.frozen() == false) {
+	if (!atom2.frozen()) {
 	    atom2.addToFx(dEdTorsion1*torsion.dTorsionDx2());
 	    atom2.addToFy(dEdTorsion1*torsion.dTorsionDy2());
 	    atom2.addToFz(dEdTorsion1*torsion.dTorsionDz2());
 	}
-	if (atom3.frozen() == false) {
+	if (!atom3.frozen()) {
 	    atom3.addToFx(dEdTorsion1*torsion.dTorsionDx3());
 	    atom3.addToFy(dEdTorsion1*torsion.dTorsionDy3());
 	    atom3.addToFz(dEdTorsion1*torsion.dTorsionDz3());
 	}	        	    
-	if (atom4.frozen() == false) {
+	if (!atom4.frozen()) {
 	    atom4.addToFx(dEdTorsion1*torsion.dTorsionDx4());
 	    atom4.addToFy(dEdTorsion1*torsion.dTorsionDy4());
 	    atom4.addToFz(dEdTorsion1*torsion.dTorsionDz4());

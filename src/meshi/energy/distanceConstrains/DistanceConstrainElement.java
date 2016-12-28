@@ -6,20 +6,21 @@ import meshi.molecularElements.AtomList;
 
 //------------------------------------------------------------------------------------------------
 public class DistanceConstrainElement extends EnergyElement {
-    protected Atom atom1, atom2;
-    protected int number1, number2;
-    protected Distance distance;
-    protected double target, tolerance, force;
-    protected double weight;
-
-    public DistanceConstrainElement(Atom atom1, Atom atom2, DistanceConstrainParameters parameters,
+    private final Atom atom1;
+	private final Atom atom2;
+	private final Distance distance;
+    private final double target;
+	private final double tolerance;
+	private final double force;
+	
+	public DistanceConstrainElement(Atom atom1, Atom atom2, DistanceConstrainParameters parameters,
 			     double weight) {
-	this.weight = weight;
+		double weight1 = weight;
 	this.atom1 = atom1;
 	this.atom2 = atom2;
 	setAtoms();
-	number1 = atom1.number();
-	number2 = atom2.number();
+		int number1 = atom1.number();
+		int number2 = atom2.number();
 	distance = new Distance(atom1, atom2);
 	target = parameters.target;
 	force =  parameters.force*weight;
@@ -77,7 +78,7 @@ public class DistanceConstrainElement extends EnergyElement {
 	return ("DistanceConstrain target = "+dFormatSrt.f(target)+" force = "+dFormatSrt.f(force)+" distance = "+
 		dFormatSrt.f(distance.distance())+" energy = "+dFormatSrt.f(evaluate())+" "+
 		"tolerance "+dFormatSrt.f(tolerance)+"\n"+
-		atom1.verbose(1)+"\n"+atom2.verbose(1));
+		atom1.verbose()+"\n"+atom2.verbose());
     }
 	
 }

@@ -21,18 +21,15 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.Vector;
 
-public class MultipleResidueSearch   extends MeshiProgram {
+class MultipleResidueSearch   extends MeshiProgram {
 	
-	public final double maxCummulativeProbInLib = 0.99; // The library will be built up to this cummlative prob, so very rare rotamers are excluded.
-	public final double maxLJrisePerRotamer = 15.0; // The maximal rise in LJ energy over base.
-
-	private Protein prot;
-	private CommandList commands;
-	private Vector<Residue> residues;
+	private final Protein prot;
+	private final CommandList commands;
+	private final Vector<Residue> residues;
 	private TotalEnergy energy;
 	private DunbrackLib lib;
 	private Vector<SingleResidueSearch> singleSearches;
-	double[][] pp;
+	private double[][] pp;
 //	LennardJones LJenergy;
 //	SimpleHydrogenBondEnergy HBenergy;
 	private double baseLJ;
@@ -52,7 +49,7 @@ public class MultipleResidueSearch   extends MeshiProgram {
 	
 	private void craeteSingleResidueSearch() {
 		int searchOptions = 1;
-		singleSearches = new Vector<SingleResidueSearch>();
+		singleSearches = new Vector<>();
 		for (Residue res : residues) {
 			singleSearches.add(new SingleResidueSearch(res, pp[res.number][0], pp[res.number][1], lib));
 			searchOptions *= singleSearches.lastElement().howMany();
@@ -61,7 +58,8 @@ public class MultipleResidueSearch   extends MeshiProgram {
 	}
 	
 	private void createEnergyAndRotLib() {
-		lib  = new DunbrackLib(commands, maxCummulativeProbInLib , 100);
+		double maxCummulativeProbInLib = 0.99;
+		lib  = new DunbrackLib(commands, maxCummulativeProbInLib, 100);
 		prot.freeze();
 		for (Residue res : residues) {
 			res.atoms().defrost();
@@ -88,7 +86,7 @@ public class MultipleResidueSearch   extends MeshiProgram {
 		System.out.println("\nBase energies: LJ=" + ((int) (baseLJ*100))/100.0 + " HB=" + ((int) (baseHB*100))/100.0 );		
 	}
 	
-	public void search() {
+	private void search() {
 		int counter = 0;
 		bestScore = Double.MAX_VALUE;
 		currentlyWorking = singleSearches.elementAt(0);
@@ -179,7 +177,7 @@ public class MultipleResidueSearch   extends MeshiProgram {
 	 * If withPermute is false 'r' can be null.
 	 */
 	public void searchSequential(int Niteration, boolean withPermute , Random r) {
-		int[] perm = permutaion(singleSearches.size(),withPermute,r);
+		int[] perm = permutaion(singleSearches.size(),withPermute);
 		int[] indsBestRot = new int[singleSearches.size()];
 		for (int c=0 ; c<indsBestRot.length ; c++) {
 			indsBestRot[c] = -1;
@@ -187,37 +185,38 @@ public class MultipleResidueSearch   extends MeshiProgram {
 		for (int iteration=0 ; iteration<Niteration ; iteration++) {
 			System.out.println("Started interation: " + iteration);
 			int change = 0;
-			for (int c=0 ; c<perm.length ; c++) {
-				SingleResidueSearch singleSearch = singleSearches.elementAt(perm[c]);
+			for (int aPerm : perm) {
+				SingleResidueSearch singleSearch = singleSearches.elementAt(aPerm);
 				currentlyWorking = singleSearch;
 				energy.evaluate();
 				baseLJ = energy.energyValues().doubleAt(0);
 				baseHB = energy.energyValues().doubleAt(1);
-				System.out.println("Initializing exhaustive search for residue: " + singleSearch.resName() +  singleSearch.resNumber() + " with possibilities: "  + singleSearch.howMany());
-				System.out.println("\nBase energies: LJ=" + ((int) (baseLJ*100))/100.0 + " HB=" + ((int) (baseHB*100))/100.0 );		
+				System.out.println(
+						"Initializing exhaustive search for residue: " + singleSearch.resName() + singleSearch.resNumber() + " with possibilities: "
+								+ singleSearch.howMany());
+				System.out.println("\nBase energies: LJ=" + ((int) (baseLJ * 100)) / 100.0 + " HB=" + ((int) (baseHB * 100)) / 100.0);
 				//int counter = 0;
 				bestScore = Double.MAX_VALUE;
-				for (singleSearch.intializeSearch() ; singleSearch.isValid() ; singleSearch.nextOption()) {
+				for (singleSearch.intializeSearch(); singleSearch.isValid(); singleSearch.nextOption()) {
 					//counter++;
-					//if (counter%5000 == 0) 
+					//if (counter%5000 == 0)
 					//System.out.println("So far did:" + counter);
 					energy.evaluate();
-//					System.out.println("Debug: " + )
-					rotamerEnergy = 
-							-(Math.log(0.1+singleSearch.getProb()));
+					//					System.out.println("Debug: " + )
+					rotamerEnergy =
+							-(Math.log(0.1 + singleSearch.getProb()));
 					if (improvement()) {
 						singleSearch.setBest();
 						reportImprovement();
-					}				
+					}
 				}
 				if (bestScore == Double.MAX_VALUE) {
 					singleSearch.restoreInitialCoordinates();
-				}
-				else {
+				} else {
 					singleSearch.buildBest();
 				}
-				if (indBestScore!=indsBestRot[perm[c]]) {
-					indsBestRot[perm[c]] = indBestScore;
+				if (indBestScore != indsBestRot[aPerm]) {
+					indsBestRot[aPerm] = indBestScore;
 					change++;
 				}
 			}
@@ -232,6 +231,7 @@ public class MultipleResidueSearch   extends MeshiProgram {
 	private boolean improvement() {
 		double Elj = energy.energyValues().doubleAt(0);
 		double Ehb = energy.energyValues().doubleAt(1);
+		double maxLJrisePerRotamer = 15.0;
 		if ((baseLJ + maxLJrisePerRotamer *singleSearches.size() ) > Elj) {
 			double score = 2.0*Ehb + rotamerEnergy;
 			if (score<bestScore) {
@@ -261,7 +261,7 @@ public class MultipleResidueSearch   extends MeshiProgram {
 	/**
 	 * Permutaion for the sequential treatment
 	 */
-	public static int[] permutaion(int length, boolean withPermute, Random r) {
+	private static int[] permutaion(int length, boolean withPermute) {
 		// initialize array and fill it with {0,1,2...}     
 		int[] array = new int[length];     
 		for(int i = 0; i < array.length; i++)         
@@ -301,7 +301,7 @@ public class MultipleResidueSearch   extends MeshiProgram {
 		Protein prot = ComplexMESHIconversion.complex2meshi(modelList);
 		CommandList commands = new CommandList("C:\\Users\\Nir\\MESHI\\commands");
 		PutHydrogens.adjustHydrogens(commands, prot);		
-		Vector<Residue> residues = new Vector<Residue>();
+		Vector<Residue> residues = new Vector<>();
 //		residues.add(prot.residue(387));
 		residues.add(prot.residue(1078));
 		MultipleResidueSearch search = new MultipleResidueSearch(prot, commands, residues);

@@ -5,13 +5,12 @@ import java.io.FileReader;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-public class MGF_Mass_Matrix_Format {
+class MGF_Mass_Matrix_Format {
 
 	private Vector<double[]> ms2 = null;
-	private IonVector iVec = null;
-	 
+	
 	public MGF_Mass_Matrix_Format(String fileName) {
-    	ms2 = new Vector<double[]>();
+    	ms2 = new Vector<>();
     	double mass = -1;
     	int chargeState = -1;
     	int scan = -1;
@@ -20,8 +19,8 @@ public class MGF_Mass_Matrix_Format {
     	boolean readingIonList = false;
     	double sumIons = 0.0;
     	double numIons = 0.0;
-    	Vector<double[]> ms2SpectrumCollection = new Vector<double[]>();
-    	iVec = new IonVector();
+    	Vector<double[]> ms2SpectrumCollection = new Vector<>();
+		IonVector iVec = new IonVector();
     	String line="";
     	try {
     		BufferedReader fMGF = new BufferedReader(new FileReader(fileName));
@@ -56,7 +55,7 @@ public class MGF_Mass_Matrix_Format {
         			if (line.startsWith("PEPMASS=")) {
         				mass = Double.valueOf(line.substring(8));
         				readingIonList = true;
-        				ms2SpectrumCollection = new Vector<double[]>();
+        				ms2SpectrumCollection = new Vector<>();
         			}
         			if (line.startsWith("CHARGE=")) {
         				chargeState = Integer.valueOf(line.substring(7,8));
@@ -84,9 +83,9 @@ public class MGF_Mass_Matrix_Format {
 	
 	public String toString() {
 		String out = "";
-		for (int c=0 ; c<ms2.size() ; c++) {
-//			out += (ms2.get(c)[0] + " " + ms2.get(c)[1] + " " + ms2.get(c)[2] + " " + ms2.get(c)[3] + "\n"); 
-			out += (ms2.get(c)[3] + " " + ms2.get(c)[2] + "\n"); 
+		for (double[] aMs2 : ms2) {
+			//			out += (ms2.get(c)[0] + " " + ms2.get(c)[1] + " " + ms2.get(c)[2] + " " + ms2.get(c)[3] + "\n");
+			out += (aMs2[3] + " " + aMs2[2] + "\n");
 		}
 		return out;
 	}

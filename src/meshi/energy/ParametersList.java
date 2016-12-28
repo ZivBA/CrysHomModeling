@@ -18,18 +18,18 @@ import java.util.Iterator;
 public abstract class ParametersList extends MeshiList {
     /**
      * True if the list is sortable.
-     **/ 
-    boolean sortable;
+     **/
+    private boolean sortable;
 
     /**
      * True if the list is sorted.
      **/
-    boolean sorted = false;
+    private boolean sorted = false;
 
     /**
      * Construct an empty list.
      **/
-    public ParametersList() {
+    protected ParametersList() {
 	super(new IsParameters());
     }
 
@@ -40,7 +40,7 @@ public abstract class ParametersList extends MeshiList {
      * is sorted. See for example the parameters for 
      * bond-energy in meshi/parameters/meshiPotential/bondParameters.dat .
      **/
-    public ParametersList(String parametersFileName, boolean sortable) {
+    protected ParametersList(String parametersFileName, boolean sortable) {
 	super(new IsParameters());
 	this.sortable = sortable;
 	if (parametersFileName != null) {
@@ -68,16 +68,17 @@ public abstract class ParametersList extends MeshiList {
      * where each file holds a single parameter. An example for this case are the TwoTorsions
      * energies.
      **/
-    public ParametersList(String[] parametersFileName, boolean sortable) {
+    protected ParametersList(String[] parametersFileName, boolean sortable) {
 	super(new IsParameters());
 	this.sortable = sortable;
 	if (parametersFileName != null) {
     if (parametersFileName.length > 0) { 
 	    System.out.println("Loading "+this+" parameters");
-	    for (int cc=0; cc<parametersFileName.length ; cc++) {
-	    	 add(createParameters(parametersFileName[cc]));
-    		 if (sortable) sort();
- 	    }
+	    for (String aParametersFileName : parametersFileName) {
+		    add(createParameters(aParametersFileName));
+		    if (sortable)
+			    sort();
+	    }
 	}
 	}
     }
@@ -85,7 +86,7 @@ public abstract class ParametersList extends MeshiList {
       /**
       * Construct an empty list with Filter filter.
       **/
-     public ParametersList(Filter filter) {
+      protected ParametersList(Filter filter) {
        super(filter);
      }
 
@@ -100,7 +101,7 @@ public abstract class ParametersList extends MeshiList {
     /**
      * Sort the list. Note that if the List is not sortable this method simply does nothing.
      **/
-    public void sort() {
+    private void sort() {
 	if (sortable) {
 	    trim();
 	    Arrays.sort(internalArray);
@@ -123,8 +124,8 @@ public abstract class ParametersList extends MeshiList {
      * 	Parameters key = new BondParameters(pair.largeType(), pair.smallType());
      *  return getParameters(key);
      *</pre>
-     **/ 
-    public Parameters getParameters(Parameters key) {
+     **/
+    protected Parameters getParameters(Parameters key) {
 	if (sortable) {
 	    int index = Arrays.binarySearch(internalArray, key);
 	    if (index <0) return null;
@@ -146,7 +147,7 @@ public abstract class ParametersList extends MeshiList {
     /**
      * Energy term specific method to create a Parameters object from a line of the parameters file.
      **/
-    public abstract Parameters createParameters(String line);
+    protected abstract Parameters createParameters(String line);
 
     /**
      * Get an element from the list.

@@ -71,8 +71,9 @@ public class ChargeParametersList extends ParametersList {
 			   throw e;
 		}
 		
-		for (int c=0 ; c<tmpAr.length ; c++){
-		   if (tmpAr[c]!=null) set(tmpAr[c].atomType,tmpAr[c]);		   
+		for (ChargeParameter aTmpAr : tmpAr) {
+			if (aTmpAr != null)
+				set(aTmpAr.atomType, aTmpAr);
 		}
 	}
 
@@ -86,7 +87,7 @@ public class ChargeParametersList extends ParametersList {
 	 * @return Parameters
 	 **/
 	
-	public Parameters createParameters(String line) {
+	protected Parameters createParameters(String line) {
 		return new ChargeParameter(new StringTokenizer(line));
     }
 

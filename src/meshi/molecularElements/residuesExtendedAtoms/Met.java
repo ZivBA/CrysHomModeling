@@ -13,8 +13,7 @@ import meshi.molecularElements.AtomList;
  *           CG - SD - CE
  **/
 public class Met extends ResidueExtendedAtoms {
-    public final Atom CG, SD, CE;
-    public static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
+	private static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
 	"                 O\n"+
 	"                 |\n"+
 	"        N - CA - C...n\n"+
@@ -35,15 +34,18 @@ public class Met extends ResidueExtendedAtoms {
 
 	Object[] temp = new Object[3];
 	int i=0;
-	temp[i++] = CG = getAtom("CG",MCG, atomList, this);
-	temp[i++] = SD = getAtom("SD",MSD, atomList, this);
-	temp[i++] = CE = getAtom("CE",MCE, atomList, this);
+	    Atom CG;
+	    temp[i++] = CG = getAtom("CG",MCG, atomList, this);
+	    Atom SD;
+	    temp[i++] = SD = getAtom("SD",MSD, atomList, this);
+	    Atom CE;
+	    temp[i++] = CE = getAtom("CE",MCE, atomList, this);
 	for (i = 0; i <temp.length; i++)
 	    if (temp[i] != null) atoms.add(temp[i]);
 
-	if ((CB  != null)   && (CG  != null)) bonds.add(CB.bond(CG));
-	if ((CG  != null)   && (SD  != null)) bonds.add(CG.bond(SD));
-	if ((SD  != null)   && (CE  != null)) bonds.add(SD.bond(CE));
+	if ((CB  != null)   && (CG != null)) bonds.add(CB.bond(CG));
+	if ((CG != null)   && (SD != null)) bonds.add(CG.bond(SD));
+	if ((SD != null)   && (CE != null)) bonds.add(SD.bond(CE));
     }
     public String comment() {
 	return COMMENT;

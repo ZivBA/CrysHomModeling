@@ -11,7 +11,7 @@ public class Cell {
     public final int rowNumber;
     public final int colNumber;
     public final Cell upCell, upLeftCell, leftCell;//the next cell will be either the cell in the right of this cell or the cell in bottom of this one
-    protected Cell back;
+    private Cell back;
     public final double score;
     public final DpMatrix matrix;
 

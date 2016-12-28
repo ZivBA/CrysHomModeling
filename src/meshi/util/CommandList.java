@@ -34,12 +34,12 @@ public class CommandList extends MeshiList implements KeyWords {
      **/
     private String comment;
 
-    private boolean debug = true;
+    private final boolean debug = true;
     
     /**
      * An empty commands List,
      **/
-    public CommandList() {
+    private CommandList() {
 	super(new IsCommand());
 	this.comment = "commadList was not generated from a file";
     }
@@ -82,8 +82,8 @@ public class CommandList extends MeshiList implements KeyWords {
     /**
      * Generates a list including only the commands starting with a given keyword. 
      * Used to extract all the commands relevant to some module.
-     **/  
-    public CommandList firstWordFilter(String key) {
+     **/
+    private CommandList firstWordFilter(String key) {
 	CommandList out = new CommandList();
 	out.comment(comment);
 	Iterator iter = iterator();
@@ -108,7 +108,7 @@ public class CommandList extends MeshiList implements KeyWords {
     /**
        Testing if some key is exists
      */
-    public boolean keyExists(String key){
+    private boolean keyExists(String key){
         for(Iterator i=iterator();i.hasNext();){
             Command c = (Command) i.next();
             if(c.firstWord().equals(key))
@@ -127,7 +127,7 @@ public class CommandList extends MeshiList implements KeyWords {
     /**
      * Returns the first command that start with the given keyword.
      **/
-    public Command firstWord(String key) {
+    private Command firstWord(String key) {
 	Iterator iter = iterator();
 	Command command;
 
@@ -186,7 +186,7 @@ public class CommandList extends MeshiList implements KeyWords {
      * myseq4 end
      * the method getSequence("myseq") will return "ACDEFGHIKLMPQRSTUVWY"
      **/
-    public String getSequence(String keyword) {
+    private String getSequence(String keyword) {
 	Iterator iter = iterator();
 	Command command;
 	int i = 1;
@@ -220,7 +220,7 @@ public class CommandList extends MeshiList implements KeyWords {
      * VDW weight 8.5 
      * then getWeight("VDW") returns 8.5
      **/
-    public double getWeight(String key) {
+    private double getWeight(String key) {
 	try {
 	    return firstWordFilter(key).secondWord(WEIGHT).thirdWordDouble();
 	} 

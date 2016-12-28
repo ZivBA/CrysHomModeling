@@ -8,16 +8,19 @@ import meshi.molecularElements.AtomList;
 import meshi.molecularElements.AtomPair;
 
 public class BondEnergyElement extends EnergyElement {
-    protected Atom atom1, atom2;
+    private Atom atom1;
+	private Atom atom2;
     protected int number1, number2;
-    protected Distance distance;
-    protected double target, force, force2;
+    private Distance distance;
+    private double target;
+	private double force;
+	private double force2;
     protected boolean frozen;
-    double weight;
-    public BondEnergyElement() {}
+	
+	public BondEnergyElement() {}
     public BondEnergyElement(AtomPair atomPair, Parameters parameters, 
 			     DistanceMatrix distanceMatrix, double weight) {
-	this.weight = weight;
+	    double weight1 = weight;
 	atom1 = atomPair.atom1();
 	atom2 = atomPair.atom2();
 	setAtoms();
@@ -85,6 +88,6 @@ public class BondEnergyElement extends EnergyElement {
     public String toString() {
 	return ("BondEnergyElement target = "+dFormatSrt.f(target)+" force = "+dFormatSrt.f(force)+" distance = "+
 		dFormatSrt.f(distance.distance())+" energy = "+dFormatSrt.f(evaluate())+"\n"+
-		atom1.verbose(1)+"\n"+atom2.verbose(1));
+		atom1.verbose()+"\n"+atom2.verbose());
     }
 }

@@ -6,11 +6,11 @@ import java.util.StringTokenizer;
 
 public class ProbA {
 	
-	private String[] suboptimalTops;
-	private String[] suboptimalBottoms;
-	private double[] scores;
-	private String top;
-	private String bottom;
+	private final String[] suboptimalTops;
+	private final String[] suboptimalBottoms;
+	private final double[] scores;
+	private final String top;
+	private final String bottom;
 	
 	public ProbA(String probAfilename) {
 		StringTokenizer st;
@@ -40,7 +40,7 @@ public class ProbA {
 		for (;lineNum<content.length ; lineNum++) {
 			st = new StringTokenizer(content[lineNum]);
 			String alignment = st.nextToken();
-			scores[alignmentCounter] = (new Double(st.nextToken())).doubleValue(); 
+			scores[alignmentCounter] = new Double(st.nextToken());
 			suboptimalBottoms[alignmentCounter] = "";
 			suboptimalTops[alignmentCounter] = "";
 			int topCounter = 0;

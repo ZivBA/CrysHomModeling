@@ -21,7 +21,7 @@ public class TorsionPairList extends MeshiList implements Updateable {
     /**
      * An empty TorsionList
      **/
-     protected TorsionPairList(Filter filter) {
+    private TorsionPairList(Filter filter) {
         super(filter);
     }
 
@@ -31,7 +31,7 @@ public class TorsionPairList extends MeshiList implements Updateable {
      * residue are considered. Mixed torsion pairs from different residues are not treated nor 
      * created. Also, only torsions with known biological names (PHI , CHI1, etc.) are treated.
      **/
-    public TorsionPairList(TorsionList torsions, DistanceMatrix distanceMatrix) {
+    private TorsionPairList(TorsionList torsions) {
 	this();
 	MeshiIterator torsionIter = torsions.meshiIterator();
 	Torsion torsion1, torsion2;
@@ -61,7 +61,7 @@ public class TorsionPairList extends MeshiList implements Updateable {
     }
 
 
-    public TorsionPair torsionPairAt(int i) { return (TorsionPair) elementAt(i);}
+    private TorsionPair torsionPairAt(int i) { return (TorsionPair) elementAt(i);}
     
 	
     public static class IsTorsionPair implements Filter {
@@ -81,14 +81,14 @@ public class TorsionPairList extends MeshiList implements Updateable {
 	bondList.renumber();
 	AngleList angleList = new AngleList(bondList, distanceMatrix);
 	TorsionList torsionList = new TorsionList(angleList, distanceMatrix);
-	return new TorsionPairList(torsionList, distanceMatrix);
+	return new TorsionPairList(torsionList);
     }
     public static TorsionPairList createQuickAndDirtyTorsionPairList(Protein protein, DistanceMatrix distanceMatrix) {
 	    AtomPairList bondList = protein.bonds();
 	    bondList.renumber();
 	    AngleList angleList = new AngleList(bondList, distanceMatrix);
 	    TorsionList torsionList = new QuickAndDirtyTorsionList(angleList, distanceMatrix);
-	    return new TorsionPairList(torsionList, distanceMatrix);
+	    return new TorsionPairList(torsionList);
     }
 }
 

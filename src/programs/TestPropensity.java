@@ -62,7 +62,7 @@ import meshi.util.MeshiProgram;
  * structure.
  **/
 
-public class TestPropensity extends MeshiProgram implements Residues,
+class TestPropensity extends MeshiProgram implements Residues,
 		AtomTypes { /**
 									 * The implemented
 									 * interfaces defines the 
@@ -73,24 +73,14 @@ public class TestPropensity extends MeshiProgram implements Residues,
      * Reads, parse and stores the contents of the commands file. 
      **/ 
     private static CommandList commands;
-   
-    /**
-     * A string with the name of the command file.
-     **/
-    private static String commandsFileName = null;
- 
-    /**
+	
+	/**
      * A string with the name of the pdb file to minimize.
      **/
-    private static String modelFileName = null;  
-
-    /**
-     * The minimized protein object.
-     **/
-    private static Protein protein;
-
-
-    public static void main(String[] args) throws MinimizerException, LineSearchException {
+    private static String modelFileName = null;
+	
+	
+	public static void main(String[] args) throws MinimizerException, LineSearchException {
 	/**
 	 * A static function for parsing of the command line arguments and assigning the 
 	 * variables commandsFileName, modelFileName and randomNumberSeed with the right values.
@@ -108,7 +98,10 @@ public class TestPropensity extends MeshiProgram implements Residues,
 	 * minimization is able to fix this. This is obviously not a very wise decision but it 
 	 * is easy to implement. We are currently working on better solution.  <br>
 	 **/ 
-	protein = new ExtendedAtomsProtein(modelFileName,DO_NOT_ADD_ATOMS);
+	/*
+      The minimized protein object.
+     */
+		Protein protein = new ExtendedAtomsProtein(modelFileName, DO_NOT_ADD_ATOMS);
 
 	/**
 	 * The distance matrix object stores all the distances between the protein's atoms. 
@@ -215,7 +208,7 @@ System.out.println(((CompositePropensity2DEnergyElement) term.elementsList().ele
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -232,10 +225,13 @@ System.out.println(((CompositePropensity2DEnergyElement) term.elementsList().ele
 			       "Usage java -Xmx300m MinimizeProtein <commands file name> <pdb file name> seed\n"+
 			       "                    ******************\n");
 			      
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-	commandsFileName = getOrderedArgument(args);
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+	/*
+      A string with the name of the command file.
+     */
+	    String commandsFileName = getOrderedArgument(args);
 	if (commandsFileName == null) throw new RuntimeException(errorMessage);
-	System.out.println("# commandsFileName = "+commandsFileName);
+	System.out.println("# commandsFileName = "+ commandsFileName);
 
 	commands = new CommandList(commandsFileName);
 	
@@ -245,7 +241,7 @@ System.out.println(((CompositePropensity2DEnergyElement) term.elementsList().ele
 
 	String seedString = getOrderedArgument(args);
 	if (seedString== null) throw new RuntimeException(errorMessage);
-	int seed = (new Integer(seedString)).intValue();
+	int seed = new Integer(seedString);
 	System.out.println("# seed is "+seed);
 	initRandom(seed);
     }

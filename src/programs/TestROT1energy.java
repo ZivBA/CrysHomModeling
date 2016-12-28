@@ -22,31 +22,24 @@ import meshi.util.rotamericTools.RotamericTools;
 import java.io.IOException;
 
 
-public class TestROT1energy extends MeshiProgram implements Residues, AtomTypes {
+class TestROT1energy extends MeshiProgram implements Residues, AtomTypes {
     private static CommandList commands;
-   
-    private static String commandsFileName = null;
- 
-    private static String modelFileName = null;  
-
-    private static String loopFileName = null;  
-
-    private static Protein protein;
-    
-    private static int loopStart=203;
-
-    private static int loopEnd=214;
- 
-    public static void main(String[] args) throws MinimizerException, LineSearchException {
-	init(args); 
-
-	double[] cbEnesNat = new double[loopEnd+1];
-	double[] cbEnesLoop = new double[loopEnd+1];
-	double[] rot1EnesNat = new double[loopEnd+1];
-	double[] rot1EnesLoop = new double[loopEnd+1];
 	
-	protein = new ExtendedAtomsProtein(modelFileName,DO_NOT_ADD_ATOMS);
-	for (int cc=0 ; cc<protein.atoms().size() ; cc++)
+	private static String modelFileName = null;
+
+    private static String loopFileName = null;
+	
+	public static void main(String[] args) throws MinimizerException, LineSearchException {
+	init(args);
+		
+		int loopEnd = 214;
+		double[] cbEnesNat = new double[loopEnd +1];
+	double[] cbEnesLoop = new double[loopEnd +1];
+	double[] rot1EnesNat = new double[loopEnd +1];
+	double[] rot1EnesLoop = new double[loopEnd +1];
+		
+		Protein protein = new ExtendedAtomsProtein(modelFileName, DO_NOT_ADD_ATOMS);
+	for (int cc = 0; cc< protein.atoms().size() ; cc++)
 		protein.atoms().atomAt(cc).setChain(" ");
 	protein.defrost();
 
@@ -68,7 +61,8 @@ public class TestROT1energy extends MeshiProgram implements Residues, AtomTypes 
 	TotalEnergy energy = new TotalEnergy(protein, dm, energyCreators, commands);
 	energy.evaluate();
 	energy.evaluateAtoms();
-	for (int res=loopStart; res<=loopEnd ; res++) {
+		int loopStart = 203;
+		for (int res = loopStart; res<= loopEnd; res++) {
 		Atom atom = protein.residue(res).atoms().getAtom("CB");
 		if (atom != null)
 			cbEnesNat[res] = atom.energy();
@@ -84,7 +78,7 @@ public class TestROT1energy extends MeshiProgram implements Residues, AtomTypes 
 	RotamericTools.putIntoRot1(protein, dm, lib);
 	energy.evaluate();
 	energy.evaluateAtoms();
-	for (int res=loopStart; res<=loopEnd ; res++) {
+	for (int res = loopStart; res<= loopEnd; res++) {
 		Atom atom = protein.residue(res).atoms().getAtom("CB");
 		if (atom != null)
 			cbEnesLoop[res] = atom.energy();
@@ -103,13 +97,13 @@ public class TestROT1energy extends MeshiProgram implements Residues, AtomTypes 
 	
 	
 	protein = new ExtendedAtomsProtein(modelFileName,DO_NOT_ADD_ATOMS);
-	for (int cc=0 ; cc<protein.atoms().size() ; cc++)
+	for (int cc = 0; cc< protein.atoms().size() ; cc++)
 		protein.atoms().atomAt(cc).setChain(" ");
 	protein.defrost();
 
 	dm = new DistanceMatrix(protein.atoms(), 8.5,  1.0,  4);
 	RotamericTools.putIntoRot1(protein, dm, lib);
-	for (int res=0 ; res<protein.residues().size() ; res++) {
+	for (int res = 0; res< protein.residues().size() ; res++) {
 		if (!protein.residues().residueAt(res).dummy())
 			RotamericTools.putCBinSCcenter(protein.residues().residueAt(res));
 	}
@@ -122,7 +116,7 @@ public class TestROT1energy extends MeshiProgram implements Residues, AtomTypes 
 	energy = new TotalEnergy(protein, dm, energyCreators2, commands);
 	energy.evaluate();
 	energy.evaluateAtoms();
-	for (int res=loopStart; res<=loopEnd ; res++) {
+	for (int res = loopStart; res<= loopEnd; res++) {
 		Atom atom = protein.residue(res).atoms().getAtom("CB");
 		if (atom != null)
 			rot1EnesNat[res] = atom.energy();
@@ -136,14 +130,14 @@ public class TestROT1energy extends MeshiProgram implements Residues, AtomTypes 
 	}
 	energy.evaluate();
 	RotamericTools.putIntoRot1(protein, dm, lib);
-	for (int res=0 ; res<protein.residues().size() ; res++) {
+	for (int res = 0; res< protein.residues().size() ; res++) {
 		if (!protein.residues().residueAt(res).dummy())
 			RotamericTools.putCBinSCcenter(protein.residues().residueAt(res));
 	}
 	energy.evaluate();
 	System.out.print("*********************************************************");
 	energy.evaluateAtoms();
-	for (int res=loopStart; res<=loopEnd ; res++) {
+	for (int res = loopStart; res<= loopEnd; res++) {
 		Atom atom = protein.residue(res).atoms().getAtom("CB");
 		if (atom != null)
 			rot1EnesLoop[res] = atom.energy();
@@ -151,7 +145,7 @@ public class TestROT1energy extends MeshiProgram implements Residues, AtomTypes 
 	
 	
 	System.out.println();
-	for (int res=loopStart; res<=loopEnd ; res++) 
+	for (int res = loopStart; res<= loopEnd; res++)
 		System.out.println(res + " " + (rot1EnesLoop[res]-rot1EnesNat[res]) + " " +
 				(cbEnesLoop[res]-cbEnesNat[res]));
 	
@@ -167,7 +161,7 @@ public class TestROT1energy extends MeshiProgram implements Residues, AtomTypes 
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -183,10 +177,10 @@ public class TestROT1energy extends MeshiProgram implements Residues, AtomTypes 
 			       "Usage java -Xmx300m SimplestMinimizeProtein <commands file name> <pdb file name> \n"+
 			       "                    ******************\n");
 			      
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-	commandsFileName = getOrderedArgument(args);
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+	    String commandsFileName = getOrderedArgument(args);
 	if (commandsFileName == null) throw new RuntimeException(errorMessage);
-	System.out.println("# commandsFileName = "+commandsFileName);
+	System.out.println("# commandsFileName = "+ commandsFileName);
 
 	commands = new CommandList(commandsFileName);
 	

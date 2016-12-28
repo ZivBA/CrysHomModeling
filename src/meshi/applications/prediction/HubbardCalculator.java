@@ -2,18 +2,17 @@ package meshi.applications.prediction;
 import meshi.applications.hubbard.HubbardPosition;
 import meshi.molecularElements.AtomList;
 
-public class HubbardCalculator 
+class HubbardCalculator
 {
-	public static double[][] C1;
-	public static double[][] C2;
-	public static HubbardPosition[] Popo;
-	public static int len;
-    public static final int sub = 4; //the length of the first sub protein that we check.
+	private static double[][] C1;
+	private static double[][] C2;
+	private static int len;
+    private static final int sub = 4; //the length of the first sub protein that we check.
 	                   //According to Hubbard plot - suppose to be 3 but there is a problem 
 	                   //to the Hubbard overlap to handle it.
-    public static final double maximal_distance = 4.9;//the maximal distance between 2 Ca atoms for joining them to the
+    private static final double maximal_distance = 4.9;//the maximal distance between 2 Ca atoms for joining them to the
                                        //group of Atoms we send at the next iteration.
-    public static final int num_of_loops = 20;//the maximal number of iterations over the protein in finding
+    private static final int num_of_loops = 20;//the maximal number of iterations over the protein in finding
                                     //the best superposition.
 
 
@@ -21,17 +20,17 @@ public class HubbardCalculator
     	return hubbard_gdt(reference, protein1, 1, 2, 4, 8);
     }
     
-    public static double hubbard_gdt(AtomList reference, AtomList protein1 , double cutoff1, double cutoff2, double cutoff3, double cutoff4) {
+    private static double hubbard_gdt(AtomList reference, AtomList protein1, double cutoff1, double cutoff2, double cutoff3, double cutoff4) {
         //creating two arrays (one for each given structure)
         //according to the atoms coordinates writen at the files.
         read_files(reference, protein1);
-        Popo = new HubbardPosition[len+1-sub];//represents all the superspositions of the protein.
-        initialize(Popo);//initialize Popo (for each subunit of the 
+	    HubbardPosition[] popo = new HubbardPosition[len + 1 - sub];
+        initialize(popo);//initialize Popo (for each subunit of the
                                                          //protein at the base subunit size.
-        loop_over_Popo(Popo);//for each start point (according to the base subunit)
+        loop_over_Popo(popo);//for each start point (according to the base subunit)
                                                     //finding the best superposition of the protein.
         double[] best_distance = new double[len];
-        build_best_distance(best_distance, Popo);//building the best distances array.
+        build_best_distance(best_distance, popo);//building the best distances array.
 System.out.println(cutoff1 + " " + fracBelowRMS(best_distance,cutoff1,reference.CAFilter().size()));
 System.out.println(cutoff2 + " " + fracBelowRMS(best_distance,cutoff2,reference.CAFilter().size()));
 System.out.println(cutoff3 + " " + fracBelowRMS(best_distance,cutoff3,reference.CAFilter().size()));
@@ -57,10 +56,9 @@ System.out.println(cutoff4 + " " + fracBelowRMS(best_distance,cutoff4,reference.
      
      //--------------------------------------------------------------------------------------
     private static void loop_over_Popo(HubbardPosition[] Popo) {
-        for(int i = 0; i<Popo.length; i++)//go over all our HubbardPositions.
-            {
-                Popo[i].find_best_conformation(num_of_loops);	
-            }//each position now has an array of the smallest sum of distances
+	    for (HubbardPosition aPopo : Popo) {
+		    aPopo.find_best_conformation(num_of_loops);
+	    }//each position now has an array of the smallest sum of distances
     }
 
     

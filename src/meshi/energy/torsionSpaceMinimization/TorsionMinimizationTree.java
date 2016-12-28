@@ -10,19 +10,19 @@ import meshi.molecularElements.Protein;
 
 import java.util.Vector;
 
-public class TorsionMinimizationTree {
+class TorsionMinimizationTree {
 	
-	private Protein prot;
-	private DistanceMatrix dm;
-	private Vector<TorsionMinimizationElement> tree;
-	private TempCalcForthAtom tempCalcForthAtom = new TempCalcForthAtom(); 
+	private final Protein prot;
+	private final DistanceMatrix dm;
+	private final Vector<TorsionMinimizationElement> tree;
+	private final TempCalcForthAtom tempCalcForthAtom = new TempCalcForthAtom();
 	
 	public TorsionMinimizationTree(Protein prot, DistanceMatrix dm){
 		this.prot = prot;
 		this.dm = dm;
 		for (int c=0 ; c<prot.atoms().size(); c++)
 			prot.atoms().atomAt(c).wasVisited = false;
-		tree = new Vector<TorsionMinimizationElement>();
+		tree = new Vector<>();
 		buildTree();
 	}
 	
@@ -126,14 +126,14 @@ public class TorsionMinimizationTree {
 	// Return all the elements around torsions with IUPAC naming except for elements around OMEGA torsions.
 	public double[][] getCoors() {
 		int numberOfcoors = 0;
-		for (int c=0 ; c<tree.size() ; c++) 
-			if (tree.get(c).isElementAroundSignificantTorsion())
+		for (TorsionMinimizationElement aTree1 : tree)
+			if (aTree1.isElementAroundSignificantTorsion())
 				numberOfcoors++;
 		double[][] coors = new double[numberOfcoors][];
 		numberOfcoors = 0;
-		for (int c=0 ; c<tree.size() ; c++) {
-			if (tree.get(c).isElementAroundSignificantTorsion()) {
-				coors[numberOfcoors] = tree.get(c).getCoors();
+		for (TorsionMinimizationElement aTree : tree) {
+			if (aTree.isElementAroundSignificantTorsion()) {
+				coors[numberOfcoors] = aTree.getCoors();
 				numberOfcoors++;
 			}
 		}

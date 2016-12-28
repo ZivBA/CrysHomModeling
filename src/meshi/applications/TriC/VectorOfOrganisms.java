@@ -4,10 +4,10 @@ import java.util.Vector;
 
 public class VectorOfOrganisms {
 	
-	private Vector<ReadTriCofOrganism> vec;
+	private final Vector<ReadTriCofOrganism> vec;
 
 	public VectorOfOrganisms() {
-		vec = new Vector<ReadTriCofOrganism>();
+		vec = new Vector<>();
 	}
 	
 	public void add(ReadTriCofOrganism org) {

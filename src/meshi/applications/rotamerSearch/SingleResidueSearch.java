@@ -4,11 +4,9 @@ import meshi.geometry.ResidueBuilder;
 import meshi.geometry.rotamers.DunbrackLib;
 import meshi.molecularElements.Residue;
 
-public class SingleResidueSearch {
+class SingleResidueSearch {
 	
-	public final int rangeAroundRotamer = 1; // in multiplications of the resolution
-	public final double resolutionAroundRotamer = (Math.PI / 180.0) * 15.0;	
-//	public final int rangeAroundRotamer = 3; // in multiplications of the resolution
+	//	public final int rangeAroundRotamer = 3; // in multiplications of the resolution
 //	public final double resolutionAroundRotamer = (Math.PI / 180.0) * 8.0;	
 	private Residue res;
 	private double[][] conformations;
@@ -24,6 +22,7 @@ public class SingleResidueSearch {
 		this.res = res;
 		pointer = -1;
 		best = -1;
+		int rangeAroundRotamer = 1;
 		int rangeChi1 = rangeAroundRotamer;
 		int rangeChi2 = rangeAroundRotamer;
 		int rangeChi3 = rangeAroundRotamer;
@@ -55,22 +54,23 @@ public class SingleResidueSearch {
 				for (int chi2=-rangeChi2 ; chi2<=rangeChi2 ; chi2++) {
 					for (int chi3=-rangeChi3 ; chi3<=rangeChi3 ; chi3++) {
 						for (int chi4=-rangeChi4 ; chi4<=rangeChi4 ; chi4++) {
+							double resolutionAroundRotamer = (Math.PI / 180.0) * 15.0;
 							if (tmpRot.length>3) {
-								conformations[counter][3] = tmpRot[3]+chi4*resolutionAroundRotamer;
+								conformations[counter][3] = tmpRot[3]+chi4* resolutionAroundRotamer;
 							} else {
 								conformations[counter][3] = 0.0;
 							}
 							if (tmpRot.length>2) {
-								conformations[counter][2] = tmpRot[2]+chi3*resolutionAroundRotamer;
+								conformations[counter][2] = tmpRot[2]+chi3* resolutionAroundRotamer;
 							} else {
 								conformations[counter][2] = 0.0;
 							}							
 							if (tmpRot.length>1) {
-								conformations[counter][1] = tmpRot[1]+chi2*resolutionAroundRotamer;
+								conformations[counter][1] = tmpRot[1]+chi2* resolutionAroundRotamer;
 							} else {
 								conformations[counter][1] = 0.0;
 							}
-							conformations[counter][0] = tmpRot[0]+chi1*resolutionAroundRotamer;
+							conformations[counter][0] = tmpRot[0]+chi1* resolutionAroundRotamer;
 							probabilities[counter] = rotProb;
 							counter++;							
 						}

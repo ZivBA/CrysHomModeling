@@ -1,11 +1,13 @@
 package meshi.geometry;
 
 public class Coordinates{
-    protected double[] x,y,z;
+    final double[] x;
+	final double[] y;
+	final double[] z;
     public  Coordinates() {
 	this(0.0, 0.0, 0.0);
     }
-    public  Coordinates(double x, double y, double z) {
+    Coordinates(double x, double y, double z) {
 	this.x = new double[2];
 	this.y = new double[2];
 	this.z = new double[2];

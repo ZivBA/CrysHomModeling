@@ -48,7 +48,7 @@ public class SmoothRotamerLibraryEnergyElementChi1
 		residueTorsions.applyForce( PSI, -psi_deriv );
 		residueTorsions.applyForce( CHI_1, -chi_1_deriv );
 
-		monitor( energy, chi_1_deriv );
+		monitor();
 		return energy;
 	}
 

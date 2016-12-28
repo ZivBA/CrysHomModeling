@@ -35,11 +35,11 @@ public class TotalEnergyTorsionSpace extends TotalEnergy {
 		coordinates = null;
 	}
 
-	protected void setCoordinates() {
+	private void setCoordinates() {
 		coordinates = tmt.getCoors();
 	}	
 	
-	public void resetAtomForces() {
+	private void resetAtomForces() {
 		for (int c=0 ; c<atomList.size(); c++)
 			atomList.atomAt(c).coordinates().resetForces();
 	}

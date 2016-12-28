@@ -23,8 +23,8 @@ public class DistanceConstrainParametersList extends ParametersList{
 	this(original, new SatisfiedConstrainsFilter(protein,cutoff));
     }
 
-    public DistanceConstrainParametersList(DistanceConstrainParametersList original,
-					    Filter filter) {
+    private DistanceConstrainParametersList(DistanceConstrainParametersList original,
+                                            Filter filter) {
 	super();
 	System.out.println("Number of constrains before filtering: "+original.size());
 	Iterator parametersIter = original.iterator();
@@ -110,8 +110,8 @@ public class DistanceConstrainParametersList extends ParametersList{
 
 
     private static class SatisfiedConstrainsFilter implements Filter {
-	Protein model;
-	double cutoff;
+	final Protein model;
+	final double cutoff;
 	public SatisfiedConstrainsFilter(Protein model, double cutoff) {
 	    this.model = model;
 	    this.cutoff = cutoff;

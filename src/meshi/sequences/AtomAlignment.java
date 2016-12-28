@@ -31,7 +31,7 @@ public class AtomAlignment extends Alignment {
 	    this(residueAlignment, new KolDichfin());
     }
 
-    public AtomAlignment(ResidueAlignment residueAlignment, Filter filter) {
+    private AtomAlignment(ResidueAlignment residueAlignment, Filter filter) {
 	super(new IsAlignmentColumn());
 	for(Iterator columns = residueAlignment.iterator(); columns.hasNext();) {
 	    ResidueAlignmentColumn column = (ResidueAlignmentColumn) columns.next();

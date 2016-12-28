@@ -10,7 +10,7 @@ import meshi.util.MeshiProgram;
 import java.util.Vector;
 
 
-public class CalcGDT extends MeshiProgram implements Residues, AtomTypes, KeyWords {
+class CalcGDT extends MeshiProgram implements Residues, AtomTypes, KeyWords {
 
     private static String modelFileName = null;
     private static String referenceFileName = null;  
@@ -36,16 +36,16 @@ public class CalcGDT extends MeshiProgram implements Residues, AtomTypes, KeyWor
 		}
 	}
 	else {  // ranges
-		for (int rangeCounter=0 ; rangeCounter<ranges.size() ; rangeCounter++) {
-			for (int c=0 ; c<fullReference.size() ; c++) {
-				if ((fullReference.atomAt(c).residueNumber()>=ranges.get(rangeCounter)[0]) &&
-						(fullReference.atomAt(c).residueNumber()<=ranges.get(rangeCounter)[1])) {
+		for (int[] range : ranges) {
+			for (int c = 0; c < fullReference.size(); c++) {
+				if ((fullReference.atomAt(c).residueNumber() >= range[0]) &&
+						(fullReference.atomAt(c).residueNumber() <= range[1])) {
 					ref.add(fullReference.atomAt(c));
 				}
 			}
-			for (int c=0 ; c<fullProtein.size() ; c++) {
-				if ((fullProtein.atomAt(c).residueNumber()>=ranges.get(rangeCounter)[0]) &&
-						(fullProtein.atomAt(c).residueNumber()<=ranges.get(rangeCounter)[1])) {
+			for (int c = 0; c < fullProtein.size(); c++) {
+				if ((fullProtein.atomAt(c).residueNumber() >= range[0]) &&
+						(fullProtein.atomAt(c).residueNumber() <= range[1])) {
 					model.add(fullProtein.atomAt(c));
 				}
 			}
@@ -69,7 +69,7 @@ public class CalcGDT extends MeshiProgram implements Residues, AtomTypes, KeyWor
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -90,7 +90,7 @@ public class CalcGDT extends MeshiProgram implements Residues, AtomTypes, KeyWor
 			"java -Xmx300m CalcGDT <reference prot> <model prot> -c <cutoff 1>  <cutoff 2>  <cutoff 3>  <cutoff 4> -r <from res (fragment 1)> <to res (fragment 1)> <from res (fragment 2)> <to res (fragment 2)> ...\n\n"+
 			"                    ******************\n");
 			      
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 	initRandom(0);
 	
@@ -102,35 +102,35 @@ public class CalcGDT extends MeshiProgram implements Residues, AtomTypes, KeyWor
 	if (modelFileName == null) throw new RuntimeException(errorMessage);
 	System.out.println("# initial model file name is "+modelFileName);
 	
-	ranges = new Vector<int[]>();
+	ranges = new Vector<>();
 	
-	if (!getFlag("-c",args))
-		return;
+	if (!getFlag("-c",args)) {
+	}
 	else {
 		String tmp = "";
 		
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		cutoff1 = (new Double(tmp)).doubleValue();
+		cutoff1 = new Double(tmp);
 		System.out.println("# Cutoff 1 is " + cutoff1);
 	
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		cutoff2 = (new Double(tmp)).doubleValue();
+		cutoff2 = new Double(tmp);
 		System.out.println("# Cutoff 2 is " + cutoff2);
 	
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		cutoff3 = (new Double(tmp)).doubleValue();
+		cutoff3 = new Double(tmp);
 		System.out.println("# Cutoff 3 is " + cutoff3);
 	
 		tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		cutoff4 = (new Double(tmp)).doubleValue();
+		cutoff4 = new Double(tmp);
 		System.out.println("# Cutoff 4 is " + cutoff4);
 		
-		if (!getFlag("-r",args))
-			return;
+		if (!getFlag("-r",args)) {
+		}
 		else {
 			tmp = getOrderedArgument(args);
 			
@@ -140,7 +140,7 @@ public class CalcGDT extends MeshiProgram implements Residues, AtomTypes, KeyWor
 				tmp = getOrderedArgument(args);
 				if (tmp==null)
 					throw new RuntimeException("Error reading the command line. The number of residue range limiters is not even");
-				tmpRange[1] = (new Integer(tmp)).intValue();
+				tmpRange[1] = new Integer(tmp);
 				if (tmpRange[1]<tmpRange[0])  
 					throw new RuntimeException("the low limit of a range: " + tmpRange[0] + " is higher than the high limit: " + tmpRange[1]);
 				ranges.add(tmpRange);

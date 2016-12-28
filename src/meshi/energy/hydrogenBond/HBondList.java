@@ -19,21 +19,17 @@ import java.util.Iterator;
 public class HBondList extends HBdistanceList implements Updateable {
 
     //--------------------------------- data fields -----------------------------
-
-    
-    /*
-     * The  PairsList updated every X steps.
-     */
-    private final int UPDATE_EVERY_X_STEPS = 50;
-    ///*
+	
+	
+	///*
     // * List of the candidate to hydrogen bonding given by the DistanceMatrix object
     // */
     //protected DistanceList nonBondedList;
     /*
      * List of all the new HB elements that were added to the  hBondList in the last update call.
      */
-    protected DistanceList newhBondList;
-    protected static HBdistanceList inputNewHBList = new HBdistanceList();
+	private final DistanceList newhBondList;
+    private static final HBdistanceList inputNewHBList = new HBdistanceList();
     /*
     * List of all the HB elements
     */
@@ -42,12 +38,12 @@ public class HBondList extends HBdistanceList implements Updateable {
     /*
      * holds the relevant row numbers
      */
-    private MeshiList relevantRows;
+    private final MeshiList relevantRows;
     /*
      * get the parameters (epsilon, sigma) of each element
      */
-    private HydrogenBondsParametersList parametersList;
-    private DistanceMatrix distanceMatrix;
+    private final HydrogenBondsParametersList parametersList;
+    private final DistanceMatrix distanceMatrix;
 
     /*
      * Used to avoid reupdate in the same minimization step
@@ -60,7 +56,7 @@ public class HBondList extends HBdistanceList implements Updateable {
     /*
      * Filter for update
      */
-    private GoodResiduesForHB goodResiduesForHB;
+    private final GoodResiduesForHB goodResiduesForHB;
     private final IsAlive isAlive;
 
     /**
@@ -126,7 +122,8 @@ public class HBondList extends HBdistanceList implements Updateable {
     private void update() {
         oldSize = -1;
         newhBondList.reset();
-        if (countUpdates == UPDATE_EVERY_X_STEPS) {//TODO can delete this if - i leave it for now for possible future needs
+	    int UPDATE_EVERY_X_STEPS = 50;
+	    if (countUpdates == UPDATE_EVERY_X_STEPS) {//TODO can delete this if - i leave it for now for possible future needs
             int prevrousSize = size() ;
             updateTwoLists(inputNewHBList);
             int secondSize = size() ;
@@ -139,7 +136,7 @@ public class HBondList extends HBdistanceList implements Updateable {
         }
         else if (countUpdates > UPDATE_EVERY_X_STEPS)
             throw new RuntimeException("Something weird with HbondList.update()\n"+
-                                       "countUpdates = "+countUpdates+" UPDATE_EVERY_X_STEPS  = "+UPDATE_EVERY_X_STEPS);
+                                       "countUpdates = "+countUpdates+" UPDATE_EVERY_X_STEPS  = "+ UPDATE_EVERY_X_STEPS);
         else {
             //System.out.println("HBondList: in update: distanceMatrix.newHydrogenBondsList():");
             //distanceMatrix.newHydrogenBondsList().print();
@@ -197,7 +194,7 @@ public class HBondList extends HBdistanceList implements Updateable {
                 headAttribute = (HB_AtomAttribute) headAtom.getAttribute(HB_AtomAttribute.key);
                 if (headAttribute != null){//meens that it is H or O !
                     // System.out.println("HBondList: headAttribute != null");
-                    relevantRows.fastAdd(new Integer(headAtom.number()));//add the row number
+                    relevantRows.fastAdd(headAtom.number());//add the row number
                     rowIterator = matrixRow.nonBondedIterator();
                     while((pair = (Distance) rowIterator.next()) != null){
                         if(goodResiduesForHB.accept(pair) ){
@@ -221,7 +218,7 @@ public class HBondList extends HBdistanceList implements Updateable {
             Integer current;
             int row;
             while((current = (Integer) relevantRowsIterator.next()) != null){
-                row = current.intValue();
+                row = current;
                 matrixRow = distanceMatrix.rowNumber(row);
                 headAtom = matrixRow.atom;
                 rowIterator = matrixRow.nonBondedIterator();
@@ -254,7 +251,7 @@ public class HBondList extends HBdistanceList implements Updateable {
     /**
         * save only the live elements inthis list
         */
-       public void cleanList_dm(){
+    private void cleanList_dm(){
            Object[] newInternalArray = new Object[capacity ];
            Iterator allPairs = iterator() ;
            Distance pair;
@@ -291,7 +288,7 @@ public class HBondList extends HBdistanceList implements Updateable {
     } //--------------------------- internal class IsAlive ---------------------------
 
     static class IsAlive implements Filter{
-        DistanceMatrix dm;
+        final DistanceMatrix dm;
         boolean firstTimeWornning = true;
         public IsAlive(DistanceMatrix  matrix){
             super();
@@ -321,7 +318,7 @@ public class HBondList extends HBdistanceList implements Updateable {
     //--------------------------- internal class WithinRmaxIterator ---------------------------
     
     private  class WithinRmaxIterator extends MeshiIterator  {
-        IsWithInRmax isWithInRmax;
+        final IsWithInRmax isWithInRmax;
         
         public WithinRmaxIterator(MeshiList list){
             super(list);

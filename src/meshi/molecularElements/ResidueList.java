@@ -17,8 +17,8 @@ public class ResidueList extends SortableMeshiList{
     /**
      * The residue number of the first residue (may but also may not be 1).
      **/
-    protected int firstNonDummyResidueIndex;
-    protected Residue firstNonDummyResidue;
+    private int firstNonDummyResidueIndex;
+    private Residue firstNonDummyResidue;
 
     // --------------------------------- constructors ------------------------------
     /**

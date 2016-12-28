@@ -7,13 +7,12 @@ public class ModelData {
     public final Hashtable data;
     public final File file;
     public final boolean valid;
-    public final Exception exception;
-    public final int numberOfResidues;
+	private final int numberOfResidues;
     public ModelData(Model model) {
 	data = model.data;
 	file = model.file;
 	numberOfResidues = model.numberOfResidues;
-	exception = model.exception;
+	    Exception exception = model.exception;
 	valid = model.valid();
     }
     
@@ -22,7 +21,7 @@ public class ModelData {
 	if (perResidue) factor = numberOfResidues;
 	else factor = 1;
 	try {
-	    return (new Double((String)data.get(key))).doubleValue()/factor;
+	    return new Double((String) data.get(key)) /factor;
 	}
 	catch (Exception ex) {throw new RuntimeException("Cannot get "+key+" or cannot parse "+
 							 data.get(key)+" as double.");}
@@ -31,26 +30,26 @@ public class ModelData {
 
     public void tabulate(String[] keys) {
 	System.out.printf("%-9d ",numberOfResidues);
-	for (int i = 0; i < keys.length; i++) { 
-	    String key = keys[i];
-	    double value;
-	    String element = null;
-	    element = (String)data.get(key);
-	    if (element == null) {
-		System.out.println("\n"+"A problem with "+file.getPath());
-		for (Enumeration dataKeys = data.keys();dataKeys.hasMoreElements();)
-		    System.out.println(dataKeys.nextElement());
-		throw new RuntimeException("no key "+key);
+	    for (String key : keys) {
+		    double value;
+		    String element = null;
+		    element = (String) data.get(key);
+		    if (element == null) {
+			    System.out.println("\n" + "A problem with " + file.getPath());
+			    for (Enumeration dataKeys = data.keys(); dataKeys.hasMoreElements(); )
+				    System.out.println(dataKeys.nextElement());
+			    throw new RuntimeException("no key " + key);
+		    }
+		
+		    try {
+			    value = new Double(element);
+		    } catch (Exception ex) {
+			    throw new RuntimeException("cannot parse " +
+					    element + " as double." +
+					    "key = " + key);
+		    }
+		    System.out.printf("%-9.3f ", value);
 	    }
-	       
-	    try {
-		value = (new Double(element)).doubleValue();
-	    }
-	    catch (Exception ex) {throw new RuntimeException("cannot parse "+
-							     element+" as double."+
-							     "key = "+key);}
-	    System.out.printf("%-9.3f ",value);
-	}
 	System.out.println(file.getPath());
     }
 
@@ -59,14 +58,14 @@ public class ModelData {
 	if (perResidue) factor = numberOfResidues;
 	else factor = 1;
 
-	double valueX = (new Double((String)data.get(keyX))).doubleValue();
-	double valueY = (new Double((String)data.get(keyY))).doubleValue()/factor+yShift;
+	double valueX = new Double((String) data.get(keyX));
+	double valueY = new Double((String) data.get(keyY)) /factor+yShift;
 	return ""+valueX+"\t"+valueY+"\n";
     }
 	
     public String GdtVsSolvate(double yShift) {
-	double gdt = (new Double((String)data.get("T2.gdt1"))).doubleValue();
-	double solvate = (new Double((String)data.get("T2.Solvate"))).doubleValue()+yShift;
+	double gdt = new Double((String) data.get("T2.gdt1"));
+	double solvate = new Double((String) data.get("T2.Solvate")) +yShift;
 	return ""+gdt+"\t"+solvate+"\n";
     }
 

@@ -6,47 +6,62 @@ import meshi.geometry.DistanceMatrix;
 import meshi.molecularElements.Atom;
 
 
-public class CAlphaPlaneTorsion {
-/*       C              E
- *          \         /
- *           A ---- B
- *         /          \
- *    D                 F
- */
-private final double MAXtorsion = 1; // |max(cos)|
-private final double K = 1, a, c;
-private final double angleNoDef; //parameters for Angle Term
-private final double MINangle, MAXangle, slopeAng;//MINangle = angleNoDef MAXangle = Math.PI-angleNoDef
-private DisposableAngle angleCAB, angleBAD, angleABE, angleABF;
+class CAlphaPlaneTorsion {
+	private final double a;
+	private final double c;
+	private final double MINangle;
+	private final double MAXangle;
+	private DisposableAngle angleCAB, angleBAD, angleABE, angleABF;
 
-private CAlphaPlaneAngle angleElementCAB, angleElementABE;
+private final CAlphaPlaneAngle angleElementCAB;
+	private final CAlphaPlaneAngle angleElementABE;
 private Atom A, B, C, E;
 
 private DisposableTorsion torsionCABE;
-protected double dtorCABEeDxC, dtorCABEeDyC, dtorCABEeDzC, dtorCABEeDxA, dtorCABEeDyA, dtorCABEeDzA,
-                 dtorCABEeDxB, dtorCABEeDyB, dtorCABEeDzB, dtorCABEeDxE, dtorCABEeDyE, dtorCABEeDzE;
-protected double energyCABE;
-protected double dCABEeDxC, dCABEeDyC, dCABEeDzC, dCABEeDxA, dCABEeDyA, dCABEeDzA,
-                 dCABEeDxB, dCABEeDyB, dCABEeDzB, dCABEeDxE, dCABEeDyE, dCABEeDzE;
+private double dtorCABEeDxC;
+	private double dtorCABEeDyC;
+	private double dtorCABEeDzC;
+	private double dtorCABEeDxA;
+	private double dtorCABEeDyA;
+	private double dtorCABEeDzA;
+	private double dtorCABEeDxB;
+	private double dtorCABEeDyB;
+	private double dtorCABEeDzB;
+	private double dtorCABEeDxE;
+	private double dtorCABEeDyE;
+	private double dtorCABEeDzE;
+private double energyCABE;
+double dCABEeDxC;
+	double dCABEeDyC;
+	double dCABEeDzC;
+	double dCABEeDxA;
+	double dCABEeDyA;
+	double dCABEeDzA;
+	double dCABEeDxB;
+	double dCABEeDyB;
+	double dCABEeDzB;
+	double dCABEeDxE;
+	double dCABEeDyE;
+	double dCABEeDzE;
 
-private DistanceMatrix distanceMatrix;
-boolean smallAngleCABE;
+private final DistanceMatrix distanceMatrix;
+private boolean smallAngleCABE;
 
 public CAlphaPlaneTorsion(double angleNoDef, double slopeAng, DistanceMatrix distanceMatrix){
-    this.slopeAng = slopeAng;
-    this.angleNoDef = angleNoDef;
-    MINangle = angleNoDef;
+	MINangle = angleNoDef;
     MAXangle = Math.PI-angleNoDef;
     this.distanceMatrix = distanceMatrix;
-    double MAXtorsion2 = MAXtorsion*MAXtorsion;
-    a = -K/(MAXtorsion2*MAXtorsion2);
-    c = 2*K/MAXtorsion2;
+	double MAXtorsion = 1;
+	double MAXtorsion2 = MAXtorsion * MAXtorsion;
+	double k = 1;
+	a = -k /(MAXtorsion2*MAXtorsion2);
+    c = 2* k /MAXtorsion2;
     angleElementCAB = new CAlphaPlaneAngle(MINangle, MAXangle, slopeAng);
     angleElementABE = new CAlphaPlaneAngle(MINangle, MAXangle, slopeAng);
 }
 
   //to set and to check the space disposition conditions
-  protected  void setTorsions(Atom A, Atom B, Atom C, Atom E){
+  void setTorsions(Atom A, Atom B, Atom C, Atom E){
   double angle;
     this.A = A;
     this.B = B;
@@ -72,7 +87,7 @@ public CAlphaPlaneTorsion(double angleNoDef, double slopeAng, DistanceMatrix dis
    /**
     * energy and dirivarives calculation.
     **/
- protected double updateEnergy() {
+   double updateEnergy() {
 //angleElementBAC includes atoms B (atom1), A (atom2), C (atom3)
 //angleElementABE includes atoms A, B, E
  if (smallAngleCABE) {
@@ -133,7 +148,7 @@ public CAlphaPlaneTorsion(double angleNoDef, double slopeAng, DistanceMatrix dis
     return energyCABE*angleElementCAB.energy()*angleElementABE.energy();
 }
 
- protected void getTorsionEnergy(){
+ private void getTorsionEnergy(){
 //CABE
    if (smallAngleCABE) {
         energyCABE = 0;

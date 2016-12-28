@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-public class MGF_Thermo_Format {
+class MGF_Thermo_Format {
 
 	private IonVector iVec = null;
 	 
@@ -17,7 +17,7 @@ public class MGF_Thermo_Format {
     	double retentionTime = -1;
     	String ionFileName = null;
     	boolean readingIonList = false;
-    	Vector<double[]> ms2SpectrumCollection = new Vector<double[]>();
+    	Vector<double[]> ms2SpectrumCollection = new Vector<>();
     	iVec = new IonVector();
     	String line="";
     	try {
@@ -51,7 +51,7 @@ public class MGF_Thermo_Format {
         			if (line.startsWith("CHARGE=")) {
         				chargeState = Integer.valueOf(line.substring(7));
         				readingIonList = true;
-        				ms2SpectrumCollection = new Vector<double[]>();
+        				ms2SpectrumCollection = new Vector<>();
         			}    				
         			if (line.startsWith("RTINSECONDS=")) {
         				retentionTime = Double.valueOf(line.substring(12));
@@ -76,8 +76,8 @@ public class MGF_Thermo_Format {
 
 	public String toString() {
 		String out = "";
-		for (int c=0 ; c<iVec.size() ; c++) {
-			out += (iVec.get(c).scan() + " " + iVec.get(c).intensityMS1() + "\n"); 
+		for (Ion anIVec : iVec) {
+			out += (anIVec.scan() + " " + anIVec.intensityMS1() + "\n");
 		}
 		return out;
 	}

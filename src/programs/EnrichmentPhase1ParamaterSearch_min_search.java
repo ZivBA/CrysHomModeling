@@ -13,7 +13,7 @@ import java.util.StringTokenizer;
  *
  */
 
-public class EnrichmentPhase1ParamaterSearch_min_search {
+class EnrichmentPhase1ParamaterSearch_min_search {
 	
 	public static void main(String[] args) {
 		System.out.println("Reading files from: " + args[0].trim());
@@ -61,19 +61,19 @@ public class EnrichmentPhase1ParamaterSearch_min_search {
 				for (int column=1 ; st.hasMoreTokens() ; column++) {
 					token = st.nextToken();
 					if (column==columnRMS)
-						data[loop][0][decoy] = (new Double(token)).doubleValue();
+						data[loop][0][decoy] = new Double(token);
 					if (column==column1)
-						data[loop][1][decoy] = (new Double(token)).doubleValue();
+						data[loop][1][decoy] = new Double(token);
 					if (column==column2)
-						data[loop][2][decoy] = (new Double(token)).doubleValue();
+						data[loop][2][decoy] = new Double(token);
 					if (column==column3)
-						data[loop][3][decoy] = (new Double(token)).doubleValue();
+						data[loop][3][decoy] = new Double(token);
 					if (column==column4)
-						data[loop][4][decoy] = (new Double(token)).doubleValue();
+						data[loop][4][decoy] = new Double(token);
 					if (column==column5)
-						data[loop][5][decoy] = (new Double(token)).doubleValue();
+						data[loop][5][decoy] = new Double(token);
 					if (column==column6)
-						data[loop][6][decoy] = (new Double(token)).doubleValue();
+						data[loop][6][decoy] = new Double(token);
 //					data[loop][6][decoy] = Math.log(1+(new Double(token)).doubleValue());				
 				}
 			}
@@ -90,68 +90,69 @@ public class EnrichmentPhase1ParamaterSearch_min_search {
 		double best4 = -9999;
 		double best5 = -9999;
 		double best6 = -9999;
-		for (int c1=0 ; c1<range1.length ; c1++)
-		for (int c2=0 ; c2<range2.length ; c2++)
-		for (int c3=0 ; c3<range3.length ; c3++)
-		for (int c4=0 ; c4<range4.length ; c4++)
-		for (int c5=0 ; c5<range5.length ; c5++) 
-		for (int c6=0 ; c6<range6.length ; c6++) {
-			// Calculating the enrichment
-			totalRMS = 0.0;
-			for (int loop=0 ; loop<data.length ; loop++) {
-				for (int decoy=0 ; decoy<data[loop][0].length ; decoy++) {
-					data[loop][7][decoy] = range1[c1]*data[loop][1][decoy] + 
-					range2[c2]*data[loop][2][decoy] + 
-					range3[c3]*data[loop][3][decoy] + 
-					range4[c4]*data[loop][4][decoy] + 
-					range5[c5]*data[loop][5][decoy] + 
-					range6[c6]*data[loop][6][decoy];
-				}
-				double minEnergy = Double.MAX_VALUE;
-				int minInd = -1;
-				for (int decoy=0 ; decoy<data[loop][0].length ; decoy++) {
-					if (minEnergy>data[loop][7][decoy]) {
-						minEnergy = data[loop][7][decoy];
-						minInd = decoy;
-					}
-				}
-				totalRMS += (data[loop][0][minInd]*data[loop][0][minInd]);
-			}
-			totalRMS = Math.sqrt(totalRMS/data.length);
-			rmsVec[rmsVecCounter] = totalRMS;
-			rmsVecCounter++;
-			// Is this better?
-			if (totalRMS<bestRMS) {
-				best1 = range1[c1];
-				best2 = range2[c2];
-				best3 = range3[c3];
-				best4 = range4[c4];
-				best5 = range5[c5];
-				best6 = range6[c6];
-				bestRMS = totalRMS;
-				System.out.println("Best: " + bestRMS + " " + best1 + " " + best2 + " " + best3 + " " + best4 + " " + best5 + " " + best6);
-			}
-		}
+		for (double aRange11 : range1)
+			for (double aRange2 : range2)
+				for (double aRange3 : range3)
+					for (double aRange4 : range4)
+						for (double aRange5 : range5)
+							for (double aRange6 : range6) {
+								// Calculating the enrichment
+								totalRMS = 0.0;
+								for (int loop = 0; loop < data.length; loop++) {
+									for (int decoy = 0; decoy < data[loop][0].length; decoy++) {
+										data[loop][7][decoy] = aRange11 * data[loop][1][decoy] +
+												aRange2 * data[loop][2][decoy] +
+												aRange3 * data[loop][3][decoy] +
+												aRange4 * data[loop][4][decoy] +
+												aRange5 * data[loop][5][decoy] +
+												aRange6 * data[loop][6][decoy];
+									}
+									double minEnergy = Double.MAX_VALUE;
+									int minInd = -1;
+									for (int decoy = 0; decoy < data[loop][0].length; decoy++) {
+										if (minEnergy > data[loop][7][decoy]) {
+											minEnergy = data[loop][7][decoy];
+											minInd = decoy;
+										}
+									}
+									totalRMS += (data[loop][0][minInd] * data[loop][0][minInd]);
+								}
+								totalRMS = Math.sqrt(totalRMS / data.length);
+								rmsVec[rmsVecCounter] = totalRMS;
+								rmsVecCounter++;
+								// Is this better?
+								if (totalRMS < bestRMS) {
+									best1 = aRange11;
+									best2 = aRange2;
+									best3 = aRange3;
+									best4 = aRange4;
+									best5 = aRange5;
+									best6 = aRange6;
+									bestRMS = totalRMS;
+									System.out.println(
+											"Best: " + bestRMS + " " + best1 + " " + best2 + " " + best3 + " " + best4 + " " + best5 + " " + best6);
+								}
+							}
 		
 		// Pritting the best values:
 		System.out.println("\nBest values:\n-----------");
 		rmsVecCounter=0;
-		for (int c1=0 ; c1<range1.length ; c1++)
-		for (int c2=0 ; c2<range2.length ; c2++)
-		for (int c3=0 ; c3<range3.length ; c3++)
-		for (int c4=0 ; c4<range4.length ; c4++)
-		for (int c5=0 ; c5<range5.length ; c5++) 
-		for (int c6=0 ; c6<range6.length ; c6++) {
-				if ((rmsVec[rmsVecCounter]-bestRMS)<0.05) {
-					System.out.println(rmsVec[rmsVecCounter] + "   " + range1[c1] + " " + 
-							range2[c2] + " " +
-							range3[c3] + " " +
-							range4[c4] + " " +
-							range5[c5] + " " +
-							range6[c6]);
-				}
-				rmsVecCounter++;
-			}
+		for (double aRange1 : range1)
+			for (double aRange2 : range2)
+				for (double aRange3 : range3)
+					for (double aRange4 : range4)
+						for (double aRange5 : range5)
+							for (double aRange6 : range6) {
+								if ((rmsVec[rmsVecCounter] - bestRMS) < 0.05) {
+									System.out.println(rmsVec[rmsVecCounter] + "   " + aRange1 + " " +
+											aRange2 + " " +
+											aRange3 + " " +
+											aRange4 + " " +
+											aRange5 + " " +
+											aRange6);
+								}
+								rmsVecCounter++;
+							}
 
 		System.out.println("\nBest: " + bestRMS + " " + best1 + " " + best2 + " " + best3 + " " + best4 + " " + best5 + " " + best6);
 

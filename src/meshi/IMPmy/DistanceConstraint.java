@@ -1,21 +1,13 @@
 package meshi.IMPmy;
 
-public class DistanceConstraint {
+class DistanceConstraint {
 
-	private AnchorPosition pos1;
-	private AnchorPosition pos2;
+	private final AnchorPosition pos1;
+	private final AnchorPosition pos2;
 	private double weight;
 	private double targetDis = Double.NEGATIVE_INFINITY;
 	public final DistanceConstraintType constraintType;
-
-	// For calculations
-	private double energy;
-	private double dEdD;
-	private double dx;	
-	private double dy;	
-	private double dz;
-	private double dis;
-	private double invDistance;
+	
 	private double dDistanceDx;
 	private double dDistanceDy;
 	private double dDistanceDz;
@@ -38,55 +30,56 @@ public class DistanceConstraint {
 		double CONNECTIVITY_MAX = 12.1; // Angs  // For parding of 25 res I used conn_max of 13.0 and rEV of 12.0
 		double XL_MAX = 20.0; // Angs
 		rEV = 12.0;
-		energy = 0.0;
-		dx  = pos2.x()-pos1.x(); 	
-		dy  = pos2.y()-pos1.y();	
-		dz  = pos2.z()-pos1.z();
-		dis = Math.sqrt(dx*dx + dy*dy + dz*dz);
+		double energy = 0.0;
+		double dx = pos2.x() - pos1.x();
+		double dy = pos2.y() - pos1.y();
+		double dz = pos2.z() - pos1.z();
+		double dis = Math.sqrt(dx * dx + dy * dy + dz * dz);
 		if (withDerivatives) {
-			invDistance = 1.0/dis;
-			dDistanceDx = dx*invDistance;
-			dDistanceDy = dy*invDistance;
-			dDistanceDz = dz*invDistance;
+			double invDistance = 1.0 / dis;
+			dDistanceDx = dx * invDistance;
+			dDistanceDy = dy * invDistance;
+			dDistanceDz = dz * invDistance;
 		}
 		
+		double dEdD;
 		switch (constraintType) {
 		case CONNECTIVITY:	
-			if (dis<CONNECTIVITY_MAX) {
+			if (dis <CONNECTIVITY_MAX) {
 				energy = dEdD = 0.0;
 			} 
 			else { 
 				double alpha = 1.0;
-				double inv1 = 1.0/(1 + (dis-CONNECTIVITY_MAX)*alpha);
-				energy = weight*alpha*(dis-CONNECTIVITY_MAX)*(dis-CONNECTIVITY_MAX)*inv1;
-				dEdD = weight*alpha*(dis-CONNECTIVITY_MAX)*(2*inv1 - alpha*(dis-CONNECTIVITY_MAX)*inv1*inv1);
+				double inv1 = 1.0/(1 + (dis -CONNECTIVITY_MAX)*alpha);
+				energy = weight*alpha*(dis -CONNECTIVITY_MAX)*(dis -CONNECTIVITY_MAX)*inv1;
+				dEdD = weight*alpha*(dis -CONNECTIVITY_MAX)*(2*inv1 - alpha*(dis -CONNECTIVITY_MAX)*inv1*inv1);
 			}
 			break;
 
 		case CROSS_LINK: 
-			if (dis<XL_MAX) {
+			if (dis <XL_MAX) {
 				energy = dEdD = 0.0;
 			} 
 			else { 
 				double alpha = 1.0;
-				double inv1 = 1.0/(1 + (dis-XL_MAX)*alpha);
-				energy = weight*alpha*(dis-XL_MAX)*(dis-XL_MAX)*inv1;
-				dEdD = weight*alpha*(dis-XL_MAX)*(2*inv1 - alpha*(dis-XL_MAX)*inv1*inv1);
+				double inv1 = 1.0/(1 + (dis -XL_MAX)*alpha);
+				energy = weight*alpha*(dis -XL_MAX)*(dis -XL_MAX)*inv1;
+				dEdD = weight*alpha*(dis -XL_MAX)*(2*inv1 - alpha*(dis -XL_MAX)*inv1*inv1);
 			}
 			break;
 
 		case RIGID_BODY: 
-			energy = weight*(dis-targetDis)*(dis-targetDis);
-			dEdD = 2*weight*(dis-targetDis);
+			energy = weight*(dis -targetDis)*(dis -targetDis);
+			dEdD = 2*weight*(dis -targetDis);
 			break;
 
 		case EXCLUDED_VOLUME:
-			if (dis>rEV) {
+			if (dis >rEV) {
 				energy = dEdD = 0.0;
 			} 
 			else { 
-				energy = weight*(dis-rEV)*(dis-rEV);
-				dEdD = 2.0*weight*(dis-rEV);
+				energy = weight*(dis -rEV)*(dis -rEV);
+				dEdD = 2.0*weight*(dis -rEV);
 			}
 			break;
 			
@@ -96,12 +89,12 @@ public class DistanceConstraint {
 		}
 		
 		if (withDerivatives) {
-			pos1.addFX(dEdD*dDistanceDx); // These are forces not derivatives
-			pos1.addFY(dEdD*dDistanceDy);
-			pos1.addFZ(dEdD*dDistanceDz);
-			pos2.addFX(-dEdD*dDistanceDx);
-			pos2.addFY(-dEdD*dDistanceDy);
-			pos2.addFZ(-dEdD*dDistanceDz);
+			pos1.addFX(dEdD *dDistanceDx); // These are forces not derivatives
+			pos1.addFY(dEdD *dDistanceDy);
+			pos1.addFZ(dEdD *dDistanceDz);
+			pos2.addFX(-dEdD *dDistanceDx);
+			pos2.addFY(-dEdD *dDistanceDy);
+			pos2.addFZ(-dEdD *dDistanceDz);
 		}
 		
 		return energy;

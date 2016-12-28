@@ -53,12 +53,12 @@ public class Rot1PairwiseParametersList extends ParametersList {
 			   parametersFileName);
 			   throw e;
 		}
-		
-		for (int c=0 ; c<tmpAr.length ; c++)
-		   add(tmpAr[c]);
+	
+	    for (Rot1PairwiseParameters aTmpAr : tmpAr)
+		    add(aTmpAr);
 	}
 
-    public Parameters createParameters(String line) {
+    protected Parameters createParameters(String line) {
     	return new Rot1PairwiseParameters(new StringTokenizer(line));
     }
     

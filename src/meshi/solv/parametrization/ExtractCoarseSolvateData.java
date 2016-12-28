@@ -31,16 +31,16 @@ import java.text.DecimalFormat;
  * 
  * @author Nir
  */
-public class ExtractCoarseSolvateData extends MeshiProgram implements Residues, AtomTypes{ 
+class ExtractCoarseSolvateData extends MeshiProgram implements Residues, AtomTypes{
 
 	// We get these user defined parameters from the command line
 	// ----------------------------------------------------------
 	// The structure database:
-	static String listOfStructures = "C:/Users/Nir/Loop_Building_Project/listPISCES.txt";
+	private static String listOfStructures = "C:/Users/Nir/Loop_Building_Project/listPISCES.txt";
 	// Output file:
-	static String outputFile = "All_Atom_Solvate_Data_5.3"; 
+	private static String outputFile = "All_Atom_Solvate_Data_5.3";
 	// The carbon cutoff (carbon will counted in a sphere with this radius):
-	static double cutoffNeighbor = 5.3;    	
+	private static double cutoffNeighbor = 5.3;
 
 
 	public static void main(String[] args){
@@ -90,77 +90,77 @@ public class ExtractCoarseSolvateData extends MeshiProgram implements Residues, 
 
 		// Going over the models
 		String[] models = File2StringArray.f2a(listOfStructures);
-		for (int i=0 ; i<models.length ; i++) { 		
-			System.out.println("Reading: " + models[i]);
-
+		for (String model1 : models) {
+			System.out.println("Reading: " + model1);
+			
 			// Creating the model
 			Protein model = null;
 			try {
-			model = new Protein(new AtomList(models[i]), new ResidueExtendedAtoms(ADD_ATOMS));
-			}
-			catch (Exception e) {
+				model = new Protein(new AtomList(model1), new ResidueExtendedAtoms(ADD_ATOMS));
+			} catch (Exception ignored) {
 				
 			}
-			if ((model != null) && (model.atoms().CAFilter().size()>min_Prot_Size)) {
+			if ((model != null) && (model.atoms().CAFilter().size() > min_Prot_Size)) {
 				
-				for (int res=0 ; res<model.residues().size(); res++) {
-					if ((model.residues().residueAt(res).type<20) &&
-							(model.residues().residueAt(res).type>-1))
+				for (int res = 0; res < model.residues().size(); res++) {
+					if ((model.residues().residueAt(res).type < 20) &&
+							(model.residues().residueAt(res).type > -1))
 						ResidueBuilder.buildCentroid(model.residues().residueAt(res));
 				}
-
+				
 				
 				// Excluding clashing residues				
-				DistanceMatrix dm = new DistanceMatrix(model.atoms(), 5.5 , 1.0, 4);
+				DistanceMatrix dm = new DistanceMatrix(model.atoms(), 5.5, 1.0, 4);
 				energy = new TotalEnergy(model, dm, rottenCreators, commands);
 				energy.evaluateAtoms();
 				double[] resRamachEnergies = new double[model.residues().size()];
 				int validResidues = 0;
-				for (int rr=0 ; rr<resRamachEnergies.length ; rr++) { 
+				for (int rr = 0; rr < resRamachEnergies.length; rr++) {
 					if (!model.residues().residueAt(rr).dummy()) {
 						resRamachEnergies[rr] = model.residues().residueAt(rr).ca().energy();
 						validResidues++;
-					}
-					else
+					} else
 						resRamachEnergies[rr] = -999999.0;
 				}
-
-				dm = new DistanceMatrix(model.atoms(), 5.5 , 1.0, 4);
+				
+				dm = new DistanceMatrix(model.atoms(), 5.5, 1.0, 4);
 				energy = new TotalEnergy(model, dm, energyCreators, commands);
 				energy.evaluateAtoms();
-				for (int c=0 ; c<model.atoms().size() ; c++) {
+				for (int c = 0; c < model.atoms().size(); c++) {
 					atom = model.atoms().atomAt(c);
-					if (atom.energy()>max_LJ_energy)
-						for (int cc=0 ; cc<atom.residue().atoms().size(); cc++)
+					if (atom.energy() > max_LJ_energy)
+						for (int cc = 0; cc < atom.residue().atoms().size(); cc++)
 							atom.residue().atoms().atomAt(cc).addEnergy(100.0);
 				}
 				
 				int rottenResidues = 0;
-				for (int rr=0 ; rr<resRamachEnergies.length ; rr++) { 
-					if (((model.residues().residueAt(rr).type==GLY) && (resRamachEnergies[rr]>1.65)) ||
-						((model.residues().residueAt(rr).type!=GLY) && (resRamachEnergies[rr]>1.5))) {
+				for (int rr = 0; rr < resRamachEnergies.length; rr++) {
+					if (((model.residues().residueAt(rr).type == GLY) && (resRamachEnergies[rr] > 1.65)) ||
+							((model.residues().residueAt(rr).type != GLY) && (resRamachEnergies[rr] > 1.5))) {
 						rottenResidues++;
-						for (int c=0 ; c<model.residues().residueAt(rr).atoms().size() ; c++) {
+						for (int c = 0; c < model.residues().residueAt(rr).atoms().size(); c++) {
 							model.residues().residueAt(rr).atoms().atomAt(c).addEnergy(100.0);
-						}						
+						}
 					}
 				}
-				System.out.println("There were "+ rottenResidues + " rotten residues out of " + validResidues + "     (" + rottenResidues*1.0/validResidues + "%)");
-
+				System.out.println(
+						"There were " + rottenResidues + " rotten residues out of " + validResidues + "     (" + rottenResidues * 1.0 /
+								validResidues + "%)");
 				
-				dm = new DistanceMatrix(model.atoms(), cutoffNeighbor+0.1 , 0.2, 4);
-				for (int c=0; c<model.atoms().size() ; c++)
+				
+				dm = new DistanceMatrix(model.atoms(), cutoffNeighbor + 0.1, 0.2, 4);
+				for (int c = 0; c < model.atoms().size(); c++)
 					model.atoms().atomAt(c).addAttribute(new SolvateExtractionAttribute());
-
+				
 				// ****************************************************
 				// ************    CB CB CB CB CB  ********************
 				// ****************************************************
 				// Extracting the solvate data for the CB representaion
 				DistanceList dl = dm.nonBondedList();
-				for (int c=0 ; c<dl.size(); c++) {
+				for (int c = 0; c < dl.size(); c++) {
 					dis = dl.distanceAt(c).distance();
-					if ((dis<cutoffNeighbor) && 
-							(Math.abs(dl.distanceAt(c).atom1().residueNumber() - dl.distanceAt(c).atom2().residueNumber())>ignore_local)) {  
+					if ((dis < cutoffNeighbor) &&
+							(Math.abs(dl.distanceAt(c).atom1().residueNumber() - dl.distanceAt(c).atom2().residueNumber()) > ignore_local)) {
 						atom1 = dl.distanceAt(c).atom1();
 						atom2 = dl.distanceAt(c).atom2();
 						ty1 = atom1.type;
@@ -171,69 +171,70 @@ public class ExtractCoarseSolvateData extends MeshiProgram implements Residues, 
 							attribute1.addToSumOfNeighbors(1.0);
 						if (atom1.name.equals("CB"))
 							attribute2.addToSumOfNeighbors(1.0);
-//						if (atom2.isBackbone && !atom2.isHydrogen)
-//							attribute1.addToSumOfNeighbors(1.0);
-//						if (atom1.isBackbone && !atom1.isHydrogen)
-//							attribute2.addToSumOfNeighbors(1.0);
+						//						if (atom2.isBackbone && !atom2.isHydrogen)
+						//							attribute1.addToSumOfNeighbors(1.0);
+						//						if (atom1.isBackbone && !atom1.isHydrogen)
+						//							attribute2.addToSumOfNeighbors(1.0);
 					}
 				}
-
+				
 				// Add the protein's data to the entire database
-				for (int c=0 ; c<model.atoms().size() ; c++) {
+				for (int c = 0; c < model.atoms().size(); c++) {
 					atom = model.atoms().atomAt(c);
 					ty = atom.type;
 					attribute = (SolvateExtractionAttribute) atom.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE);
-					if (atom.energy()<max_LJ_energy) {
+					if (atom.energy() < max_LJ_energy) {
 						indNeighbor = findBinIndice(binsNeighbor, attribute.getSumOfNeighbors());
 						dataCBs[ty][indNeighbor]++;
-					}
-					else {
+					} else {
 						//System.out.println("Serious clash in: " + atom + "\n");
 					}
 				}
-
-
+				
+				
 				// ****************************************************
 				// ************    ROT1 ROT1 ROT1  ********************
 				// ****************************************************
 				// Extracting the solvate data for the ROT1
-//				RotamericTools.putIntoRot1(model, dm, lib);
-//				dm = new DistanceMatrix(model.atoms(), cutoffNeighbor+0.1 , 0.2, 4);
-//				for (int c=0; c<model.atoms().size() ; c++)
-//					((SolvateExtractionAttribute) model.atoms().atomAt(c).getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE)).reset();		    
-//				dl = dm.nonBondedList();
-//				for (int c=0 ; c<dl.size(); c++) {
-//					dis = dl.distanceAt(c).distance();
-//					if ((dis<cutoffNeighbor) && 
-//							(Math.abs(dl.distanceAt(c).atom1().residueNumber() - dl.distanceAt(c).atom2().residueNumber())>ignore_local)) {
-//						atom1 = dl.distanceAt(c).atom1();
-//						atom2 = dl.distanceAt(c).atom2();
-//						ty1 = atom1.type;
-//						ty2 = atom2.type;
-//						attribute1 = (SolvateExtractionAttribute) atom1.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE);
-//						attribute2 = (SolvateExtractionAttribute) atom2.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE);
-//						if (!atom2.isHydrogen)
-//							attribute1.addToSumOfNeighbors(1.0);
-//						if (!atom1.isHydrogen)
-//							attribute2.addToSumOfNeighbors(1.0);
-//					}
-//				}
-//
-//				// Add the protein's data to the entire database
-//				for (int c=0 ; c<model.atoms().size() ; c++) {
-//					atom = model.atoms().atomAt(c);
-//					ty = atom.type;
-//					attribute = (SolvateExtractionAttribute) atom.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE);
-//					if (atom.energy()<max_LJ_energy) {
-//						indNeighbor = findBinIndice(binsNeighbor, attribute.getSumOfNeighbors());
-//						dataROT1[ty][indNeighbor]++;
-//						if ((atom.type==KNZ) && (indNeighbor==0))
-//							System.out.println(atom);
-//					}
-//					else {
-//						//System.out.println("Serious clash in: " + atom + "\n");
-//					}
-//				}
+				//				RotamericTools.putIntoRot1(model, dm, lib);
+				//				dm = new DistanceMatrix(model.atoms(), cutoffNeighbor+0.1 , 0.2, 4);
+				//				for (int c=0; c<model.atoms().size() ; c++)
+				//					((SolvateExtractionAttribute) model.atoms().atomAt(c).getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE))
+				// .reset();
+				//				dl = dm.nonBondedList();
+				//				for (int c=0 ; c<dl.size(); c++) {
+				//					dis = dl.distanceAt(c).distance();
+				//					if ((dis<cutoffNeighbor) &&
+				//							(Math.abs(dl.distanceAt(c).atom1().residueNumber() - dl.distanceAt(c).atom2().residueNumber())
+				// >ignore_local)) {
+				//						atom1 = dl.distanceAt(c).atom1();
+				//						atom2 = dl.distanceAt(c).atom2();
+				//						ty1 = atom1.type;
+				//						ty2 = atom2.type;
+				//						attribute1 = (SolvateExtractionAttribute) atom1.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE);
+				//						attribute2 = (SolvateExtractionAttribute) atom2.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE);
+				//						if (!atom2.isHydrogen)
+				//							attribute1.addToSumOfNeighbors(1.0);
+				//						if (!atom1.isHydrogen)
+				//							attribute2.addToSumOfNeighbors(1.0);
+				//					}
+				//				}
+				//
+				//				// Add the protein's data to the entire database
+				//				for (int c=0 ; c<model.atoms().size() ; c++) {
+				//					atom = model.atoms().atomAt(c);
+				//					ty = atom.type;
+				//					attribute = (SolvateExtractionAttribute) atom.getAttribute(MeshiAttribute.SOLVATE_EXTRACTION_ATTRIBUTE);
+				//					if (atom.energy()<max_LJ_energy) {
+				//						indNeighbor = findBinIndice(binsNeighbor, attribute.getSumOfNeighbors());
+				//						dataROT1[ty][indNeighbor]++;
+				//						if ((atom.type==KNZ) && (indNeighbor==0))
+				//							System.out.println(atom);
+				//					}
+				//					else {
+				//						//System.out.println("Serious clash in: " + atom + "\n");
+				//					}
+				//				}
 			}
 		}
 
@@ -279,7 +280,7 @@ public class ExtractCoarseSolvateData extends MeshiProgram implements Residues, 
 	}
 
 
-	public static int findBinIndice(double[] bins, double value) {
+	private static int findBinIndice(double[] bins, double value) {
 		double minDiff = Double.MAX_VALUE;
 		int minInd = -1;
 		for (int c=0; c<bins.length ; c++) {
@@ -292,7 +293,7 @@ public class ExtractCoarseSolvateData extends MeshiProgram implements Residues, 
 	}
 
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -317,7 +318,7 @@ public class ExtractCoarseSolvateData extends MeshiProgram implements Residues, 
 
 		String cutoffString = getOrderedArgument(args);
 		if (cutoffString== null) throw new RuntimeException(errorMessage);
-		cutoffNeighbor = (new Double(cutoffString)).doubleValue();
+		cutoffNeighbor = new Double(cutoffString);
 		System.out.println("# CNC cutoff value: "+ cutoffNeighbor);
 
 		initRandom(333);

@@ -5,7 +5,7 @@ import meshi.util.filters.Filter;
 
 public class ListOfDistanceLists extends MeshiList {
 
-    protected ListOfDistanceLists() {
+    ListOfDistanceLists() {
            super(new IsDistanceList(), 2);
        }
 

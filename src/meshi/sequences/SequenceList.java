@@ -10,7 +10,7 @@ import java.util.Iterator;
 
 public class SequenceList extends MeshiList implements KeyWords {
     private String fileName = null;
-    protected static final SequenceCharFilter acceptAllChars = new AcceptAll(); 
+    private static final SequenceCharFilter acceptAllChars = new AcceptAll();
     public SequenceList() {
 	super(new IsSequenceFilter());
     }
@@ -41,12 +41,12 @@ public class SequenceList extends MeshiList implements KeyWords {
     private Sequence getSequence(String name) {
 	    for (Iterator sequences = iterator(); sequences.hasNext();) {
 		    Sequence sequence = (Sequence) sequences.next();
-		    if (sequence.comment().indexOf(name) > -1) return sequence;
+		    if (sequence.comment().contains(name)) return sequence;
 	    }
 	    return null;
     }
 
-    public ResidueSequence getResidueSequence(String name) {
+    private ResidueSequence getResidueSequence(String name) {
 	Sequence sequence = getSequence(name);
 	if (sequence == null) return null;
 	return new ResidueSequence(sequence);
@@ -85,7 +85,7 @@ public class SequenceList extends MeshiList implements KeyWords {
     
     private static class AcceptAll extends SequenceCharFilter {
 	public boolean accept(Object obj) { 
-	    Character c = ((Character) obj).charValue();
+	    Character c = (Character) obj;
 	    return true;
 	}
     }

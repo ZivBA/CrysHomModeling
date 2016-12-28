@@ -21,18 +21,17 @@ public class PairsOfHBEElementsList extends MeshiList implements Updateable {
     //--------------------------------------- data -------------------------------------------
 
 
-    private static IsPairOfHydrogenBondsElements filter = new IsPairOfHydrogenBondsElements();
+    private static final IsPairOfHydrogenBondsElements filter = new IsPairOfHydrogenBondsElements();
     /*
      * update list of the hydrogen bonds, used to update this list whenever the hBondList has been changed  
      */
-    protected HBondList hBondList;
+    HBondList hBondList;
     private int numberOfUpdates;
-    private boolean debug = false;
-
-   // public final DistanceList hbeElementsList(){return hbeElementsList;}
+    
+    // public final DistanceList hbeElementsList(){return hbeElementsList;}
     public final HBondList hBondList(){return hBondList;}
 
-    private IsWithInRmax isWithinRmax = new IsWithInRmax();
+    private final IsWithInRmax isWithinRmax = new IsWithInRmax();
     //-------------------------------------- constructors ----------------------------------------
     
     public PairsOfHBEElementsList(){
@@ -57,12 +56,13 @@ public class PairsOfHBEElementsList extends MeshiList implements Updateable {
                                        "numberOfUpdates = "+numberOfUpdates+" this.numberOfUpdates = "+this.numberOfUpdates);
     }
 	    
-    public void update() {
+    private void update() {
         if (hBondList.countUpdates() == 0){ //when countUpdates == 0 it meens that hBondList was reset
             if(size > 20)
                 doNothing();
             updateNew(hBondList.newhBondList(),hBondList .getOldSize() );
             cleanList();
+            boolean debug = false;
             if(debug){
                 System.out.println("HBE:update:in first if:el: "+ size());
             }
@@ -91,7 +91,7 @@ public class PairsOfHBEElementsList extends MeshiList implements Updateable {
         }
     }
   
-    public void updateNew(DistanceList newlist,int lastIndexBeforeNewElements){
+    private void updateNew(DistanceList newlist, int lastIndexBeforeNewElements){
         if (lastIndexBeforeNewElements == -1)
                 throw new RuntimeException("problem ... this method should be called just if HBondList called to updateTwoLists !");
         if (newlist .size() !=0) {
@@ -117,7 +117,7 @@ public class PairsOfHBEElementsList extends MeshiList implements Updateable {
      /**
         * save only the live elements inthis list
         */
-       public void cleanList(){
+     private void cleanList(){
            Object[] newInternalArray = new Object[capacity ];
            Iterator allPairs = iterator() ;
            PairOfHydrogenBondsElements pair;
@@ -145,9 +145,8 @@ public class PairsOfHBEElementsList extends MeshiList implements Updateable {
     //---------------------------------------------------------------------------------------
         private static class IsPairOfHydrogenBondsElements implements Filter {
         public boolean accept(Object obj) {
-            boolean ans = ((obj instanceof PairOfHydrogenBondsElements) &&
+            return ((obj instanceof PairOfHydrogenBondsElements) &&
                            ((PairOfHydrogenBondsElements)obj).lookAtThisPair);
-            return ans;
         }
     }
 
@@ -155,7 +154,7 @@ public class PairsOfHBEElementsList extends MeshiList implements Updateable {
     //--------------------------- internal class IsWithInRmax ---------------------------
 
     static class IsWithInRmax implements Filter {
-        private double rMax;
+        private final double rMax;
         public IsWithInRmax(){
             super();
             rMax = DistanceMatrix.rMax() ;
@@ -175,7 +174,7 @@ public class PairsOfHBEElementsList extends MeshiList implements Updateable {
     //---------------------------------------------------------------------------------------
     private  class WithinRmaxPairsIterator extends MeshiIterator {
 
-        private IsWithInRmax isWithInRmax;
+        private final IsWithInRmax isWithInRmax;
         public WithinRmaxPairsIterator(MeshiList list) {
             super(list);
             isWithInRmax = new IsWithInRmax();

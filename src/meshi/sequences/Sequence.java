@@ -5,10 +5,10 @@ import java.util.Iterator;
  * Sequence is a single row alignment.
  **/
 public class Sequence extends SequenceAlignment{
-    public final SequenceCharFilter charFilter;
+    private final SequenceCharFilter charFilter;
     public static final char UNKNOWN = '_';
     
-        public Sequence(SequenceCharFilter charFilter) {
+        Sequence(SequenceCharFilter charFilter) {
 	super();
 	this.charFilter = charFilter;
     }
@@ -44,18 +44,18 @@ public class Sequence extends SequenceAlignment{
     public boolean add(Object obj) {
 	SequenceAlignmentColumn column = (SequenceAlignmentColumn) obj;
 	char c = column.getChar(0);
-	Character cc = new Character(c);
+	Character cc = c;
 	if (!charFilter.accept(cc))
 	    throw new RuntimeException("Cannot add "+column.getChar(0)+" to "+getClass());
 	return super.add(column);
     }
 
-    public Character weirdChar(String sequence) {
+    Character weirdChar(String sequence) {
 	for (int i = 0; i < sequence.length(); i++) {
 	    char c = sequence.charAt(i);
 	    if ((c != SequenceAlignmentCell.GAP_CHAR) &
 	        (c != SequenceAlignmentCell.WILDCARD_CHAR)) {
-		Character cc = new Character(c);
+		Character cc = c;
 		if (!charFilter.accept(cc)) return cc;
 	    }
 	}
@@ -69,12 +69,12 @@ public class Sequence extends SequenceAlignment{
     }
 
 
-    public Sequence(Sequence source, SequenceCharFilter charFilter) {
+    Sequence(Sequence source, SequenceCharFilter charFilter) {
 	this(source.comment(),charFilter);
 	add(source);
     } 	
     
-    public int startsIn() {
+    private int startsIn() {
 	    int i;
 	    boolean found =false;
 	    for (i = 0;i <size() & (! found); i++)
@@ -117,11 +117,11 @@ public class Sequence extends SequenceAlignment{
 	
     }
     
-    public char charAt(int index) {
+    private char charAt(int index) {
 	return cell(index).getChar();
     }
 
-    public Sequence renumber(Sequence reference) {
+    private Sequence renumber(Sequence reference) {
 	SequenceAlignment alignment = SequenceAlignment.identityAlignment(reference, this);
 	SequenceAlignmentColumn firstColumn = (SequenceAlignmentColumn) alignment.elementAt(0);
 	if (reference.size() == 0) return null;
@@ -133,7 +133,7 @@ public class Sequence extends SequenceAlignment{
 	return renumber(alignment);
     }
 
-    public Sequence tail() {
+    private Sequence tail() {
 	Sequence out = new Sequence(comment(),charFilter);
 	Iterator columns = iterator();
 	if (! columns.hasNext()) return out;
@@ -143,7 +143,7 @@ public class Sequence extends SequenceAlignment{
 	return out;
     }
 	
-    public Sequence renumber(SequenceAlignment alignment) {
+    private Sequence renumber(SequenceAlignment alignment) {
 	AlignmentCell  pivot = null;
 	int shift = 999999;
 	for (int i = 0; (i < size()) & (pivot == null); i++) {

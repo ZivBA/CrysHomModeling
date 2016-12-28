@@ -21,9 +21,9 @@ public class ResidueTorsionsList
 	implements Updateable {
 
 	/* updates counter for compatability with Updateable */
-	int numberOfUpdates;
+	private int numberOfUpdates;
 	
-	public ResidueTorsionsList() {
+	private ResidueTorsionsList() {
 		super( new IsResidueTorsions() );
 	}
 	

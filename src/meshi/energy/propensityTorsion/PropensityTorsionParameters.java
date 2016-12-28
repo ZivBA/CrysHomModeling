@@ -8,22 +8,20 @@ import java.io.FileReader;
 /**
  *This is practically the same file as TwoTorsionsParameters.java . See the documentation there.
  **/
- 
- public class PropensityTorsionParameters extends Parameters {
 
-    public String parametersFileName;
-    public String torsion1Name;
+class PropensityTorsionParameters extends Parameters {
+	
+	public String torsion1Name;
     public String torsion2Name;
-    public String secondaryStructure;
+    private String secondaryStructure;
     public double limit;
     public double resolution;
     public double[][][] coef;    
-    public int[] mapping = new int[22];
-    private int numOfEntries=0;
-
-
-    public PropensityTorsionParameters(String parametersFileName) {
-    	this.parametersFileName = parametersFileName;
+    public final int[] mapping = new int[22];
+	
+	
+	public PropensityTorsionParameters(String parametersFileName) {
+		String parametersFileName1 = parametersFileName;
     	int c1,c2,c3,ns;
     	String line = "";
     	
@@ -37,18 +35,19 @@ import java.io.FileReader;
 	    torsion2Name = line.trim();
 
 	    line = br.readLine();
-	    limit = Double.valueOf(line.trim()).doubleValue();
+	    limit = Double.valueOf(line.trim());
 	    line = br.readLine();
-	    resolution = Double.valueOf(line.trim()).doubleValue();
-	    Long lo = new Long(4*Math.round(limit/resolution)*Math.round(limit/resolution));
+	    resolution = Double.valueOf(line.trim());
+	    Long lo = 4 * Math.round(limit / resolution) * Math.round(limit / resolution);
 	    int Nsquares = lo.intValue();
 	    c2 = 0;
-	    for (c1=0; c1<22; c1++) {
+		int numOfEntries = 0;
+		for (c1=0; c1<22; c1++) {
 		line = br.readLine().trim();
 		if ((line.compareTo("0") != 0) && (line.compareTo("1") != 0))
 				    throw new RuntimeException("Mapping values (begining of file)" + 
 					       parametersFileName + " need to be with values {0,1) only\n");		
-		c3 = Integer.valueOf(line.trim()).intValue();
+		c3 = Integer.valueOf(line.trim());
 		if (c3==1) {
 		    mapping[c1] = c2;
 		    c2++;  
@@ -63,11 +62,11 @@ import java.io.FileReader;
 		}
 	    }				
 	    coef = new double[numOfEntries][Nsquares][16];
-	    for (c1=0; c1<numOfEntries; c1++) {
+	    for (c1=0; c1< numOfEntries; c1++) {
 		for (c2=0; c2<Nsquares; c2++) {
 		    for (c3=0; c3<16; c3++) {
 			line = br.readLine();
-			coef[c1][c2][c3] = Double.valueOf(line.trim()).doubleValue();
+			coef[c1][c2][c3] = Double.valueOf(line.trim());
 		    }
 		}
 	    }

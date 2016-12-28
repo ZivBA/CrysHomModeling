@@ -28,7 +28,7 @@ import java.io.IOException;
  *  
  */
 
-public class MergeTempleteAndRefine extends MeshiProgram implements Residues, AtomTypes {
+class MergeTempleteAndRefine extends MeshiProgram implements Residues, AtomTypes {
 
 	private static String targetNumber = null;  
 	private static double cutoffVal = -999;  
@@ -45,7 +45,7 @@ public class MergeTempleteAndRefine extends MeshiProgram implements Residues, At
 
 
 
-	public static void mergeTempAndRef(String tempFileName, String refFileName, String outputFileName, String nativeFileName, double cutoff) {	
+	private static void mergeTempAndRef(String tempFileName, String refFileName, String outputFileName, String nativeFileName, double cutoff) {
 		AtomList atomList = new AtomList();
 		Protein templ = new Protein((new AtomList(tempFileName)).noOXTFilter().backbone(), new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
 		Protein ref = new Protein((new AtomList(refFileName)).noOXTFilter().backbone(), new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
@@ -95,7 +95,7 @@ public class MergeTempleteAndRefine extends MeshiProgram implements Residues, At
 		}
 	}
 
-	public static boolean distRefTemp(AtomList ref,AtomList templ, double cutoff) {
+	private static boolean distRefTemp(AtomList ref, AtomList templ, double cutoff) {
 		int resNumber = ref.atomAt(0).residueNumber();
 		return (ref.findAtomInList("N", resNumber).distanceFrom(templ.findAtomInList("N", resNumber)) < cutoff) &&
 				(ref.findAtomInList("CA", resNumber).distanceFrom(templ.findAtomInList("CA", resNumber)) < cutoff) &&
@@ -127,7 +127,7 @@ public class MergeTempleteAndRefine extends MeshiProgram implements Residues, At
 				"Usage java -Xmx300m MergeTempleteAndRefine <Target number> <cutoff> \n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		targetNumber = getOrderedArgument(args);
 		if (targetNumber == null) throw new RuntimeException(errorMessage);

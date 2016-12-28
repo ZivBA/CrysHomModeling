@@ -8,7 +8,7 @@ import java.util.Iterator;
  **/
 public class Key {
     public final String key;
-    private static MeshiList keys = new MeshiList();
+    private static final MeshiList keys = new MeshiList();
     public Key (String key) {
 	this.key = key;
 	for (Iterator iter = keys.iterator(); iter.hasNext();)

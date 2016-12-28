@@ -13,7 +13,7 @@ public class SimpleHydrogenBond_Dahiyat_HighAccuracy_BBonly_Creator extends Ener
 	private boolean toCalcDerivatives = true;
 	private DahiyatHighAccuracyParamaters parameters = null;
 
-	public SimpleHydrogenBond_Dahiyat_HighAccuracy_BBonly_Creator(double weight , boolean toCalcDerivatives) {
+	private SimpleHydrogenBond_Dahiyat_HighAccuracy_BBonly_Creator(double weight, boolean toCalcDerivatives) {
 		super(weight);
 		this.toCalcDerivatives = toCalcDerivatives;
 		parameters = new DahiyatHighAccuracyParamaters();

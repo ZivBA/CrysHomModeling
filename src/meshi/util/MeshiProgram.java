@@ -18,15 +18,15 @@ public class MeshiProgram {
      * After program initiation, stores all the information needed for program execution.
      * It is arranged as a list of (key,value) pairs 
      **/
-    private static GlobalElementList globalTable = new GlobalElementList(); 
+    private static final GlobalElementList globalTable = new GlobalElementList();
     /**
      * Program name.
      **/
-    protected static String name = "MeshiProgram";
+    private static final String name = "MeshiProgram";
     /**
      * The command line with which the program was called.
      **/
-    protected static String commandLine = null;
+    private static final String commandLine = null;
     /**
      * The single random number generator used by the program.
      **/
@@ -65,7 +65,7 @@ public class MeshiProgram {
      * is also removed and  returned. 
      * If the keyword is not found in <b> args</b>null is returned.
      **/
-    protected static String getFlagedArgument(String key,String[] args) {
+    private static String getFlagedArgument(String key, String[] args) {
 	String temp;
 	for (int i = 0; i <  args.length - 1; i++) {
 	    if (args[i].equals(key))
@@ -107,7 +107,7 @@ public class MeshiProgram {
     }
 
     //-------------------------------------- getting parameters -----------------------------------
-    public static boolean tableIncludes(String key) {
+    private static boolean tableIncludes(String key) {
 	GlobalElement element;
 	element = globalTable.get(key);
 	    return element != null;
@@ -116,7 +116,7 @@ public class MeshiProgram {
     /**
      * Gets the value associated with the keyword <b>key</b>.
      **/
-    protected static Object tableGet(String key) {
+    private static Object tableGet(String key) {
 	GlobalElement element;
 	if (globalTable == null) 
 	    throw new RuntimeException("globalTable not initialized. Its fine but please do not \n"+
@@ -134,7 +134,7 @@ public class MeshiProgram {
     /**
      * Gets the Double value associated with the keyword <b>key</b>.
      **/
-    public static Double  getD(String key) { 
+    private static Double  getD(String key) {
 	try {
 	    return (Double) tableGet(key);
 	}
@@ -146,7 +146,7 @@ public class MeshiProgram {
     /**
      * Gets the Integer value associated with the keyword <b>key</b>.
      **/
-    public static Integer getI(String key) { 
+    private static Integer getI(String key) {
 	try {
 	    return (Integer) tableGet(key);
 	}
@@ -158,7 +158,7 @@ public class MeshiProgram {
    /**
     * Gets the Boolean value associated with the keyword <b>key</b>.
     **/
-    public static Boolean getB(String key) { 
+    private static Boolean getB(String key) {
 	try {
 	    return (Boolean) tableGet(key);
 	}
@@ -215,7 +215,7 @@ public class MeshiProgram {
     /**
      * Gets the boolean value associated with the keyword <b>key</b>.
      **/
-    public static boolean getb(String key) { return  getB(key).booleanValue();}
+    private static boolean getb(String key) { return getB(key);}
 
     /**
      * Gets the boolean value associated with the keyword <b>verbose</b>.
@@ -307,8 +307,8 @@ public class MeshiProgram {
      **/
     private static String getCommandLine(String[] args) {
 	String commandLine = "";
-	for (int i = 0; i <  args.length; i++)
-	    commandLine = commandLine+" "+args[i];
+	    for (String arg : args)
+		    commandLine = commandLine + " " + arg;
 	return commandLine;
     }	
 
@@ -323,7 +323,7 @@ public class MeshiProgram {
      * An element of the keyword-value table.
      **/
     private static class GlobalElement {
-	String key;
+	final String key;
 	Object value;
 	public GlobalElement(String key,Object value) {
 	    this.key = key;

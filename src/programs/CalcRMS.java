@@ -7,7 +7,7 @@ import meshi.util.KeyWords;
 import meshi.util.MeshiProgram;
 
 
-public class CalcRMS extends MeshiProgram implements Residues, AtomTypes, KeyWords {
+class CalcRMS extends MeshiProgram implements Residues, AtomTypes, KeyWords {
 
 	private static String modelFileName = null;
 	private static String referenceFileName = null;  
@@ -29,7 +29,7 @@ public class CalcRMS extends MeshiProgram implements Residues, AtomTypes, KeyWor
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 

@@ -15,8 +15,8 @@ public class SimpleHydrogenBond_Dahiyat_LowAccuracy_BBonly_InLoop_Creator extend
 	private boolean toCalcDerivatives = true;
 	private DahiyatLowAccuracyParameters parameters = null;
 
-	public SimpleHydrogenBond_Dahiyat_LowAccuracy_BBonly_InLoop_Creator(double weight , boolean toCalcDerivatives, 
-			int loopStart, int loopEnd) {
+	private SimpleHydrogenBond_Dahiyat_LowAccuracy_BBonly_InLoop_Creator(double weight, boolean toCalcDerivatives,
+	                                                                     int loopStart, int loopEnd) {
 		super(weight);
 		this.toCalcDerivatives = toCalcDerivatives;
 		parameters = new DahiyatLowAccuracyParameters();

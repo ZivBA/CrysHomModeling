@@ -3,24 +3,29 @@ package meshi.energy.cAlphaPlane;
 import meshi.geometry.Distance;
 import meshi.molecularElements.Atom;
 
-public class CAlphaPlaneDistance {
-private  final double K = 1;
-private  double MINdis, MAXdis, slope, leftLineBound, rightLineBound;   
-private double a, b;
-private double distanceAB, dDistanceDx, dDistanceDy, dDistanceDz;
+class CAlphaPlaneDistance {
+	private final double MINdis;
+	private final double slope;
+	private final double leftLineBound;
+	private final double rightLineBound;
+	private double distanceAB, dDistanceDx, dDistanceDy, dDistanceDz;
 private Atom  A, B; 
-protected double energy;
-protected double deDxA, deDyA, deDzA, deDxB, deDyB, deDzB;
+private double energy;
+double deDxA;
+	double deDyA;
+	double deDzA;
+	double deDxB;
+	double deDyB;
+	double deDzB;
 
  public CAlphaPlaneDistance(double MINdis, double MAXdis, double slope) {
     this.MINdis = MINdis;
-    this.MAXdis = MAXdis;
-    this.slope = slope;    
+	 this.slope = slope;
     leftLineBound = MINdis+slope;
     rightLineBound = MAXdis-slope;    
  }
 
- protected  void set(Atom A, Atom B, Distance distance ) {
+ void set(Atom A, Atom B, Distance distance) {
    this.A = A;
    this.B = B;
    distanceAB = distance.distance();
@@ -32,15 +37,18 @@ protected double deDxA, deDyA, deDzA, deDxB, deDyB, deDzB;
     /**
     * energy and dirivarives calculation.
     **/
- protected  double  updateEnergy() {  
+    double  updateEnergy() {
     double d, d2, de;
-   if (distanceAB < leftLineBound)  {
+	 double b;
+	 double a;
+	 double k = 1;
+	 if (distanceAB < leftLineBound)  {
        a = -2./(slope*slope*slope);
        b = 3./(slope*slope); 
        d = distanceAB - MINdis;
        d2 = d*d;
-       energy = K*(a*d2*d+b*d2);       
-       de = K*(3*a*d2+2*b*d);
+       energy = k *(a *d2*d+ b *d2);
+       de = k *(3* a *d2+2* b *d);
    }
    else
        if (distanceAB > rightLineBound) {
@@ -48,11 +56,11 @@ protected double deDxA, deDyA, deDzA, deDxB, deDyB, deDzB;
        b = -3./(slope*slope); 
        d = distanceAB-rightLineBound;
        d2 = d*d;
-       energy = K*(a*d2*d+b*d2+1);       
-       de = K*(3*a*d2+2*b*d);
+       energy = k *(a *d2*d+ b *d2+1);
+       de = k *(3* a *d2+2* b *d);
        }
        else {
-          energy = K;
+          energy = k;
           de = 0;
        }
    deDxA = de*dDistanceDx;

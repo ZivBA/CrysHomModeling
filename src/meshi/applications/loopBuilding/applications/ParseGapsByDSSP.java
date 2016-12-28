@@ -12,7 +12,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.Vector;
 
-public class ParseGapsByDSSP extends MeshiProgram implements Residues, AtomTypes {
+class ParseGapsByDSSP extends MeshiProgram implements Residues, AtomTypes {
 
 
 	private static String dsspFileName = null;
@@ -34,9 +34,9 @@ public class ParseGapsByDSSP extends MeshiProgram implements Residues, AtomTypes
 		if ((removeHelix<1) || (removeStrand<1))
 			throw new RuntimeException("The removal must be 1 or more.");
 
-		Vector<String>  output_superLoops = new Vector<String>();
-		Vector<String>  output_superLoops_detail = new Vector<String>();
-		Vector<int[]>  output_superLoops_limits = new Vector<int[]>();
+		Vector<String>  output_superLoops = new Vector<>();
+		Vector<String>  output_superLoops_detail = new Vector<>();
+		Vector<int[]>  output_superLoops_limits = new Vector<>();
 		DSSP dssp = new DSSP(dsspFileName);	
 		Protein model = new ExtendedAtomsProtein(initialFileName,DO_NOT_ADD_ATOMS);
 		int modelFirstRes = model.firstResidue();
@@ -50,7 +50,7 @@ public class ParseGapsByDSSP extends MeshiProgram implements Residues, AtomTypes
 				int lastRes = (gapRes-1);
 
 				// Finding the secondary structures
-				Vector<int[]> sss = new Vector<int[]>();
+				Vector<int[]> sss = new Vector<>();
 				char lastSS = 'X';
 				for (int res=firstRes; res<=lastRes ; res++) {
 					if ((dssp.SSofRes(res,' ')=='E')||(dssp.SSofRes(res,' ')=='H')) {
@@ -126,8 +126,8 @@ public class ParseGapsByDSSP extends MeshiProgram implements Residues, AtomTypes
 		}
 		try{
 			BufferedWriter bw = new BufferedWriter(new FileWriter(gapsFileName));
-			for (int c=0 ; c<output_superLoops.size(); c++) {
-				bw.write(output_superLoops.get(c));
+			for (String output_superLoop : output_superLoops) {
+				bw.write(output_superLoop);
 			}
 			bw.close();			
 		}
@@ -201,7 +201,7 @@ public class ParseGapsByDSSP extends MeshiProgram implements Residues, AtomTypes
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		String errorMessage = ("\n                  ******************\n"+
 				"Usage java -Xmx300m MinimizeBatchOfCoarseLoops <commands file name> <file with list of pdbs> <file with list of phipsi data> <ref pdb file name> " +
@@ -227,22 +227,22 @@ public class ParseGapsByDSSP extends MeshiProgram implements Residues, AtomTypes
 
 		String tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		minimalHelix = (new Integer(tmpString)).intValue();
+		minimalHelix = new Integer(tmpString);
 		System.out.println("# Minimial HELIX length: " + minimalHelix);
 		
 		tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		minimalStrand = (new Integer(tmpString)).intValue();
+		minimalStrand = new Integer(tmpString);
 		System.out.println("# Minimial STRAND length: " + minimalStrand);
 		
 		tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		removeHelix = (new Integer(tmpString)).intValue();
+		removeHelix = new Integer(tmpString);
 		System.out.println("# Trim HELIX by: " + removeHelix);
 		
 		tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		removeStrand = (new Integer(tmpString)).intValue();
+		removeStrand = new Integer(tmpString);
 		System.out.println("# Minimial STRAND length: " + removeStrand);
 		
 	}	

@@ -27,24 +27,24 @@ public class TotalEnergy{
 	 * Number of times the energy function was evaluated. This is a simple machine-independent 
 	 * measure of convergence efficiency.
 	 **/
-	protected int numberOfEvaluations;
-	protected static int numberOfUpdates;
-	protected int numberOfReports;
+	private int numberOfEvaluations;
+	private static int numberOfUpdates;
+	private int numberOfReports;
 	protected AtomList atomList;
 	protected double[][] coordinates;
-	protected MeshiList energyTerms;
-	protected DoubleList energyValues;
+	private MeshiList energyTerms;
+	private DoubleList energyValues;
 	protected double totalEnergy;
-	protected Fdouble dformat = Fdouble.SHORT;
-	protected Format sformat = Format.SHORT;
-	protected Fint iformat = Fint.SHORT;
-	protected DistanceMatrix distanceMatrix;
+	private final Fdouble dformat = Fdouble.SHORT;
+	private final Format sformat = Format.SHORT;
+	private final Fint iformat = Fint.SHORT;
+	private DistanceMatrix distanceMatrix;
 	private static TotalEnergy theOnlyTotalEnergy;
 	public static final Terminator terminator = new Terminator();
 
-	private static final double INFINITY = 1/0.0;
+	private static final double INFINITY = Double.POSITIVE_INFINITY;
 
-	public TotalEnergy() {}
+	protected TotalEnergy() {}
 
 	public TotalEnergy(AtomList atomList,
 			DistanceMatrix distanceMatrix,
@@ -60,20 +60,20 @@ public class TotalEnergy{
 			CommandList commands) {
 		this(protein.atoms(), distanceMatrix);
 		energyTerms = new MeshiList(new IsEnergy());
-		for (int i = 0; i < energyCreators.length; i++) {
-			if (!energyCreators[i].weightWasSet()){
-				energyCreators[i].getWeight(commands);
+		for (EnergyCreator energyCreator : energyCreators) {
+			if (!energyCreator.weightWasSet()) {
+				energyCreator.getWeight(commands);
 			}
-			if (energyCreators[i].weight() != 0) {
-				energyTerms.add(energyCreators[i].createEnergyTerm(protein, 
-						distanceMatrix, 
-						commands)); 
+			if (energyCreator.weight() != 0) {
+				energyTerms.add(energyCreator.createEnergyTerm(protein,
+						distanceMatrix,
+						commands));
 			}
 		}
 	}
 
-	public TotalEnergy(AtomList atomList,
-			DistanceMatrix distanceMatrix) {
+	private TotalEnergy(AtomList atomList,
+	                    DistanceMatrix distanceMatrix) {
 		this.atomList = atomList;
 		coordinates = getCoordinates(atomList);
 
@@ -110,7 +110,7 @@ public class TotalEnergy{
 
 	public DistanceMatrix distanceMatrix() {return distanceMatrix;}
 
-	public void reset() {
+	private void reset() {
 		theOnlyTotalEnergy = this;
 	}
 
@@ -146,15 +146,15 @@ public class TotalEnergy{
 			System.out.println("*** Test terminated");
 		}
 	}
-	final static double  DX = 1e-7;
-	final static String[]XYZ = new String[]{"x","y","z"};
-	final static double verySmall = Math.exp(-15);
+	private final static double  DX = 1e-7;
+	private final static String[]XYZ = new String[]{"x","y","z"};
+	private final static double verySmall = Math.exp(-15);
 
 	/**
 	 * Searching for a `criminal' atom
 	 * @return a criminal <code>Atom</code> 
 	 */
-	protected Atom findCriminalAtom(){
+	private Atom findCriminalAtom(){
 		System.out.println("*** Criminal atom searching");
 
 		double[][] coordinates = new double[3][];
@@ -162,54 +162,53 @@ public class TotalEnergy{
 		double analiticalForce = 99999.99, numericalForce = -999999.99;
 		double diff = 99999.9999, maxDiff = 0;
 		Atom criminal=null;
-		criminal_found:
-			for(Iterator atoms = atomList.iterator();atoms.hasNext();){
-				Atom atom = (Atom)atoms.next();
-				if (! atom.frozen()) {
-					coordinates[0] = atom.X();
-					coordinates[1] = atom.Y();
-					coordinates[2] = atom.Z();
-					for(int i = 0; i< 3; i++) {
-						// Whatever should be updated ( such as distance matrix torsion list etc. )
-						updateDebug(); 
-						x = coordinates[i][0];
-						coordinates[i][1] = 0;
-						e1 = evaluate();
-						analiticalForce = coordinates[i][1];
-						coordinates[i][0] += DX;
-
-						updateDebug();
-						e2 = evaluate();
-						numericalForce = -1*(e2-e1)/DX;
-						coordinates[i][0] -= DX;
-
-						diff = Math.abs(analiticalForce - numericalForce);
-						if (maxDiff < diff){// diff is maximal
-							maxDiff = diff;
-							System.out.println();
-							System.out.println("Atom["+atom.number()+"]."+XYZ[i]+" = "+x);
-							System.out.println("Analytical force = "+analiticalForce);
-							System.out.println("Numerical force  = "+numericalForce);
-							System.out.println("maxDiff = "+maxDiff);
-							System.out.println("tolerance = "+2*maxDiff/(Math.abs(analiticalForce)+
-									Math.abs(numericalForce)+verySmall));
-							criminal=atom;
-							// break criminal_found;
-						}
-
-						if ((e1 == AbstractEnergy.INFINITY) | (e1 == AbstractEnergy.NaN))
-							System.out.println("e1 = "+e1);
-						if ((e2 == AbstractEnergy.INFINITY) | (e2 == AbstractEnergy.NaN))
-							System.out.println("e2 = "+e2);
-						if ((analiticalForce == AbstractEnergy.INFINITY) | (analiticalForce == AbstractEnergy.NaN))
-							System.out.println("analiticalForce = "+analiticalForce);
+		for (Iterator atoms = atomList.iterator(); atoms.hasNext(); ) {
+			Atom atom = (Atom) atoms.next();
+			if (!atom.frozen()) {
+				coordinates[0] = atom.X();
+				coordinates[1] = atom.Y();
+				coordinates[2] = atom.Z();
+				for (int i = 0; i < 3; i++) {
+					// Whatever should be updated ( such as distance matrix torsion list etc. )
+					updateDebug();
+					x = coordinates[i][0];
+					coordinates[i][1] = 0;
+					e1 = evaluate();
+					analiticalForce = coordinates[i][1];
+					coordinates[i][0] += DX;
+					
+					updateDebug();
+					e2 = evaluate();
+					numericalForce = -1 * (e2 - e1) / DX;
+					coordinates[i][0] -= DX;
+					
+					diff = Math.abs(analiticalForce - numericalForce);
+					if (maxDiff < diff) {// diff is maximal
+						maxDiff = diff;
+						System.out.println();
+						System.out.println("Atom[" + atom.number() + "]." + XYZ[i] + " = " + x);
+						System.out.println("Analytical force = " + analiticalForce);
+						System.out.println("Numerical force  = " + numericalForce);
+						System.out.println("maxDiff = " + maxDiff);
+						System.out.println("tolerance = " + 2 * maxDiff / (Math.abs(analiticalForce) +
+								Math.abs(numericalForce) + verySmall));
+						criminal = atom;
+						// break criminal_found;
 					}
-					if(atom.number() != 0 && atom.number()%100 == 0)
-						System.out.print(atom.number());
-					else
-						System.out.print(".");
+					
+					if ((e1 == AbstractEnergy.INFINITY) | (e1 == AbstractEnergy.NaN))
+						System.out.println("e1 = " + e1);
+					if ((e2 == AbstractEnergy.INFINITY) | (e2 == AbstractEnergy.NaN))
+						System.out.println("e2 = " + e2);
+					if ((analiticalForce == AbstractEnergy.INFINITY) | (analiticalForce == AbstractEnergy.NaN))
+						System.out.println("analiticalForce = " + analiticalForce);
 				}
+				if (atom.number() != 0 && atom.number() % 100 == 0)
+					System.out.print(atom.number());
+				else
+					System.out.print(".");
 			}
+		}
 		System.out.println();
 		return criminal;
 	}
@@ -218,7 +217,7 @@ public class TotalEnergy{
 	 * @param atom a `criminal' <code>Atom</code>
 	 * @return a criminal energy term
 	 */
-	protected AbstractEnergy findCriminalEnergyTerm(Atom atom){
+	private AbstractEnergy findCriminalEnergyTerm(Atom atom){
 		System.out.println("*** Criminal energy term searching");
 
 		double[][] coordinates = new double[3][];
@@ -275,9 +274,9 @@ public class TotalEnergy{
 	public static double getGradMagnitude(double[][] coordinates) {
 		double sumGrad = 0;
 		int n = 0;
-		for (int i = 0; i < coordinates.length; i++) {
-			if (coordinates[i][1] != INFINITY) {
-				sumGrad +=  coordinates[i][1]*coordinates[i][1];
+		for (double[] coordinate : coordinates) {
+			if (coordinate[1] != INFINITY) {
+				sumGrad += coordinate[1] * coordinate[1];
 				n++;
 			}
 		}
@@ -370,7 +369,7 @@ public class TotalEnergy{
 				throw new RuntimeException("This is weird: "+energyTerm+
 						" is off but does not return zero ("+e+")");
 			if ((! (e < 0) ) & (! ( e == 0)) & (!(e > 0)))System.out.println("weird energy "+energyTerm+" "+e);
-			energyValues.add(new Double(e));
+			energyValues.add(e);
 			totalEnergy += e;
 		}
 		numberOfEvaluations++;
@@ -403,7 +402,7 @@ public class TotalEnergy{
 		if (updateableException != null) throw updateableException;
 	}
 
-	public void updateDebug() {
+	private void updateDebug() {
 		if(distanceMatrix!=null){
 			distanceMatrix.debugON();
 		}
@@ -415,25 +414,25 @@ public class TotalEnergy{
 
 
 
-	public static double getAverageForce(double[][] coordinates) {
+	private static double getAverageForce(double[][] coordinates) {
 		double averageForce = 0;
-		for (int i = 0; i < coordinates.length; i++) 
-			averageForce += coordinates[i][1]*coordinates[i][1];
+		for (double[] coordinate : coordinates)
+			averageForce += coordinate[1] * coordinate[1];
 		averageForce = Math.sqrt(averageForce/coordinates.length);
 		return averageForce;
 	}
 
 	/**
 	 * Sets all forces in the coordinates to zero.
-	 **/ 
-	public void resetForces() {
+	 **/
+	private void resetForces() {
 		int length = coordinates.length;
 		for (int i = 0; i < length; i++) {
 			coordinates[i][1] = 0.0;
 		}
 	}    
 
-	public String reportHeader() {
+	private String reportHeader() {
 		String report = "";
 		report += sformat.f("#")+sformat.f(" E total ")+" ";
 		Iterator terms = energyTerms.iterator();
@@ -472,7 +471,7 @@ public class TotalEnergy{
 		return report;
 	}	
 
-	public boolean frozenAtomsExist() {return atomList.frozenAtomsExist();}
+	protected boolean frozenAtomsExist() {return atomList.frozenAtomsExist();}
 
 	protected static class IsEnergy implements Filter {
 		public boolean accept(Object obj) {
@@ -580,7 +579,7 @@ public class TotalEnergy{
 	}
 
 
-	public static class EnergyComparator implements Comparator {
+	private static class EnergyComparator implements Comparator {
 		public int compare(Object obj1, Object obj2) {
 			Atom atom1 = (Atom) obj1;
 			Atom atom2 = (Atom) obj2;
@@ -605,11 +604,13 @@ public class TotalEnergy{
 			term.on();
 		}
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	private class SortedAtoms {
-		private Atom[] atoms = new Atom[atomList.size()];
-		double avg,std;
-		public SortedAtoms() {
+		private final Atom[] atoms = new Atom[atomList.size()];
+		final double avg;
+		final double std;
+		SortedAtoms() {
 			for (int i = 0; i < atoms.length; i++)
 				atoms[i] = (Atom) atomList().elementAt(i);
 			evaluateAtoms();
@@ -617,10 +618,10 @@ public class TotalEnergy{
 			double sum = 0;
 			double sum2 = 0;
 			double e;
-			for (int i = 0; i < atoms.length; i++) {
-				e = atoms[i].energy();
+			for (Atom atom : atoms) {
+				e = atom.energy();
 				sum += e;
-				sum2 += e*e;
+				sum2 += e * e;
 			}
 			avg = sum/atoms.length;
 			std = Math.sqrt(sum2/atoms.length -avg*avg);

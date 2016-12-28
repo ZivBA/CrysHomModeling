@@ -6,8 +6,8 @@ public class AtomPair implements Comparable{
  
     private int numberOfRenumberings;
 
-    private Atom atom1;
-    private Atom atom2;
+    private final Atom atom1;
+    private final Atom atom2;
     public final Atom atom1() {return atom1;}
     public final Atom atom2() {return atom2;}
 
@@ -34,7 +34,7 @@ public class AtomPair implements Comparable{
     public void setImortal() { imortal = true;}
 
     public static final int ATOM_PAIR_CAPACITY = 2;
-    private AtomList atoms;
+    private final AtomList atoms;
     public final AtomList atoms() {return atoms;}
     
     public  AtomPair(Atom atom1, Atom atom2) {
@@ -48,7 +48,7 @@ public class AtomPair implements Comparable{
 	renumber();
     }
 
-    protected void renumber() {
+    void renumber() {
 	numberOfRenumberings++;
 	atom1Number = atom1.number();
 	atom2Number = atom2.number();

@@ -12,9 +12,10 @@ import meshi.sequences.SequenceAlignmentColumn;
  * To change this template use File | Settings | File Templates.
  */
 public class DpMatrix {
-    Sequence sequence1, sequence2; // One dimentional sequenceAlignments
+    final Sequence sequence1;
+	final Sequence sequence2; // One dimentional sequenceAlignments
     public final CellScorer cellScorer;
-    private Cell[][] matrix;
+    private final Cell[][] matrix;
     
 
 
@@ -29,7 +30,7 @@ public class DpMatrix {
 	    }
 	}
     }
-    public void setCell(int row, int column, Cell cell){
+    private void setCell(int row, int column, Cell cell){
 	matrix[row][column] = cell;
     }
     public Cell getCell(int rowNumber, int colNumber) {

@@ -14,15 +14,14 @@ import meshi.util.KeyWords;
 public class HydrogenBondsPlaneCreator extends EnergyCreator implements KeyWords {
 
     //------------------------- data fields ---------------------------
-    public HydrogenBondsPlaneEnergy hydrogenBondsPlaneEnergy;
+    private HydrogenBondsPlaneEnergy hydrogenBondsPlaneEnergy;
 
        /**
 	 * @return Returns the hydrogenBondsEnergy.
 	 */
 	public final HydrogenBondsPlaneEnergy getHydrogenBondsPlaneEnergy() {	return hydrogenBondsPlaneEnergy;	}
-
-    private String strMaxAngleOfPlainDistortion;
-    private double maxAngleOfPlainDistortion;
+	
+	private double maxAngleOfPlainDistortion;
     //------------------------- constructors ---------------------------
     
     public HydrogenBondsPlaneCreator() {
@@ -61,10 +60,10 @@ public class HydrogenBondsPlaneCreator extends EnergyCreator implements KeyWords
 		return hydrogenBondsPlaneEnergy;
 	}
 	
-    public void setParametersList(CommandList commands) {
+    private void setParametersList(CommandList commands) {
 	CommandList constrainCommands = commands.firstWordFilter(key);
-	strMaxAngleOfPlainDistortion = constrainCommands.secondWord("MaxAngleOfPlaneDistortion").thirdWord();
-	maxAngleOfPlainDistortion = (new Double(strMaxAngleOfPlainDistortion)).doubleValue()*Math.PI/180.0;
+	    String strMaxAngleOfPlainDistortion = constrainCommands.secondWord("MaxAngleOfPlaneDistortion").thirdWord();
+	maxAngleOfPlainDistortion = new Double(strMaxAngleOfPlainDistortion) *Math.PI/180.0;
         if (maxAngleOfPlainDistortion >= 90)
             throw new RuntimeException("MaxAngleOfDistortion for HydrogenBondsPlane should be less than 90");
 

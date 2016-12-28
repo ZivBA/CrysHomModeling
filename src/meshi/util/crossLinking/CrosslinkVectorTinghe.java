@@ -2,15 +2,15 @@ package meshi.util.crossLinking;
 
 import meshi.molecularElements.AtomList;
 
-public class CrosslinkVectorTinghe extends CrosslinkVector {
+class CrosslinkVectorTinghe extends CrosslinkVector {
 
 	private static final long serialVersionUID = 1L;
 
-	public CrosslinkVectorTinghe() {
+	private CrosslinkVectorTinghe() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public CrosslinkVectorTinghe(String filename , int fileType) {
+	private CrosslinkVectorTinghe(String filename, int fileType) {
 		super(filename ,  fileType);
 		// TODO Auto-generated constructor stub
 	}

@@ -23,7 +23,7 @@ import meshi.util.MeshiProgram;
 import meshi.util.file.MeshiWriter;
 import programs.SCMOD;
 
-public class ModelConnexin extends MeshiProgram implements Residues, AtomTypes {
+class ModelConnexin extends MeshiProgram implements Residues, AtomTypes {
 
 	private static CommandList commands;
 
@@ -50,7 +50,7 @@ public class ModelConnexin extends MeshiProgram implements Residues, AtomTypes {
 		}
 	}	
 	
-	public static AtomList makeConnexinModel(int[][] helixMove) {
+	private static AtomList makeConnexinModel(int[][] helixMove) {
 //		AtomList origStruct = new AtomList("C:\\Users\\Nir\\Connexin\\2ZW3_35Ang.pdb");
 //		AtomList origStruct = new AtomList("C:\\Users\\Nir\\Connexin\\2ZW3_Hexamer_Modified.pdb");
 //		AtomList origStruct = new AtomList("C:\\Users\\Nir\\Connexin\\2ZW3_35Ang_minimized.pdb");
@@ -63,9 +63,9 @@ public class ModelConnexin extends MeshiProgram implements Residues, AtomTypes {
 		
 		AtomList outList = new AtomList();
 		for (int chainC=0; chainC<chains.length() ; chainC++) {
-			for (int chunkC=0 ; chunkC<helixMove.length ; chunkC++) {
-				background = background.substring(0, helixMove[chunkC][0]-1+helixMove[chunkC][2]) + trueSeq.substring(helixMove[chunkC][0]-1,helixMove[chunkC][1]) + 
-						background.substring(helixMove[chunkC][1]+helixMove[chunkC][2]);
+			for (int[] aHelixMove : helixMove) {
+				background = background.substring(0, aHelixMove[0] - 1 + aHelixMove[2]) + trueSeq.substring(aHelixMove[0] - 1, aHelixMove[1]) +
+						background.substring(aHelixMove[1] + aHelixMove[2]);
 			}
 			outList.add(homologyModeling(origStruct.chainFilter(chains.substring(chainC, chainC+1)), trueSeq /*connonicalStr*/, background));
 		}
@@ -76,14 +76,12 @@ public class ModelConnexin extends MeshiProgram implements Residues, AtomTypes {
 	
 	
 	
-	public static AtomList homologyModeling(AtomList templateAtoms, String trueSeq, String newSeq) {
+	private static AtomList homologyModeling(AtomList templateAtoms, String trueSeq, String newSeq) {
 
 		Protein template = new ExtendedAtomsProtein(templateAtoms, DO_NOT_ADD_ATOMS);
 		Protein query = null;
 		int firstResInTemplate = 1;
 		int firstResInQuery = 1;
-		String queryAlignment = newSeq;
-		String templateAlignment = trueSeq;
 		int resNumCounterQ=0;
 		int resNumCounterT=0;
 		boolean[] completedResidue; 
@@ -91,8 +89,8 @@ public class ModelConnexin extends MeshiProgram implements Residues, AtomTypes {
 
 
 		// Reading the alignment file
-		completedResidue = new boolean[queryAlignment.length()];
-		for (int c=0; c<queryAlignment.length() ; c++)
+		completedResidue = new boolean[newSeq.length()];
+		for (int c = 0; c< newSeq.length() ; c++)
 			completedResidue[c] = true;
 
 
@@ -100,20 +98,20 @@ public class ModelConnexin extends MeshiProgram implements Residues, AtomTypes {
 		AtomList CAslist = new AtomList();
 		resNumCounterQ = firstResInQuery-1;
 		resNumCounterT = firstResInTemplate-1;
-		for (int position=0; position<queryAlignment.length() ; position++) {
-			if (queryAlignment.charAt(position)!='-') 
+		for (int position = 0; position< newSeq.length() ; position++) {
+			if (newSeq.charAt(position)!='-')
 				resNumCounterQ++;
-			if (templateAlignment.charAt(position)!='-') 
+			if (trueSeq.charAt(position)!='-')
 				resNumCounterT++;		
-			if (queryAlignment.charAt(position)!='-') {
-				if ((templateAlignment.charAt(position)!='-') && (template.residue(resNumCounterT)!= null) && (template.residue(resNumCounterT).ca()!= null)) {
-					if (Residue.nameOneLetter(template.residue(resNumCounterT).type).charAt(0)!=templateAlignment.charAt(position)) {
-						System.out.println(Residue.nameOneLetter(template.residue(resNumCounterT).type).charAt(0) + "  BBB   " + templateAlignment.charAt(position));
+			if (newSeq.charAt(position)!='-') {
+				if ((trueSeq.charAt(position)!='-') && (template.residue(resNumCounterT)!= null) && (template.residue(resNumCounterT).ca()!= null)) {
+					if (Residue.nameOneLetter(template.residue(resNumCounterT).type).charAt(0)!= trueSeq.charAt(position)) {
+						System.out.println(Residue.nameOneLetter(template.residue(resNumCounterT).type).charAt(0) + "  BBB   " + trueSeq.charAt(position));
 						throw new RuntimeException("Mismatch between template structure and sequence");
 					}
 					else {
 						CAslist.add(new Atom(0,0,0,"CA",
-								Residue.one2three(queryAlignment.charAt(position)),
+								Residue.one2three(newSeq.charAt(position)),
 								resNumCounterQ,-1));
 					}
 				}
@@ -124,16 +122,16 @@ public class ModelConnexin extends MeshiProgram implements Residues, AtomTypes {
 		// Assigning the coordinates to the trivial homology
 		resNumCounterQ = firstResInQuery-1;
 		resNumCounterT = firstResInTemplate-1;
-		for (int position=0; position<queryAlignment.length() ; position++)  {	
-			if (queryAlignment.charAt(position)!='-') 
+		for (int position = 0; position< newSeq.length() ; position++)  {
+			if (newSeq.charAt(position)!='-')
 				resNumCounterQ++;
-			if (templateAlignment.charAt(position)!='-') 
+			if (trueSeq.charAt(position)!='-')
 				resNumCounterT++;		
-			if ((queryAlignment.charAt(position)!='-') && (templateAlignment.charAt(position)!='-') &&
+			if ((newSeq.charAt(position)!='-') && (trueSeq.charAt(position)!='-') &&
 					(template.residue(resNumCounterT)!= null) && (template.residue(resNumCounterT).ca()!= null)) {
 				for (int atomCounter=0 ; atomCounter<query.residue(resNumCounterQ).atoms().size() ; atomCounter++) {
 					if (query.residue(resNumCounterQ).atoms().atomAt(atomCounter).name().equals("CA")) {
-						System.out.println(resNumCounterQ + " " + queryAlignment.charAt(position) + " " + resNumCounterT + " " + templateAlignment.charAt(position));
+						System.out.println(resNumCounterQ + " " + newSeq.charAt(position) + " " + resNumCounterT + " " + trueSeq.charAt(position));
 					}
 					Atom atomInQuery = query.residue(resNumCounterQ).atoms().atomAt(atomCounter);
 					Atom atomInTemplate = template.residue(resNumCounterT).atoms().getAtom(atomInQuery.name());
@@ -177,11 +175,11 @@ public class ModelConnexin extends MeshiProgram implements Residues, AtomTypes {
 
 		// Freezing only residues whose sidechains are determined from the template
 		resNumCounterQ = 0;
-		for (int position=0; position<queryAlignment.length() ; position++) 
-			if (queryAlignment.charAt(position)!='-') {
+		for (int position = 0; position< newSeq.length() ; position++)
+			if (newSeq.charAt(position)!='-') {
 				resNumCounterQ++;
 				if (query.residue(resNumCounterQ)!=null) {
-					if ((templateAlignment.charAt(position)==queryAlignment.charAt(position)) &&
+					if ((trueSeq.charAt(position)== newSeq.charAt(position)) &&
 							completedResidue[position]) { 
 						//System.out.println("Freezing: " + resNumCounterQ + " " + templateAlignment.charAt(position));
 						query.residue(resNumCounterQ).atoms().freeze();
@@ -214,7 +212,7 @@ public class ModelConnexin extends MeshiProgram implements Residues, AtomTypes {
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -230,7 +228,7 @@ public class ModelConnexin extends MeshiProgram implements Residues, AtomTypes {
 				"Usage java -Xmx600m SimpleHomologyModeling <commands file name> <alignment file name> \n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
 		System.out.println("# commandsFileName = "+commandsFileName);

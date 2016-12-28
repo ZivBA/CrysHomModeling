@@ -51,7 +51,7 @@ public class RamachandranSidechainParametersList
 	}
 
 	/** Creates a RamachandranSidechainParameters for residue type. */
-	public Parameters createParameters( int residueType ) {
+	private Parameters createParameters(int residueType) {
 		/* classify residue according to type and call appropriate
 		 * constructor class. types are grouped according to number
 		 * of side chain torsion angles.

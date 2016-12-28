@@ -13,8 +13,7 @@ import meshi.molecularElements.AtomList;
  *        OG1  CG2
  **/
 public class Thr extends ResidueExtendedAtoms{
-    public final Atom OG1, CG2;
-    public static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
+	private static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
 	"                O\n"+
 	"                |\n"+
 	"       N - CA - C...n\n"+
@@ -35,13 +34,15 @@ public class Thr extends ResidueExtendedAtoms{
 
 	Object[] temp = new Object[2];
 	int i=0;
-	temp[i++] = CG2 = getAtom("CG2",TCG, atomList, this);
-	temp[i++] = OG1 = getAtom("OG1",TOG, atomList, this);
+	    Atom CG2;
+	    temp[i++] = CG2 = getAtom("CG2",TCG, atomList, this);
+	    Atom OG1;
+	    temp[i++] = OG1 = getAtom("OG1",TOG, atomList, this);
 	for (i = 0; i <temp.length; i++)
 	    if (temp[i] != null) atoms.add(temp[i]);
 
  	if ((CB  != null)   && (OG1 != null)) bonds.add(CB.bond(OG1));
- 	if ((CB  != null)   && (CG2  != null)) bonds.add(CB.bond(CG2));
+ 	if ((CB  != null)   && (CG2 != null)) bonds.add(CB.bond(CG2));
     }
     public String comment() {
 	return COMMENT;

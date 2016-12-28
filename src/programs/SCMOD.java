@@ -59,44 +59,36 @@ public final class SCMOD extends MeshiProgram implements Residues,
 	private static int Niter = 1; 
 
 	// The type order in which the side chains are modeled. Starting from TRP (18) and finishing with SER (15)
-	private static int[] resTypeModelingOrder = {18,19,4,9,10,12,17,7,6,3,8,14,2,13,11,1,16,15};
-
-	// temporary weight vectors
-	private static double[] w1;
-	private static double[] w2;
-	private static double[] w3;
-	private static double[] w4;
-	private static double[] w5;
-	private static double[] w6;
-
-
-//	Weights for the first iteration
+	private static final int[] resTypeModelingOrder = {18,19,4,9,10,12,17,7,6,3,8,14,2,13,11,1,16,15};
+	
+	
+	//	Weights for the first iteration
 	// weights for EV
-	private static double[] i1w1 = {0.000000, 7.590000, 4.490000, 9.450000, 1.140000, 0.000000, 12.470000, 2.340000, 5.210000, 1.340000, 5.340000, 3.980000, 9.250000, 8.900000, 2.050000, 13.950000, 6.340000, 2.450000, 2.370000, 2.460000};	
+	private static final double[] i1w1 = {0.000000, 7.590000, 4.490000, 9.450000, 1.140000, 0.000000, 12.470000, 2.340000, 5.210000, 1.340000, 5.340000, 3.980000, 9.250000, 8.900000, 2.050000, 13.950000, 6.340000, 2.450000, 2.370000, 2.460000};
 	// Weights for hydrophobic-like measure on all the sidechain carbons. (number of solute neighbors - indicating burial)
-	private static double[] i1w2 = {0.000000, 0.260000, -0.080000, 0.120000, 0.060000, 0.000000, 0.190000, -0.050000, 0.140000, 0.050000, 0.130000, 0.080000, 0.160000, 0.200000, 0.120000, 0.050000, 0.110000, 0.090000, 0.180000, 0.080000};	
+	private static final double[] i1w2 = {0.000000, 0.260000, -0.080000, 0.120000, 0.060000, 0.000000, 0.190000, -0.050000, 0.140000, 0.050000, 0.130000, 0.080000, 0.160000, 0.200000, 0.120000, 0.050000, 0.110000, 0.090000, 0.180000, 0.080000};
 	// Weights for hydrophilic-like measure on all the sidechain polars. (NEGATIVE number of solute neighbors - indicating exposure)
-	private static double[] i1w3 = {0.000000, 0.270000, -0.160000, 0.000000, 0.160000, 0.000000, -0.010000, 0.050000, 0.120000, 0.040000, 0.070000, -0.010000, 0.170000, 0.090000, -0.030000, -0.040000, 0.010000, 0.380000, 0.130000, -0.130000};
+	private static final double[] i1w3 = {0.000000, 0.270000, -0.160000, 0.000000, 0.160000, 0.000000, -0.010000, 0.050000, 0.120000, 0.040000, 0.070000, -0.010000, 0.170000, 0.090000, -0.030000, -0.040000, 0.010000, 0.380000, 0.130000, -0.130000};
 	// 20 weights for BBDEP rotamer prob
-	private static double[] i1w4 = {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0};	
+	private static final double[] i1w4 = {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0};
 	// weights for HB tally
-	private static double[] i1w5 = {0.000000, 3.680000, 0.520000, 0.290000, 2.200000, 0.000000, 1.530000, 2.900000, 3.280000, 0.370000, 2.790000, 1.480000, 3.130000, 1.560000, 0.860000, 0.390000, 0.600000, 2.560000, 2.970000, 1.040000};	
+	private static final double[] i1w5 = {0.000000, 3.680000, 0.520000, 0.290000, 2.200000, 0.000000, 1.530000, 2.900000, 3.280000, 0.370000, 2.790000, 1.480000, 3.130000, 1.560000, 0.860000, 0.390000, 0.600000, 2.560000, 2.970000, 1.040000};
 	// Weights for future use
-	private static double[] i1w6 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+	private static final double[] i1w6 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
 //	Weights for iterations 2 till infinity
 	// weights for EV
-	private static double[] i2w1 = {0.000000, 15.055300, 3.771300, 4.618000, 7.608700, 0.000000, 8.303000, 6.792700, 2.828300, 4.135000, 4.410000, 6.297000, 7.087700, 7.916000, 3.269000, 12.652300, 14.393700, 9.184300, 9.564000, 2.609700};	
+	private static final double[] i2w1 = {0.000000, 15.055300, 3.771300, 4.618000, 7.608700, 0.000000, 8.303000, 6.792700, 2.828300, 4.135000, 4.410000, 6.297000, 7.087700, 7.916000, 3.269000, 12.652300, 14.393700, 9.184300, 9.564000, 2.609700};
 	// Weights for hydrophobic like measure on all the carbons. (number of solute neighbors - indicating burial)
-	private static double[] i2w2 = {0.000000, 0.293300, 0.111000, 0.012300, 0.152000, 0.000000, 0.475000, 0.132300, 0.055700, 0.052000, 0.160000, 0.091000, 0.101700, 0.124700, 0.087300, 0.054000, 0.135700, 0.193300, 0.290000, 0.078700};	
+	private static final double[] i2w2 = {0.000000, 0.293300, 0.111000, 0.012300, 0.152000, 0.000000, 0.475000, 0.132300, 0.055700, 0.052000, 0.160000, 0.091000, 0.101700, 0.124700, 0.087300, 0.054000, 0.135700, 0.193300, 0.290000, 0.078700};
 	// Weights for hydrophilic-like measure on all the sidechain polars. (NEGATIVE number of solute neighbors - indicating exposure)
-	private static double[] i2w3 = {0.000000, 0.349700, -0.002000, 0.050300, 0.291000, 0.000000, 0.229000, 0.531300, 0.078300, 0.067000, 0.165000, -0.101000, 0.071300, 0.044700, -0.012000, 0.028000, 0.003700, 0.341000, 0.293000, -0.060700};
+	private static final double[] i2w3 = {0.000000, 0.349700, -0.002000, 0.050300, 0.291000, 0.000000, 0.229000, 0.531300, 0.078300, 0.067000, 0.165000, -0.101000, 0.071300, 0.044700, -0.012000, 0.028000, 0.003700, 0.341000, 0.293000, -0.060700};
 	// 20 weights for BBDEP rotamer prob
-	private static double[] i2w4 = {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0};	
+	private static final double[] i2w4 = {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0};
 	// weights for HB tally
-	private static double[] i2w5 = {0.000000, 1.373300, 0.840700, 0.915300, 1.776000, 0.000000, 3.249000, 3.508700, 1.879000, 0.897000, 0.140000, 1.764000, 2.732700, 0.438700, 1.326000, 0.486700, 0.632300, 3.902700, 4.603000, 0.864000};	
+	private static final double[] i2w5 = {0.000000, 1.373300, 0.840700, 0.915300, 1.776000, 0.000000, 3.249000, 3.508700, 1.879000, 0.897000, 0.140000, 1.764000, 2.732700, 0.438700, 1.326000, 0.486700, 0.632300, 3.902700, 4.603000, 0.864000};
 	// Weights for future use
-	private static double[] i2w6 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+	private static final double[] i2w6 = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
 
 	public static void main(String[] args)  {
@@ -214,6 +206,12 @@ public final class SCMOD extends MeshiProgram implements Residues,
 			System.out.println("\nDoing iteration: " + (stage+1));
 
 			// Setting the weights for this iteration
+			double[] w6;
+			double[] w5;
+			double[] w4;
+			double[] w3;
+			double[] w2;
+			double[] w1;
 			if (stage==0) {
 				w1 = i1w1;
 				w2 = i1w2;    
@@ -232,51 +230,51 @@ public final class SCMOD extends MeshiProgram implements Residues,
 			}    	
 
 			// Applying the random modification to the rotameric energies
-			for (int c=0 ; c<w4.length ; c++) {
+			for (int c = 0; c< w4.length ; c++) {
 				w4[c] += w4[c]*randomFactor;
 			}
 
 
 			// Looping on the type order
-			for (int cc=0 ; cc<resTypeModelingOrder.length ; cc++) {
+			for (int aResTypeModelingOrder : resTypeModelingOrder) {
 				// Looping on the chain from N to C termini
-				for (int c=0 ; c<pp.length ; c++) {
+				for (int c = 0; c < pp.length; c++) {
 					// Valid residue check:	It exist, It is of the type we currently model, It is not frozen
-					if ((pp[c]!=null) && (pp[c][2]==resTypeModelingOrder[cc]) && !protein.residue(c).ca().frozen()) {
+					if ((pp[c] != null) && (pp[c][2] == aResTypeModelingOrder) && !protein.residue(c).ca().frozen()) {
 						int typ = (int) pp[c][2];
 						minscore = 1e10;
 						pred = -1;
-						inactivateFarFromAtom(protein, protein.residue(c).atoms().findAtomInList("CB", c) , 6.0);
-
+						inactivateFarFromAtom(protein, protein.residue(c).atoms().findAtomInList("CB", c), 6.0);
+						
 						//*****************************************************************************    
 						// Going over the rotamers
-						for (int ind=0 ; ind<allrot[c].length ; ind++) {
+						for (int ind = 0; ind < allrot[c].length; ind++) {
 							// puting the rotamer in the protein
 							ResidueBuilder.build(protein.residue(c),
 									protein.residue(c).type,
 									allrot[c][ind]);
 							// Calculating the energies for this rotamer
 							energy.evaluate();
-							badPoints = calcVariousEnergies(c,probRot[c][ind],parametersList, solvateTerm, hbTerm, protein, distanceMatrix);
-							score = w1[typ]*badPoints[0] +
-							w2[typ]*badPoints[1] + 
-							w3[typ]*badPoints[2] +
-							w4[typ]*badPoints[3] +
-							w5[typ]*badPoints[4] +
-							w6[typ]*badPoints[5];  
-							if (score<minscore) {
+							badPoints = calcVariousEnergies(c, probRot[c][ind], parametersList, solvateTerm, hbTerm, protein, distanceMatrix);
+							score = w1[typ] * badPoints[0] +
+									w2[typ] * badPoints[1] +
+									w3[typ] * badPoints[2] +
+									w4[typ] * badPoints[3] +
+									w5[typ] * badPoints[4] +
+									w6[typ] * badPoints[5];
+							if (score < minscore) {
 								pred = ind;
 								minscore = score;
 							}
 						}  // The loop on the rotamers 
 						// END - Going over the rotamers
 						//*****************************************************************************    
-
+						
 						// Putting the prediction in the protein
-						if (pred<0)
-							throw new RuntimeException("Serious problems " + pred); 
+						if (pred < 0)
+							throw new RuntimeException("Serious problems " + pred);
 						ResidueBuilder.build(protein.residue(c), typ, allrot[c][pred]);
-
+						
 					} // This is a valid residue check
 				} // Going for the next residue.
 			} // Going for the next residue type.
@@ -285,8 +283,8 @@ public final class SCMOD extends MeshiProgram implements Residues,
 	}  // scmod
 
 
-	protected static double[] calcVariousEnergies(int resnum , double prob , SoftExcludedVolParametersList parametersList,
-			SimpleHP solvateTerm, SimpleHydrogenBondEnergy hbTerm, Protein protein, DistanceMatrix distanceMatrix) {
+	private static double[] calcVariousEnergies(int resnum, double prob, SoftExcludedVolParametersList parametersList,
+	                                            SimpleHP solvateTerm, SimpleHydrogenBondEnergy hbTerm, Protein protein, DistanceMatrix distanceMatrix) {
 		double tmpenergy;
 		SoftExcludedVolParameters parameters;
 
@@ -379,7 +377,7 @@ public final class SCMOD extends MeshiProgram implements Residues,
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -395,7 +393,7 @@ public final class SCMOD extends MeshiProgram implements Residues,
 				"Usage java -Xmx300m SCMOD <commands file name> <pdb file name> <number of iterations>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
@@ -407,7 +405,7 @@ public final class SCMOD extends MeshiProgram implements Residues,
 
 		String iterString = getOrderedArgument(args);
 		if (iterString== null) throw new RuntimeException(errorMessage);
-		Niter = (new Integer(iterString)).intValue();
+		Niter = new Integer(iterString);
 		System.out.println("# Number of iterations "+ Niter);
 
 

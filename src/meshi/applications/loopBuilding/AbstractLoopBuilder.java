@@ -38,60 +38,57 @@ public abstract class AbstractLoopBuilder implements Residues,AtomTypes,Composit
 KeyWords { 
 
 //	User defined hard-coded parameters:
-	protected final int extensionThreading = 9 /*3*/; // must be LARGER than overlap
-	protected final int overlapStalk = 2; 
-	protected final int overlapFree = 1; 
-	protected final double DEFROST_DIST = 8.0; // All residues whose Cb is closer than this to the loop, will be subjected to side-chain modeling.	
-
-	protected final double infiniteEnergy = 1e9; 	
-	protected int maxNumberOfLoopGenerated = -999; // The maximal number of coarse loop to be generated. Once this number is reached, farther conformational search ends.
-	protected int maxNumberOfLoopToPrint = -999;  // Number of Coarse loops to write to disk.
-	protected int takeForSCMOD = -999; // How many coarse models will be chosen for further SCMOD analysis
-	protected Corpus corpus = null;
-	protected double similarityMatchCO = -999;
-	protected int gapLength = -1;  // As the name implies
-	protected int resStart = -1; // [resStart,resEnd] are MISSING in the protein
-	protected int resEnd = -1; // [resStart,resEnd] are MISSING in the protein
-	protected Protein prot=null; // This is the instance that is modeled
-	protected Protein ref=null;  // If this is available, than RMS can be calculated
-	protected AtomList protCopy = null; // A copy of the original positions of the 
-	protected DunbrackLib rotLib = null;
-	protected String writePath = "";
-	protected double[] energies = null;
-	protected double[][] refCoors = null;  // The coordinates of the N,Ca,C loop atoms in the native reference (if available)
-	protected double[][] pp = null;   // The {Phi,Psi} of all the residues in the protein
-	protected DecimalFormat fmt2 = new DecimalFormat("0.###");
-	protected int[] seq;     // Sequence of the missing residues in the loop
-	protected boolean prepro[] = null;  // True means the residue is pre-proline
+	final int extensionThreading = 9 /*3*/; // must be LARGER than overlap
+	final int overlapStalk = 2;
+	final int overlapFree = 1;
+	
+	final double infiniteEnergy = 1e9;
+	int maxNumberOfLoopGenerated = -999; // The maximal number of coarse loop to be generated. Once this number is reached, farther conformational search ends.
+	private int maxNumberOfLoopToPrint = -999;  // Number of Coarse loops to write to disk.
+	Corpus corpus = null;
+	double similarityMatchCO = -999;
+	int gapLength = -1;  // As the name implies
+	int resStart = -1; // [resStart,resEnd] are MISSING in the protein
+	int resEnd = -1; // [resStart,resEnd] are MISSING in the protein
+	Protein prot=null; // This is the instance that is modeled
+	Protein ref=null;  // If this is available, than RMS can be calculated
+	AtomList protCopy = null; // A copy of the original positions of the
+	private DunbrackLib rotLib = null;
+	String writePath = "";
+	private double[][] refCoors = null;  // The coordinates of the N,Ca,C loop atoms in the native reference (if available)
+	double[][] pp = null;   // The {Phi,Psi} of all the residues in the protein
+	final DecimalFormat fmt2 = new DecimalFormat("0.###");
+	int[] seq;     // Sequence of the missing residues in the loop
+	boolean[] prepro = null;  // True means the residue is pre-proline
 
 
 //	Energy related fields
-	protected CommandList commands;
-	protected TotalEnergy energy = null;
-	protected SoftExcludedVol energyTermEVloopFinal = null;
-	protected SoftExcludedVol energyTermEVloopAssembly = null;
+final CommandList commands;
+	TotalEnergy energy = null;
+	SoftExcludedVol energyTermEVloopFinal = null;
+	private SoftExcludedVol energyTermEVloopAssembly = null;
 	protected CompositePropensity2DEnergy energyTermProp = null;
-	protected SimpleHydrogenBondEnergy energyTermHB = null;
+	SimpleHydrogenBondEnergy energyTermHB = null;
 	private Vector<LocalEVdata> evData_interLoop;
 	private Vector<LocalEVdata> evData_extLoop;
 	private Vector<LocalEVdata> touchData_extLoop;
 
 
 //	The object that stores all the loops built so far, and the total number of coarse loops generated.
-	protected BasicLoopResultVector allResults = null;
+BasicLoopResultVector allResults = null;
 	int numberOfCoarseGenerated = 0;
-	protected boolean loopCompleted = false;
-	protected boolean gotEnoughCoarseModels = false;
+	private boolean loopCompleted = false;
+	boolean gotEnoughCoarseModels = false;
 
 //	Libraries, and their limits. See the first lines in the 'buildLibraries' methods
-	protected LocalFragmentLib[] libs = null;
-	protected int[] libStarts = null;  // The indices in the loop (first missing res is 0) where the frags (not overlaps) of each lib strat.
-	protected int[] libEnds = null;    // The same as above, but where they end
-	protected int[] libManners = null;  // The manner of each lib. (-1) - overlapping in the N terminus. (1) - overlapping in the C terminus.
-	protected int[] fragRank = null;   // When a loop is closed, 'fragRank' gives the indices in the libraries of the composing loop fragments.
-	protected int[] actuallyTaken = null;  // How deep in the library has the search gone. 
-	protected int[] startResForClosingPotential = null; // For each lib, this and the next array can be used as the parameters for the term 'temporaryDistEnergy'
-	protected int[] endResForClosingPotential = null;
+LocalFragmentLib[] libs = null;
+	int[] libStarts = null;  // The indices in the loop (first missing res is 0) where the frags (not overlaps) of each lib strat.
+	int[] libEnds = null;    // The same as above, but where they end
+	int[] libManners = null;  // The manner of each lib. (-1) - overlapping in the N terminus. (1) - overlapping in the C terminus.
+	int[] fragRank = null;   // When a loop is closed, 'fragRank' gives the indices in the libraries of the composing loop fragments.
+	int[] actuallyTaken = null;  // How deep in the library has the search gone.
+	int[] startResForClosingPotential = null; // For each lib, this and the next array can be used as the parameters for the term 'temporaryDistEnergy'
+	int[] endResForClosingPotential = null;
 	
 //	Auxiliary variables for the structural alignment
 	protected double[][] forAlign1=null;
@@ -107,9 +104,9 @@ KeyWords {
 	 * @param resEnd -   " " " " " " " " " " " " " " " " " " " " " " 
 	 * @param similarityMatchCO - When choosing a fragment, its overlap should be better then this value with the existing scaffold.
 	 */
-
-	public AbstractLoopBuilder(CommandList commands, String writePath, Corpus corpus, Protein prot, Protein ref, 
-			int resStart, int resEnd, double similarityMatchCO) {  
+	
+	AbstractLoopBuilder(CommandList commands, String writePath, Corpus corpus, Protein prot, Protein ref,
+	                    int resStart, int resEnd, double similarityMatchCO) {
 		this.commands = commands;
 		this.writePath = writePath;
 		this.resStart = resStart;
@@ -213,7 +210,7 @@ KeyWords {
 	 * ----------------------------------------------
 	 */
 	public void runSCMOD(int takeForSCMOD, double EV_CUTOFF) {
-		this.takeForSCMOD = takeForSCMOD;
+		int takeForSCMOD1 = takeForSCMOD;
 		if (takeForSCMOD>maxNumberOfLoopToPrint) {
 			throw new RuntimeException("You asked for more SCMOD models than are saved (as defined in the toPrint)");
 		}
@@ -230,8 +227,8 @@ KeyWords {
 
 		// Second: Sorting the scores
 		double largeEnergyAddition = 100000;
-		energies = new double[allResults.size()];
-		for (int c=0; c<energies.length ; c++)
+		double[] energies = new double[allResults.size()];
+		for (int c = 0; c< energies.length ; c++)
 			if (allResults.get(c).evEnergy>medianEV)
 				energies[c] = allResults.get(c).score + largeEnergyAddition; 
 			else
@@ -254,6 +251,7 @@ KeyWords {
 
 			// Defrosting only close residues
 			prot.freeze();
+			double DEFROST_DIST = 8.0;
 			defrostCloseResidues(DEFROST_DIST);
 
 			//"SCMODing"
@@ -299,12 +297,12 @@ private void defrostCloseResidues(double defrost_dist) {
 
 
 //Returns the global RMS between the current loop conformation and native 
-protected double calcRMS(int start, int end) {
+double calcRMS(int start, int end) {
 	double totRms = 0.0;
 	int counter = 0;
 	for (int c=start; c<=end ; c++) {
 		Atom atom = prot.residue(c).atoms().findAtomInList("N",c);
-		totRms += (atom.x() - refCoors[0][3*(c-resStart)+0])*
+		totRms += (atom.x() - refCoors[0][3 * (c - resStart)])*
 		(atom.x() - refCoors[0][counter]) +
 		(atom.y() - refCoors[1][counter])*
 		(atom.y() - refCoors[1][counter]) + 
@@ -332,7 +330,7 @@ protected double calcRMS(int start, int end) {
 }
 
 //Storing the reference loop atom coordinates in a local array 
-protected void updateRefCoors() {
+private void updateRefCoors() {
 	refCoors = new double[3][gapLength*3];
 	Atom atom;
 	int counter = 0;
@@ -372,7 +370,7 @@ protected double[][] saveLoopCoordinatesCaCb() {
 	return savedLoopCoordinates;
 }
 
-protected double[][] saveLoopCoordinatesHeavyBackbone() {
+double[][] saveLoopCoordinatesHeavyBackbone() {
 	double[][] savedLoopCoordinates = new double[3][gapLength*5];
 	Atom atom;
 	int counter=0;
@@ -390,7 +388,7 @@ protected double[][] saveLoopCoordinatesHeavyBackbone() {
 }
 
 
-protected double[][] saveLoopCoordinatesNCaC() {
+double[][] saveLoopCoordinatesNCaC() {
 	double[][] savedLoopCoordinates = new double[3][gapLength*3];
 	Atom atom;
 	int counter = 0;
@@ -414,7 +412,7 @@ protected double[][] saveLoopCoordinatesNCaC() {
 	return savedLoopCoordinates;
 }
 
-protected double[][] saveLoopCoordinates() {
+double[][] saveLoopCoordinates() {
 	double[][] savedLoopCoordinates = new double[3][gapLength*15];
 	Atom atom;
 	int counter=0;
@@ -429,7 +427,7 @@ protected double[][] saveLoopCoordinates() {
 	return savedLoopCoordinates;
 }
 
-protected void restoreLoopCoordinates(double[][] savedLoopCoordinates) {
+void restoreLoopCoordinates(double[][] savedLoopCoordinates) {
 	Atom atom;
 	int counter=0;
 	for (int c=resStart ; c<=resEnd ; c++) 
@@ -443,7 +441,7 @@ protected void restoreLoopCoordinates(double[][] savedLoopCoordinates) {
 
 //This method translates the initial positions of the loop atoms away so they don't interact with the protein at all.
 //Non-interaction is achieved by having no EV energy on the loop. The 12.0 Angs is just a thumb figure.
-protected void putInitialLoopFar() {
+private void putInitialLoopFar() {
 	if (ref != null)
 		System.out.println("The initial RMS: " + calcRMS(resStart, resEnd) );
 	do {
@@ -462,7 +460,7 @@ protected void putInitialLoopFar() {
 }
 
 //Update the sequence array, and find which residues are pre-proline
-protected void updateSeqAndPrePRO() {
+void updateSeqAndPrePRO() {
 	seq = Protein.getSeqOfProt(prot,resStart,resEnd);
 
 	// Finding pre-Prolines in the sequence
@@ -472,7 +470,7 @@ protected void updateSeqAndPrePRO() {
 		prepro[c] = (tmpSEQ[c + 1] == PRO) && (tmpSEQ[c] != GLY) && (tmpSEQ[c] != PRO);
 }
 
-protected void updatePhiPsi(int indInCorpus, int Rstart, int Rend) {
+private void updatePhiPsi(int indInCorpus, int Rstart, int Rend) {
 	for (int res=Rstart ; res<=Rend ; res++) {
 		pp[res][0] = corpus.torsions[indInCorpus+res-Rstart][1]; // Transfering Phi
 		pp[res][1] = corpus.torsions[indInCorpus+res-Rstart][2]; // Transfering Psi
@@ -490,7 +488,7 @@ protected void updatePhiPsi(int indInCorpus, int Rstart, int Rend) {
 }
 
 
-protected double[][] savePhiPsiOfLoop() {
+double[][] savePhiPsiOfLoop() {
 	double[][] results = new double[gapLength][2];
 	for (int c=0 ; c<gapLength ; c++) {
 		results[c][0] = pp[resStart+c][0];
@@ -511,7 +509,7 @@ private void restorePhiPsiOfLoop(double[][] ppArray) {
  * 'breakStart' is the residue number of the last residue before the break.
  * 'breakEnd' is the residue number of the first residue after the break.
  */
-protected double temporaryDistEnergy(int breakStart, int breakEnd) {
+double temporaryDistEnergy(int breakStart, int breakEnd) {
 	double[][] data = 
 	{{    0.0000,   5.9000,   6.0000,   6.1000,   6.1500},
 			{    1.0000,   5.9000,   6.0000,   6.1000,   6.1500},
@@ -557,15 +555,15 @@ protected double temporaryDistEnergy(int breakStart, int breakEnd) {
  * 
  * @param libCounter - see above.
  */
-protected void addFromLib(int libCounter) {
+void addFromLib(int libCounter) {
 	if (libCounter==0) {  // On the begining of the recursion
 		loopCompleted = false;
 	}
 	double[][] tmpCoor = saveLoopCoordinates();
 	int taken = 0;
 	int libFragToChoose = 0;
-	for (int c=0 ; !loopCompleted && continueSearch(libCounter,taken,c) ; c++ ) {
-		libFragToChoose = chooseFrag(libCounter,c);
+	for (int c = 0; !loopCompleted && continueSearch(libCounter, c) ; c++ ) {
+		libFragToChoose = chooseFrag(libCounter);
 		if (libManners[libCounter]==-1) { // From N
 			if (libs[libCounter].isFragCompatible(libFragToChoose,resStart+libStarts[libCounter]-libs[libCounter].overlap(),libs[libCounter].overlap(),-1,similarityMatchCO)) {
 				libs[libCounter].insertFragToProt(rotLib, libFragToChoose, prot, resStart+libStarts[libCounter]-libs[libCounter].overlap(), libs[libCounter].overlap(), -1);
@@ -612,10 +610,9 @@ protected void addFromLib(int libCounter) {
 		}
 	}
 	restoreLoopCoordinates(tmpCoor);
-	return;
 }
 
-protected void resetTotalEnergy() {
+private void resetTotalEnergy() {
 	// For the sake of calculating HB fast, only the loop is activated.
 	for (int c=0; c<prot.atoms().size() ; c++)
 		if ((prot.atoms().atomAt(c).residueNumber()>=resStart) && 
@@ -642,23 +639,22 @@ protected void resetTotalEnergy() {
 	setUpLocalEV();
 }
 
-protected EnergyCreator[] getEnergyCreatorArray() {
-	EnergyCreator[] energyCreators = {new  SoftExcludedVolCreator(1.0 , 9 , 1.0),
+private EnergyCreator[] getEnergyCreatorArray() {
+	return new EnergyCreator[]{new SoftExcludedVolCreator(1.0 , 9 , 1.0),
 			new  SoftExcludedVolCreator(1.0 , 10 , 1.0),
 			new SimpleHydrogenBond_Dahiyat_LowAccuracy_BBonly_Creator(1.0)};
-	return energyCreators;
 }
 
 
-protected double evaluateEVextLoop() {
+double evaluateEVextLoop() {
 	return evaluateEV(evData_extLoop);
 }
 
-protected double evaluateEVinterLoop() {
+double evaluateEVinterLoop() {
 	return evaluateEV(evData_interLoop);
 }
 
-protected double evaluateTouchLoop() {
+double evaluateTouchLoop() {
 	return evaluateTouch(touchData_extLoop);
 }
 
@@ -705,7 +701,7 @@ private void setUpLocalEV() {
 	// Calculating the Inter-loop data
 	Atom atom1,atom2;
 	double rLJ;
-	evData_interLoop = new Vector<LocalEVdata>();
+	evData_interLoop = new Vector<>();
 	for (int c1=0 ; c1<prot.atoms().size() ; c1++)
 		for (int c2=c1+1 ; c2<prot.atoms().size() ; c2++) {
 			atom1 = prot.atoms().atomAt(c1);
@@ -719,7 +715,7 @@ private void setUpLocalEV() {
 			}
 		}
 	// Calculating the ext-loop data
-	evData_extLoop = new Vector<LocalEVdata>();
+	evData_extLoop = new Vector<>();
 	for (int c1=0 ; c1<prot.atoms().size() ; c1++)
 		for (int c2=c1+1 ; c2<prot.atoms().size() ; c2++) {
 			atom1 = prot.atoms().atomAt(c1);
@@ -734,7 +730,7 @@ private void setUpLocalEV() {
 			}
 		}	
 	// Calculating the data for touches of the loop with the outer loop
-	touchData_extLoop = new Vector<LocalEVdata>();
+	touchData_extLoop = new Vector<>();
 	for (int c1=0 ; c1<prot.atoms().size() ; c1++)
 		for (int c2=c1+1 ; c2<prot.atoms().size() ; c2++) {
 			atom1 = prot.atoms().atomAt(c1);
@@ -749,11 +745,11 @@ private void setUpLocalEV() {
 
 }
 
-protected boolean atomInLoop(Atom atom) {
+private boolean atomInLoop(Atom atom) {
 	return ((atom.residueNumber()>=resStart) && (atom.residueNumber()<=resEnd));
 }
 
-protected boolean inBondedList(Atom atom1 , Atom atom2) {
+private boolean inBondedList(Atom atom1, Atom atom2) {
 	return energy.distanceMatrix().bondedList().contains(new Distance(atom1,atom2));
 }
 
@@ -784,8 +780,7 @@ public static int[] findTopMinArray(double[] ar, int N, double maximalVal) {
 		return result;
 	else {
 		int[] shorterResults = new int[n];
-		for (int nn=0; nn<n; nn++)
-			shorterResults[nn] = result[nn];
+		System.arraycopy(result, 0, shorterResults, 0, n);
 		return shorterResults;
 	}
 }
@@ -806,17 +801,16 @@ protected abstract int giveFragLength();
 /**
  * This method is called from addToLib. It should decide whether to continue the search from this lib.
  * @param libCounter - The current local lib being searched
- * @param taken - how many were already analyzed from this lib.
  * @param c - the local counter in the call of addToLib
  */
-protected abstract boolean continueSearch(int libCounter, int taken, int c);
+protected abstract boolean continueSearch(int libCounter, int c);
 
 /**
  * This method chose a fragment from the local frag library to be tested in the loop.
  * @param libCounter - The current local lib being searched
- * @param c - the local counter in the call of addToLib
+ *
  */
-protected abstract int chooseFrag(int libCounter, int c);
+protected abstract int chooseFrag(int libCounter);
 
 /**
  * This method decides if we can recursively continue, after the last fragment was inserted.
@@ -838,10 +832,10 @@ protected abstract void analyzedCloseLoop();
 
 // This class is for the local EV evaluation
 private class LocalEVdata {
-	protected Atom atom1;
-	protected Atom atom2;
-	protected double rLJ;
-	protected double rLJsquared;
+	final Atom atom1;
+	final Atom atom2;
+	final double rLJ;
+	final double rLJsquared;
 	
 	public LocalEVdata(Atom atom1, Atom atom2, double rLJ) {
 		this.atom1 = atom1;

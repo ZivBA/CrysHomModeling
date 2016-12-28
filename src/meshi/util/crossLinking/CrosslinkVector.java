@@ -16,12 +16,12 @@ public abstract class CrosslinkVector extends Vector<Crosslink> {
 	/**
 	 * An empty Crosslining vector, with 'null' 'creatingFile'.
 	 */
-	public CrosslinkVector() {}
+	CrosslinkVector() {}
 	
 	/**
 	 * Building an vector of XL objects from the Abersold lab excel file (fileType=0), or from the Kalisman lab excel file (fileType=1).
 	 */
-	public CrosslinkVector(String filename , int fileType) {
+	CrosslinkVector(String filename, int fileType) {
 		this.creatingFile = filename;
 		String[] lines = File2StringArray.f2a(filename);
 		for (String lineStr : lines) {
@@ -40,7 +40,7 @@ public abstract class CrosslinkVector extends Vector<Crosslink> {
 	}
 	
 	
-	public String creatingFile() {
+	private String creatingFile() {
 		return creatingFile;
 	}
 	
@@ -80,7 +80,7 @@ public abstract class CrosslinkVector extends Vector<Crosslink> {
 	/**
 	 * this method will filter out redundancies of equal positions (not peptides). 
 	 */
-	public CrosslinkVector filterOutRedundancies() {
+	CrosslinkVector filterOutRedundancies() {
 		CrosslinkVector newVec = createEmptyVector();
 		for (Crosslink xl : this) {
 			if (newVec.find(xl.protName1(), xl.absPos1(), xl.protName2(), xl.absPos2()) == null) {
@@ -110,7 +110,7 @@ public abstract class CrosslinkVector extends Vector<Crosslink> {
 	/**
 	 * Will return only cross-links within the same protein, or between homo-dimers. 
 	 */
-	public CrosslinkVector filterOutInterUnit() {
+	CrosslinkVector filterOutInterUnit() {
 		CrosslinkVector newVec = createEmptyVector();
 		for (Crosslink xl : this) {
 			if (xl.protName1().equals(xl.protName2())) {
@@ -151,7 +151,7 @@ public abstract class CrosslinkVector extends Vector<Crosslink> {
 	/**
 	 * Will return only cross-links where at least one of the residues is of protein that starts with a letter in the string.
 	 **/
-	public CrosslinkVector filterProteinsInSet(String proteinNames) {
+	CrosslinkVector filterProteinsInSet(String proteinNames) {
 		CrosslinkVector newVec = createEmptyVector();
 		for (Crosslink xl : this) {
 			if ( (proteinNames.indexOf(xl.protName1().charAt(0)) != -1) | (proteinNames.indexOf(xl.protName2().charAt(0)) != -1)) {
@@ -165,7 +165,7 @@ public abstract class CrosslinkVector extends Vector<Crosslink> {
 	/**
 	 * Will remove cross-links where at least one of the residues is of protein that starts with a letter in the string.
 	 **/
-	public CrosslinkVector filterOutProteinsInSet(String proteinNames) {
+	CrosslinkVector filterOutProteinsInSet(String proteinNames) {
 		CrosslinkVector newVec = createEmptyVector();
 		for (Crosslink xl : this) {
 			if ( (proteinNames.indexOf(xl.protName1().charAt(0)) == -1) & (proteinNames.indexOf(xl.protName2().charAt(0)) == -1)) {
@@ -190,7 +190,7 @@ public abstract class CrosslinkVector extends Vector<Crosslink> {
 
 	
 	
-	public boolean isResidueCrossLinked(String protName, int resNum) {
+	private boolean isResidueCrossLinked(String protName, int resNum) {
 		for (Crosslink xl : this) {
 			if (xl.protName1().equals(protName) && 
 					(xl.absPos1()==resNum)) {
@@ -321,7 +321,7 @@ public abstract class CrosslinkVector extends Vector<Crosslink> {
 	 * This will return a string with the distances of the cross-links on the model. If a cross-linked residue is missing the nearest residue
 	 * up to 'missingResTol' will be assigned. If any of the cross-linked residues are not in the model, NA will be printed. 
 	 */
-	public String printDistancesOnStructure(AtomList modelFull, int missingResTol) {
+	String printDistancesOnStructure(AtomList modelFull, int missingResTol) {
 		AtomList model = modelFull.CAFilter();
 		String outString = "";
 		for (Crosslink xl : this) {
@@ -455,7 +455,7 @@ public abstract class CrosslinkVector extends Vector<Crosslink> {
 	}
 	
 	
-	public boolean twoAtomsConsistent(Atom a1, Atom a2) {
+	private boolean twoAtomsConsistent(Atom a1, Atom a2) {
 		return a1.distanceFrom(a2) < violationCutoff;
 	}
 	
@@ -583,7 +583,7 @@ public abstract class CrosslinkVector extends Vector<Crosslink> {
 	 * Returns the first crosslink from the Vec with the properties in the parameters. If none is found, 
 	 * returns null.
 	 */
-	public Crosslink find(String prot1, int pos1, String prot2, int pos2) {
+	Crosslink find(String prot1, int pos1, String prot2, int pos2) {
 		for (Crosslink xl : this) {
 			if ((xl.absPos1()==pos1) && (xl.absPos2()==pos2) && xl.protName1().equals(prot1) 
 					&& xl.protName2().equals(prot2)) {

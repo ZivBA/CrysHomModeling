@@ -8,14 +8,17 @@ import meshi.molecularElements.AtomList;
 
 //---------------------------------------------------------------------
 public class PlaneEnergyElement extends EnergyElement {
-    public final double BETA = 0.05;
-    protected Atom atom1, atom2, atom3, atom4;
-    protected double force, force2;
-    protected int trans;
-    protected Torsion torsion;
-    double weight;
-    public PlaneEnergyElement(Torsion torsion, Parameters parameters, double weight) {
-	this.weight = weight;
+	private final Atom atom1;
+	private final Atom atom2;
+	private final Atom atom3;
+	private final Atom atom4;
+    private final double force;
+	private final double force2;
+    private final int trans;
+    private final Torsion torsion;
+	
+	public PlaneEnergyElement(Torsion torsion, Parameters parameters, double weight) {
+		double weight1 = weight;
 	atom1 = torsion.atom1;
 	atom2 = torsion.atom2;
 	atom3 = torsion.atom3;
@@ -27,7 +30,7 @@ public class PlaneEnergyElement extends EnergyElement {
 	force = ((PlaneParameters) parameters).force*weight;
 	force2 = ((PlaneParameters) parameters).force2*weight;	    
     }
-    public void setAtoms() {
+    protected void setAtoms() {
 	atoms = new AtomList();
 	atoms.add(atom1);
 	atoms.add(atom2);
@@ -50,17 +53,18 @@ public class PlaneEnergyElement extends EnergyElement {
 	if (frozen()) return 0;
 	cosTorsion = torsion.cosTorsion();
 	//System.out.println("xxxxxxx "+torsion+" "+cosTorsion);
-	if (trans == PlaneParameters.TRANS) {
+	    double BETA = 0.05;
+	    if (trans == PlaneParameters.TRANS) {
 	    ctpo = cosTorsion + 1; // Cos Torsion Plus One
 	    ctpo2 = ctpo*ctpo;
-	    invCtpo2pb = 1/(ctpo2+BETA); 
+	    invCtpo2pb = 1/(ctpo2+ BETA);
 	    energy = force * (ctpo2 + ctpo2*invCtpo2pb);
 	    dEdCosTorsion = force2*ctpo*(1 + invCtpo2pb - ctpo2*invCtpo2pb*invCtpo2pb);
 	}
 	else if (trans == PlaneParameters.CIS) {
 	    omct = 1 - cosTorsion; // One Minus Cos Torsion
 	    omct2 = omct*omct;
-	    invOmct2pb = 1/(omct2+BETA); 
+	    invOmct2pb = 1/(omct2+ BETA);
 	    energy = force * (omct2 + omct2*invOmct2pb);
 	    dEdCosTorsion = -1*force2*omct*(1 + invOmct2pb - omct2*invOmct2pb*invOmct2pb);
 	}
@@ -97,6 +101,6 @@ public class PlaneEnergyElement extends EnergyElement {
 	return ("PlaneEnergyElement "+torsion.name()+" "+conf+" "+prop+"\n"+
 		"force = "+dFormatSrt.f(force)+" torsion = "+
 		dFormatSrt.f(Angle.rad2deg(torsion.torsion()))+" energy = "+dFormatSrt.f(evaluate())+"\n"+
-		atom1.verbose(1)+"\n"+atom2.verbose(1)+"\n"+atom3.verbose(1)+"\n"+atom4.verbose(1));
+		atom1.verbose()+"\n"+atom2.verbose()+"\n"+atom3.verbose()+"\n"+atom4.verbose());
     }
 }	

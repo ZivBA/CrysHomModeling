@@ -6,7 +6,7 @@ import meshi.util.filters.Filter;
 import java.util.StringTokenizer;
 
 public class MeshiLogLineFilter implements Filter, KeyWords {
-    public static StringTokenizer acceptLine(String line) {
+    static StringTokenizer acceptLine(String line) {
 	StringTokenizer tokenizer = new StringTokenizer(line);
 	if (! tokenizer.hasMoreTokens()) return null;
 	String token = tokenizer.nextToken();

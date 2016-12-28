@@ -7,13 +7,13 @@ package meshi.sequences;
     public final Object obj;
     public final String comment;
 
-    public AlignmentCell(Object obj, int number) {
+    AlignmentCell(Object obj, int number) {
 	this.number = number;
 	this.obj = obj;
 	this.comment = "UNKNOWN";
     }
     
-    public AlignmentCell(Object obj, int number, String comment) {
+    AlignmentCell(Object obj, int number, String comment) {
 	this.number = number;
 	this.obj = obj;
 	this.comment = comment;

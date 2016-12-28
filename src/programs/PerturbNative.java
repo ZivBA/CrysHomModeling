@@ -43,22 +43,17 @@ import meshi.util.rotamericTools.RotamericTools;
  *
  **/
 
-public class PerturbNative extends MeshiProgram implements Residues, AtomTypes {
+class PerturbNative extends MeshiProgram implements Residues, AtomTypes {
 
 	private static CommandList commands;
-	private static String commandsFileName = null;
-	private static String modelsFileName = null;  
-	private static String refFileName = null;  
-	private static double Wpol = 0.0;  
-	private static double Wev = 3.0;  
+	private static String modelsFileName = null;
+	private static String refFileName = null;
+	private static double Wev = 3.0;
 	private static double Wsolv = 0.5;  
-	private static double Whb = 1.0;  
-	private static double Wprop = 1.0;  
-	private static double Wramach = 0.1;  
-	private static double frac = 1.0;  
-	private static double Wtether = 1.0;  
-
-
+	private static double Whb = 1.0;
+	private static double Wramach = 0.1;
+	
+	
 	public static void main(String[] args) throws MinimizerException, LineSearchException {
 		init(args); 
 		Protein reference = null;
@@ -112,58 +107,56 @@ public class PerturbNative extends MeshiProgram implements Residues, AtomTypes {
 			System.out.println("Trying to minimize: " + models[i]);
 			//AtomList tmpList = getMatchingAtoms(reference,	new AtomList(models[i]));
 			//if (tmpList!=null) {
-			if (true) {
-				//model = new Protein(tmpList, new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
-				model = new Protein(new AtomList(models[i]), new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
-				for (int cc=0 ; cc<model.atoms().size() ; cc++)
-					model.atoms().atomAt(cc).setChain("A");
-				model.defrost();
+			//model = new Protein(tmpList, new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
+			model = new Protein(new AtomList(models[i]), new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
+			for (int cc=0 ; cc<model.atoms().size() ; cc++)
+				model.atoms().atomAt(cc).setChain("A");
+			model.defrost();
+			
+			// Energy and RMS - Before minimization
+			System.out.println("999999 " + i + " 0000 " + models[i]);
+			System.out.println("999999 " + i + " 1111 " + reference.atoms().CAFilter().getRms(getMatchingAtoms(reference,model.atoms()).CAFilter()) +
+					" " + GDTcalculator.gdt(reference.atoms(), model.atoms(), 0.5, 1.0, 2.0, 4.0) +
+					" " + GDTcalculator.gdt(reference.atoms(), model.atoms(), 1.0, 2.0, 4.0, 8.0) + " " +
+					0.0); //reference.atoms().noOXTFilter().filter(new AtomList.NonHydrogen()).getRms(model.atoms().noOXTFilter().filter(new AtomList.NonHydrogen())));
+			distanceMatrix = new DistanceMatrix(model.atoms(), 5.5, 2.0, 4);
+			energy = new TotalEnergy(model, distanceMatrix, energyCreators2, commands);
+			//energy = new TotalEnergyTorsionSpace(model, distanceMatrix, energyCreators2, commands);
+			energy.evaluate();
+			solvTerm = (SolvateEnergy) energy.getEnergyTerm(new SolvateEnergy());
+			System.out.println("999999 " + i + " 2222 " + energy.report(2) + " " +
+					solvTerm.evaluate(false,1.0,0.0,0.0,0.0) + " " + solvTerm.evaluate(false,0.0,1.0,0.0,0.0) + " " + solvTerm.evaluate(false,0.0,0.0,1.0,0.0) + " " + solvTerm.evaluate(false,0.0,0.0,0.0,1.0));
+			
+			minimizer = new LBFGS(energy, 0.1, 100000, 100);
+			try {
+			System.out.println(minimizer.minimize());
+			}
+			catch (Exception e) {
+				System.out.print("\nThere was a problem in minimizing.\n" + e + "\n\nContinueing...\n\n");
+			}
+/*				System.out.println("999999 " + i + " 5555 " + reference.atoms().CAFilter().getRms(getMatchingAtoms(reference,model.atoms()).CAFilter()) +
+						" " + GDTcalculator.gdt(reference.atoms(),model.atoms(),0.5,1.0,2.0,4.0) +
+						" " + GDTcalculator.gdt(reference.atoms(),model.atoms(),1.0,2.0,4.0,8.0) + " " +
+						0.0); //reference.atoms().noOXTFilter().filter(new AtomList.NonHydrogen()).getRms(model.atoms().noOXTFilter().filter(new AtomList.NonHydrogen())));
 
-				// Energy and RMS - Before minimization
-				System.out.println("999999 " + i + " 0000 " + models[i]);
-				System.out.println("999999 " + i + " 1111 " + reference.atoms().CAFilter().getRms(getMatchingAtoms(reference,model.atoms()).CAFilter()) + 
-						" " + GDTcalculator.gdt(reference.atoms(), model.atoms(), 0.5, 1.0, 2.0, 4.0) +
-						" " + GDTcalculator.gdt(reference.atoms(), model.atoms(), 1.0, 2.0, 4.0, 8.0) + " " +
-						0.0); //reference.atoms().noOXTFilter().filter(new AtomList.NonHydrogen()).getRms(model.atoms().noOXTFilter().filter(new AtomList.NonHydrogen())));				
-				distanceMatrix = new DistanceMatrix(model.atoms(), 5.5, 2.0, 4);
-				energy = new TotalEnergy(model, distanceMatrix, energyCreators2, commands);
-				//energy = new TotalEnergyTorsionSpace(model, distanceMatrix, energyCreators2, commands);
-				energy.evaluate();
-				solvTerm = (SolvateEnergy) energy.getEnergyTerm(new SolvateEnergy());
-				System.out.println("999999 " + i + " 2222 " + energy.report(2) + " " + 
-						solvTerm.evaluate(false,1.0,0.0,0.0,0.0) + " " + solvTerm.evaluate(false,0.0,1.0,0.0,0.0) + " " + solvTerm.evaluate(false,0.0,0.0,1.0,0.0) + " " + solvTerm.evaluate(false,0.0,0.0,0.0,1.0));					
-
-				minimizer = new LBFGS(energy, 0.1, 100000, 100);
-				try {
-				System.out.println(minimizer.minimize());
-				}
-				catch (Exception e) {
-					System.out.print("\nThere was a problem in minimizing.\n" + e + "\n\nContinueing...\n\n");
-				}
-/*				System.out.println("999999 " + i + " 5555 " + reference.atoms().CAFilter().getRms(getMatchingAtoms(reference,model.atoms()).CAFilter()) + 
-						" " + GDTcalculator.gdt(reference.atoms(),model.atoms(),0.5,1.0,2.0,4.0) +	 
-						" " + GDTcalculator.gdt(reference.atoms(),model.atoms(),1.0,2.0,4.0,8.0) + " " +	
-						0.0); //reference.atoms().noOXTFilter().filter(new AtomList.NonHydrogen()).getRms(model.atoms().noOXTFilter().filter(new AtomList.NonHydrogen())));				
-
-				System.out.println("999999 " + i + " 6666 " + energy.report(2) + " " + 
+				System.out.println("999999 " + i + " 6666 " + energy.report(2) + " " +
 						solvTerm.evaluate(false,1.0,0.0,0.0,0.0) + " " + solvTerm.evaluate(false,0.0,1.0,0.0,0.0) + " " + solvTerm.evaluate(false,0.0,0.0,1.0,0.0) + " " + solvTerm.evaluate(false,0.0,0.0,0.0,1.0));
 				
-				//energy.getEnergyTerm(new TetherEnergy()).off();				
+				//energy.getEnergyTerm(new TetherEnergy()).off();
 				minimizer = new LBFGS(energy, 0.001, 30000, 100);
 				System.out.println(minimizer.minimize());
-*/				
-				System.out.println("999999 " + i + " 3333 " + reference.atoms().CAFilter().getRms(getMatchingAtoms(reference,model.atoms()).CAFilter()) + 
-						" " + GDTcalculator.gdt(reference.atoms(), model.atoms(), 0.5, 1.0, 2.0, 4.0) +
-						" " + GDTcalculator.gdt(reference.atoms(), model.atoms(), 1.0, 2.0, 4.0, 8.0) + " " +
-						0.0); //reference.atoms().noOXTFilter().filter(new AtomList.NonHydrogen()).getRms(model.atoms().noOXTFilter().filter(new AtomList.NonHydrogen())));				
-				System.out.println("999999 " + i + " 4444 " + energy.report(2) + " " + 
-						solvTerm.evaluate(false,1.0,0.0,0.0,0.0) + " " + solvTerm.evaluate(false,0.0,1.0,0.0,0.0) + " " + solvTerm.evaluate(false,0.0,0.0,1.0,0.0) + " " + solvTerm.evaluate(false,0.0,0.0,0.0,1.0));
-				try {
-					model.atoms().print(new MeshiWriter(models[i]+".min.pdb"));
-				}
-				catch (Exception e) {
-					System.out.print("\nThere was a problem writing the output:\n" + e + "\n\nContinueing...\n\n");
-				}
+*/
+			System.out.println("999999 " + i + " 3333 " + reference.atoms().CAFilter().getRms(getMatchingAtoms(reference,model.atoms()).CAFilter()) +
+					" " + GDTcalculator.gdt(reference.atoms(), model.atoms(), 0.5, 1.0, 2.0, 4.0) +
+					" " + GDTcalculator.gdt(reference.atoms(), model.atoms(), 1.0, 2.0, 4.0, 8.0) + " " +
+					0.0); //reference.atoms().noOXTFilter().filter(new AtomList.NonHydrogen()).getRms(model.atoms().noOXTFilter().filter(new AtomList.NonHydrogen())));
+			System.out.println("999999 " + i + " 4444 " + energy.report(2) + " " +
+					solvTerm.evaluate(false,1.0,0.0,0.0,0.0) + " " + solvTerm.evaluate(false,0.0,1.0,0.0,0.0) + " " + solvTerm.evaluate(false,0.0,0.0,1.0,0.0) + " " + solvTerm.evaluate(false,0.0,0.0,0.0,1.0));
+			try {
+				model.atoms().print(new MeshiWriter(models[i]+".min.pdb"));
+			}
+			catch (Exception e) {
+				System.out.print("\nThere was a problem writing the output:\n" + e + "\n\nContinueing...\n\n");
 			}
 		}
 	} // Of main
@@ -214,10 +207,10 @@ private static void init(String[] args) {
 			"<Wrg>  <Wev> <Wsolv> <Whb> <Wprop> <Wramach> \n"+
 	"                    ******************\n");
 
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-	commandsFileName = getOrderedArgument(args);
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+	String commandsFileName = getOrderedArgument(args);
 	if (commandsFileName == null) throw new RuntimeException(errorMessage);
-	System.out.println("# commandsFileName = "+commandsFileName);
+	System.out.println("# commandsFileName = "+ commandsFileName);
 
 	commands = new CommandList(commandsFileName);
 
@@ -233,42 +226,42 @@ private static void init(String[] args) {
 
 	String tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wev = (new Double(tmpString)).doubleValue();
+	Wev = new Double(tmpString);
 	System.out.println("# Wev is " + Wev);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wpol = (new Double(tmpString)).doubleValue();
-	System.out.println("# Wpol is " + Wpol);
+	double wpol = new Double(tmpString);
+	System.out.println("# Wpol is " + wpol);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wsolv = (new Double(tmpString)).doubleValue();
+	Wsolv = new Double(tmpString);
 	System.out.println("# Wsolv is " + Wsolv);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Whb = (new Double(tmpString)).doubleValue();
+	Whb = new Double(tmpString);
 	System.out.println("# Whb is " + Whb);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wprop = (new Double(tmpString)).doubleValue();
-	System.out.println("# Wprop is " + Wprop);
+	double wprop = new Double(tmpString);
+	System.out.println("# Wprop is " + wprop);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wramach = (new Double(tmpString)).doubleValue();
+	Wramach = new Double(tmpString);
 	System.out.println("# Wramach is " + Wramach);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString== null) throw new RuntimeException(errorMessage);
-	Wtether = (new Double(tmpString)).doubleValue();
-	System.out.println("# Wtether is " + Wtether);
+	double wtether = new Double(tmpString);
+	System.out.println("# Wtether is " + wtether);
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString!= null) {
-		frac = (new Double(tmpString)).doubleValue();
+		double frac = new Double(tmpString);
 		System.out.println("# EV frac " + frac);
 	}
 }

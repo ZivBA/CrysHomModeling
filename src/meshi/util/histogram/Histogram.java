@@ -9,9 +9,9 @@ import java.util.Iterator;
 
 
 public class Histogram extends SortableMeshiList {
-    private double lowBound;
-    private double highBound;
-    private int nBins;
+    private final double lowBound;
+    private final double highBound;
+    private final int nBins;
     private double histFactor;
     private int belowLow,aboveHigh;
     private int sum;
@@ -60,7 +60,7 @@ public class Histogram extends SortableMeshiList {
 		sum++;
 		}
     }
-    public HistogramBin HistogramBinAt(int pos){
+    private HistogramBin HistogramBinAt(int pos){
 	if (lastSorted != -1) 
 	    throw new RuntimeException("Histogram.HistogramBinAt inapplicable after sort"); 
 	return (HistogramBin) elementAt(pos);
@@ -93,7 +93,7 @@ public class Histogram extends SortableMeshiList {
 	return maxBin;
     }
     
-    static class BinCreator {
+    private static class BinCreator {
 	public Object create() {return new HistogramBin(0.0, 0);}
     }
     static class IsBin implements Filter {
@@ -127,8 +127,8 @@ public class Histogram extends SortableMeshiList {
 	    return prev;
     }
     private  class RepresentativesIterator implements Iterator {
-	MeshiIterator internal;
-	ThresholdFilter filter;
+	final MeshiIterator internal;
+	final ThresholdFilter filter;
 	public RepresentativesIterator(double fractionThreshold) {
 	    double[] values = new double[size];
 	    Iterator bins = iterator();
@@ -162,7 +162,7 @@ public class Histogram extends SortableMeshiList {
 	}
 	
 	private class ThresholdFilter implements Filter {
-	    double threshold; 
+	    final double threshold;
 	    public ThresholdFilter(double threshold) {
 		this.threshold = threshold;
 	    }

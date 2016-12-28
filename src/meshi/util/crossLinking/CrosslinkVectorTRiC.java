@@ -21,9 +21,8 @@ public class CrosslinkVectorTRiC extends CrosslinkVector {
 	 * gave it in the bottom ring.
 	 */
 	public String identicalChains(String protName) {
-		String outS = "" + protName.charAt(0) + 
+		return "" + protName.charAt(0) +
 		PutUnitInAnyTopPositionYeast.matchChainLetterOnBottomRing(protName.charAt(0));
-		return outS;
 	}
 
 	public CrosslinkVector createEmptyVector() {

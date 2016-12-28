@@ -30,7 +30,7 @@ public class DisConstEnergy  extends SimpleEnergyTerm{
     }
 
 
-    public EnergyElement createElement(Object baseElement) {
+    private EnergyElement createElement(Object baseElement) {
     	return new DisConstEnergyElement(weight, (Distance) baseElement);
     }
 

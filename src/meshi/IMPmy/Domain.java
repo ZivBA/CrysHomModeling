@@ -9,13 +9,12 @@ import java.util.Vector;
 
 public class Domain {
 	
-	private final int MAX_SEPERATION_ANCHOR_TO_STRUCTURED_RESIDUE = 10; // Half the maximal loop that could be unstructured in a structured domain
-	private Vector<AnchorPosition> positions = new Vector<AnchorPosition>();
+	private final Vector<AnchorPosition> positions = new Vector<>();
 	private AnchorPosition center = null;
-	private String proteinName;
-	private String domainName;
-	private int[][] residues;
-	private boolean structured;
+	private final String proteinName;
+	private final String domainName;
+	private final int[][] residues;
+	private final boolean structured;
 	
 	public Domain(String protName , String domainName, int[][] residues , boolean structured) {
 		this.proteinName = protName;
@@ -47,17 +46,17 @@ public class Domain {
 	
 	public int numberOfResidues() {
 		int counter=0;
-		for (int c=0 ; c<residues.length ; c++) {
-			counter += (residues[c][1]-residues[c][0]);
+		for (int[] residue : residues) {
+			counter += (residue[1] - residue[0]);
 		}
 		return counter;
 	}
 	
 	public boolean isResNumInDomain(int resNum) {
 		boolean inDom = false;
-		for (int c=0 ; c<residues.length ; c++) {
-			if ((resNum<=residues[c][1]) && (resNum>=residues[c][0])) {
-				inDom=true;
+		for (int[] residue : residues) {
+			if ((resNum <= residue[1]) && (resNum >= residue[0])) {
+				inDom = true;
 			}
 		}
 		return inDom;
@@ -65,8 +64,8 @@ public class Domain {
 
 	public String toString() {
 		String str = proteinName+" "+domainName;
-		for (int c=0 ; c<residues.length ; c++) {
-			str += (" " + residues[c][0] + " " + residues[c][1]); 
+		for (int[] residue : residues) {
+			str += (" " + residue[0] + " " + residue[1]);
 		}
 		return str + "Radius:" + center().R() + "\n";
 	}
@@ -91,7 +90,7 @@ public class Domain {
 		return structured;
 	}
 	
-	public AnchorPosition findPosition(int resNum) {
+	private AnchorPosition findPosition(int resNum) {
 		for (AnchorPosition pos : positions) {
 			if (pos.resNum() == resNum) {
 				return pos;
@@ -114,6 +113,7 @@ public class Domain {
 				}
 			}
 		}
+		int MAX_SEPERATION_ANCHOR_TO_STRUCTURED_RESIDUE = 10;
 		if (Math.abs(closestRes - res) > MAX_SEPERATION_ANCHOR_TO_STRUCTURED_RESIDUE) {
 			throw new RuntimeException("\n\nA sepration of: " + Math.abs(closestRes - res) + " from anchor to nearest structured residue.\n\n");
 		}

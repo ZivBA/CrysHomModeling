@@ -3,7 +3,7 @@ import meshi.molecularElements.Protein;
 import meshi.util.MeshiProgram;
 
 
-public class SubmitManualCASP8 extends MeshiProgram { 
+class SubmitManualCASP8 extends MeshiProgram {
 
     private static String proteinFileName = null; 
     private static String targetName = null;
@@ -27,13 +27,13 @@ public class SubmitManualCASP8 extends MeshiProgram {
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
 
 	String errorMessage = ("\n                  ******************\n"+
 			       "Usage java SubmitManualCASP8 <protein file name> <target#> <model#> <parent pdb ID> <output file name> \n"+
 			       "                    ******************\n");
 			      
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 	proteinFileName = getOrderedArgument(args);
 	if (proteinFileName == null) throw new RuntimeException(errorMessage);
 	System.out.println("# proteinFileName = "+proteinFileName);
@@ -44,7 +44,7 @@ public class SubmitManualCASP8 extends MeshiProgram {
 
 	String modelString = getOrderedArgument(args);
 	if (modelString == null) throw new RuntimeException(errorMessage);
-	model = (new Integer(modelString)).intValue();
+	model = new Integer(modelString);
 	System.out.println("# model = "+model);
 
 	parentID = getOrderedArgument(args);

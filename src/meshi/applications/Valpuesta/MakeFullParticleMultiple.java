@@ -13,17 +13,17 @@ import meshi.util.file.File2StringArray;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class MakeFullParticleMultiple extends MeshiProgram implements Residues,AtomTypes {
+class MakeFullParticleMultiple extends MeshiProgram implements Residues,AtomTypes {
 	
 	public static void main(String[] args) throws Exception {
-		init(args);
+		init();
 		String[] allModels = File2StringArray.f2a("Top_100_for_Gunnar_models.txt");
 		for (int c=0; c<allModels.length ; c++) {
 			makeSingle(allModels[c].substring(0, 8), allModels[c].substring(8, 16), c+1, allModels[c].substring(17, 25));
 		}
 	}
 		
-	public static void makeSingle(String topTrue, String botTrue, int modelNumber, String Rstring) throws Exception {
+	private static void makeSingle(String topTrue, String botTrue, int modelNumber, String Rstring) throws Exception {
 		// Defining the arrangement 
 //		String topTrue   = "ZQHEBDAG"; // OMS
 //		String topTrue   = "ZEAHDQGB"; // Willison
@@ -61,7 +61,7 @@ public class MakeFullParticleMultiple extends MeshiProgram implements Residues,A
 				AtomList template = willison1Q3R.chainFilter(chainID+"");
 				Atom.resetNumberOfAtoms();
 				System.out.println("\n\n" + toPut + " in chain " + chainID + "  ::: " + template.size());
-				AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), 'K',template);
+				AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), template);
 				finalUnit.setChain(chainID+"");
 				// Writing
 				for (int c=0 ; c<finalUnit.size() ; c++) {
@@ -76,7 +76,7 @@ public class MakeFullParticleMultiple extends MeshiProgram implements Residues,A
 				AtomList template = willison1Q3R.chainFilter(chainID+"");
 				Atom.resetNumberOfAtoms();
 				System.out.println("\n\n" + toPut + " in chain " + chainID + "  ::: " + template.size());
-				AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), 'K',template);
+				AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), template);
 				finalUnit.setChain(chainID+"");
 				// Writing
 				for (int c=0 ; c<finalUnit.size() ; c++) {
@@ -92,7 +92,7 @@ public class MakeFullParticleMultiple extends MeshiProgram implements Residues,A
 	}
 
 	
-	protected static AtomList HMunit(String querySeq,char queryUnit , String templateSeq, char templateUnit, AtomList template) {
+	private static AtomList HMunit(String querySeq, char queryUnit, String templateSeq, AtomList template) {
 		boolean[] residueInAllSeqs = {false,  // -   
 				false,  // - 1 
 				false,  // - 2 
@@ -806,21 +806,18 @@ public class MakeFullParticleMultiple extends MeshiProgram implements Residues,A
 
 	
 
-	protected static AtomList filterDomainAccordingTo1Q3R(AtomList fullList, char subunit , char domain) {
+	private static AtomList filterDomainAccordingTo1Q3R(AtomList fullList, char subunit, char domain) {
 		int[][] parsingQ3R; 
 		TricAlignment alignments = new TricAlignment();
 		switch (domain) {
     	case 'E': // Equatorial 
-    		int[][] newParse = {{1,149} , {404,535}};
-    		parsingQ3R = newParse;
+		    parsingQ3R = new int[][]{{1,149} , {404,535}};
     		break;
     	case 'M': // Middle 
-    		int[][] newParse1 = {{150,217} , {369,403}};
-    		parsingQ3R = newParse1;
+		    parsingQ3R = new int[][]{{150,217} , {369,403}};
     		break;
     	case 'A': // Apical 
-    		int[][] newParse2 = {{218,368}};
-    		parsingQ3R = newParse2;
+		    parsingQ3R = new int[][]{{218,368}};
     		break;
 //    	case 'A': // Apical 
 //    		int[][] newParse2 = {{218,247} , {278,368}};
@@ -844,12 +841,12 @@ public class MakeFullParticleMultiple extends MeshiProgram implements Residues,A
 	}
 	
 	
-	protected static AtomList filterDomain(AtomList fullList, int[][] parsing) {
+	private static AtomList filterDomain(AtomList fullList, int[][] parsing) {
 		AtomList newList = new AtomList();
 		for (int c=0 ; c<fullList.size() ; c++) {
 			int resNum = fullList.atomAt(c).residueNumber();
-			for (int segID=0 ; segID<parsing.length ; segID++ ) {
-				if ((resNum>=parsing[segID][0]) & (resNum<=parsing[segID][1])) {
+			for (int[] aParsing : parsing) {
+				if ((resNum >= aParsing[0]) & (resNum <= aParsing[1])) {
 					newList.add(fullList.atomAt(c));
 				}
 			}
@@ -858,7 +855,7 @@ public class MakeFullParticleMultiple extends MeshiProgram implements Residues,A
 	}
 	
 	
-	protected static void init(String[] args) {
+	private static void init() {
 		int zvl = ALA; // force the reading of "meshi.parameters.Residues"
 		zvl = ACA;// force the reading of "meshi.parameters.AtomTypes"
 		initRandom(333);

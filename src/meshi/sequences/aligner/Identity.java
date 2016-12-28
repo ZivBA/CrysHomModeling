@@ -2,7 +2,7 @@ package meshi.sequences.aligner;
 import meshi.sequences.SequenceAlignmentCell;
 
 public class Identity implements CellScorer {
-    public final double gapPenalty;
+    private final double gapPenalty;
     
     public Identity(double gapPenalty) {
 	this.gapPenalty = gapPenalty;

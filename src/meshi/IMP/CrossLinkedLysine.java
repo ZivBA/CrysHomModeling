@@ -1,9 +1,11 @@
 package meshi.IMP;
 
-public class CrossLinkedLysine {
+class CrossLinkedLysine {
 
-	private int resNum;
-	private double x,y,z;
+	private final int resNum;
+	private final double x;
+	private final double y;
+	private final double z;
 	
 	public CrossLinkedLysine(int resNum, double x, double y, double z) {
 		this.resNum = resNum;

@@ -13,7 +13,7 @@ public class SimpleHydrogenBond_Dahiyat_Minimization_NoDuplications_Creator exte
 	private boolean toCalcDerivatives = true;
 	private DahiyatMinimizationParameters parameters = null;
 
-	public SimpleHydrogenBond_Dahiyat_Minimization_NoDuplications_Creator(double weight , boolean toCalcDerivatives) {
+	private SimpleHydrogenBond_Dahiyat_Minimization_NoDuplications_Creator(double weight, boolean toCalcDerivatives) {
 		super(weight);
 		this.toCalcDerivatives = toCalcDerivatives;
 		parameters = new DahiyatMinimizationParameters();

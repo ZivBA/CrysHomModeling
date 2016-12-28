@@ -15,14 +15,14 @@ import meshi.util.filters.Filter;
 import java.util.Iterator;
 
 public class Pdb2FastaFailSafe extends MeshiProgram implements Residues, AtomTypes {
-    public static final String MONOMERS_TO_IGNORE = ("HOH HEM GDP TRS LLP CA CS K CAC AMP ALF SO4 AP5 ACE AXT 3PP PO4 "+
+    private static final String MONOMERS_TO_IGNORE = ("HOH HEM GDP TRS LLP CA CS K CAC AMP ALF SO4 AP5 ACE AXT 3PP PO4 "+
 						     "D12 CO UNK IHP FBP PGA FAD BME NAG DAC ADP FMN MN FE HEA B12 "+
 						     "GTS GOL T5A MG NAP CU DCA CL ZN PER POP CIT AGM CMP GL3 MGN ORO "+
 						     "F43 PGC TP7 SHT EGL CYO FS4 COM COB PYR GOA ISP 3PY CBX NH2 NAD "+
 						     "TPO SM IPS SPS NDP FUC CAS C20 PLP PHO DCD TAU FE2 POH HEC NMO");
-    public static final String STANDARD_RESIDUES = ("ALA CYS ASP GLU PHE GLY HIS ILE LYS LEU "+
+    private static final String STANDARD_RESIDUES = ("ALA CYS ASP GLU PHE GLY HIS ILE LYS LEU "+
 						    "MET ASN PRO GLN ARG SER THR VAL TRP TYR");
-    public static final String[][] dictionary = { join("MSE", "MET"),
+    private static final String[][] dictionary = { join("MSE", "MET"),
 						  join("ARO", "ARG"),
 						  join("CSE", "CYS"), //selenium cysteine
 						  join("CSZ", "CYS"), //selenium cysteine
@@ -85,12 +85,12 @@ public class Pdb2FastaFailSafe extends MeshiProgram implements Residues, AtomTyp
 	for (Iterator atoms = originalAtomsList.iterator(); atoms.hasNext();) {
 	    Atom atom = (Atom) atoms.next();
 	    String residueName = atom.residueName();
-	    if (STANDARD_RESIDUES.indexOf(residueName) > -1) {
+	    if (STANDARD_RESIDUES.contains(residueName)) {
 		newAtomList.add(atom);
 	    }
 	    else {
-		if (MONOMERS_TO_IGNORE.indexOf(residueName) > -1) {
-		    if (toIgnoreFound.indexOf(residueName) <= -1) {
+		if (MONOMERS_TO_IGNORE.contains(residueName)) {
+		    if (!toIgnoreFound.contains(residueName)) {
 			log.add(residueName+" monomers were ignored");
 			toIgnoreFound += " "+residueName;
 		    }
@@ -99,7 +99,7 @@ public class Pdb2FastaFailSafe extends MeshiProgram implements Residues, AtomTyp
 		    boolean found = false;
 		    for (int i = 0; i < dictionary.length & (! found); i++) {
 			if (residueName.equals(dictionary[i][0])) {
-			    if (toConvertFound.indexOf(residueName) <= -1) {
+			    if (!toConvertFound.contains(residueName)) {
 				log.add("REMARK "+residueName+" was converted to "+dictionary[i][1]);
 				toConvertFound += " "+residueName;
 			    }
@@ -237,7 +237,7 @@ public class Pdb2FastaFailSafe extends MeshiProgram implements Residues, AtomTyp
 	
     private static class ResidueSequenceCharFilter extends SequenceCharFilter {
 	public boolean accept(Object obj) {
-	    Character c = ((Character) obj).charValue();
+	    Character c = (Character) obj;
 		return "XACDEFGHIKLMNOPQRSTVWY-".indexOf(c) >= 0;
 	}
     }
@@ -254,7 +254,7 @@ public class Pdb2FastaFailSafe extends MeshiProgram implements Residues, AtomTyp
     }
 
     private static class MyFilter implements Filter {
-	private String chain;
+	private final String chain;
 	public MyFilter(String chain) {
 	    this.chain = chain;
 	}

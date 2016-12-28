@@ -58,7 +58,7 @@ public class FastaList extends SequenceList {
     }
  
 
-    public static String removeSpaces(String source) {
+    private static String removeSpaces(String source) {
 	if (source.indexOf(' ') == -1) return source;
 	String out = "";
 	for (int index = 0; index < source.length(); index++) {

@@ -19,14 +19,14 @@ import java.util.Iterator;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class AbstractPunishAngleEnergy extends NonBondedEnergyTerm {
-      protected HBondList hBondList;
+      private HBondList hBondList;
     //private DistanceList specialDisatnces = null;
 
-    public AbstractPunishAngleEnergy(){}
+    AbstractPunishAngleEnergy(){}
 
-    public AbstractPunishAngleEnergy(DistanceMatrix distanceMatrix,
-                                      HBondList hBondList,
-                                      double weight)
+    AbstractPunishAngleEnergy(DistanceMatrix distanceMatrix,
+                              HBondList hBondList,
+                              double weight)
     {
         super(toArray(distanceMatrix,hBondList),//updatabel resources
               weight,
@@ -36,23 +36,23 @@ public abstract class AbstractPunishAngleEnergy extends NonBondedEnergyTerm {
         setEnergyElement();
     }
 
-    public AbstractPunishAngleEnergy(DistanceMatrix distanceMatrix,
-                                      HBondList hBondList,
-                                      double weight,
-                                      DistanceList specialDis){
-        this(distanceMatrix,hBondList,weight);
-        //specialDisatnces = specialDis;
-    }
+//    AbstractPunishAngleEnergy(DistanceMatrix distanceMatrix,
+//                              HBondList hBondList,
+//                              double weight,
+//                              DistanceList specialDis){
+//        this(distanceMatrix,hBondList,weight);
+//        //specialDisatnces = specialDis;
+//    }
 
     /**
      * set the energyElement to point on the relavent instance
      */
-    public abstract void  setEnergyElement();
+    protected abstract void  setEnergyElement();
 
     /**
      * set the comment to be the relavent comment according to the instance
      */
-    public abstract void  setComment();
+    protected abstract void  setComment();
 
     public double evaluate() {
         if (! on) return 0.0;

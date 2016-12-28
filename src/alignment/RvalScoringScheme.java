@@ -8,8 +8,4 @@ public class RvalScoringScheme implements ScoringScheme {
 		return ((RvalPosition) pos1).fitToAA( ((AminoAcidPosition) pos2).getAminoTypeIndex() );
 	}
 
-//	// Taking all positions
-//	public double score(Position pos1, Position pos2) {
-//		return ((RvalPosition) pos1).fitToAA( ((AminoAcidPosition) pos2).getAminoTypeIndex() );
-//	}
 }

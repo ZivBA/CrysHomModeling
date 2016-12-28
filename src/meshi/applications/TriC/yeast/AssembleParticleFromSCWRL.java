@@ -6,7 +6,7 @@ import meshi.molecularElements.AtomList;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class AssembleParticleFromSCWRL {
+class AssembleParticleFromSCWRL {
 
 	public static void main(String[] args) {
 

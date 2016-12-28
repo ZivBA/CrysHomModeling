@@ -8,24 +8,24 @@ import meshi.util.file.File2StringArray;
 
 import java.util.Vector;
 
-public class ProteinList extends Vector<Protein> {
+class ProteinList extends Vector<Protein> {
 
 	public ProteinList() {	}
 
-	public ProteinList(String fileName) {
+	private ProteinList(String fileName) {
 		String[] domainText = File2StringArray.f2a(fileName);
-		for (int c=0 ; c<domainText.length ; c++) {
-			DomainWithCrossLinks newDomain = new DomainWithCrossLinks(domainText[c]);
+		for (String aDomainText : domainText) {
+			DomainWithCrossLinks newDomain = new DomainWithCrossLinks(aDomainText);
 			Protein prot = findProteinByName(newDomain.proteinName());
-			if (prot==null) {
+			if (prot == null) {
 				prot = new Protein(newDomain.proteinName());
 				add(prot);
 			}
-			prot.addDomain(newDomain);			
+			prot.addDomain(newDomain);
 		}		
 	}
 	
-	public Protein findProteinByName(String name) {
+	private Protein findProteinByName(String name) {
 		for (Protein protein : this) {
 			if (protein.proteinName().equals(name)) {
 				return protein;
@@ -42,7 +42,7 @@ public class ProteinList extends Vector<Protein> {
 		return str;
 	}
 	
-	public DomainList allDomains() {
+	private DomainList allDomains() {
 		DomainList allDomains = new DomainList();
 		for (Protein protein : this) {
 			for (DomainWithCrossLinks domain : protein.domainList()) {
@@ -52,7 +52,7 @@ public class ProteinList extends Vector<Protein> {
 		return allDomains;
 	}
 	
-	public void putDomainsRandomlyInSphere(double initialRadius) {
+	private void putDomainsRandomlyInSphere(double initialRadius) {
 		DomainList allDomains = allDomains();
 		for (Domain domain : allDomains) {
 			int radius = (int) (initialRadius*Math.random());
@@ -68,7 +68,7 @@ public class ProteinList extends Vector<Protein> {
 	}
 	
 	
-	public CrosslinkVector getBoundariesAsCrossLinks() {
+	private CrosslinkVector getBoundariesAsCrossLinks() {
 		CrosslinkVectorTRiC vec = new CrosslinkVectorTRiC(); // No one should know it's TRiC
 		for (Protein prot : this) {
 			DomainList domList = prot.domainList();
@@ -101,7 +101,7 @@ public class ProteinList extends Vector<Protein> {
 	}
 
 
-	public void addCrossLinkAndBoundaryData(CrosslinkVector xlVec) {
+	private void addCrossLinkAndBoundaryData(CrosslinkVector xlVec) {
 		DomainList allDomains = allDomains();
 		CrosslinkVector boundaryList = getBoundariesAsCrossLinks();
 		for (DomainWithCrossLinks domain : allDomains) {

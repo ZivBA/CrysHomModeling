@@ -210,7 +210,7 @@ public class RotamericTools implements Residues, AtomTypes, KeyWords, Rot1Arrays
 	// This method finds the most similar (in term of rms) rotamer of residue 'res'.
 	// If it returns -1 then an error occured, probably some atoms are missing in the side chain. 
 	// Otherwise it returns the rotamer index found. 
-	public static int nearestRotReturningRotamerInd(DunbrackLib lib, Residue res, double phi, double psi) { 
+	private static int nearestRotReturningRotamerInd(DunbrackLib lib, Residue res, double phi, double psi) {
 		AtomList al1 = res.atoms();
 		AtomList al2 = al1.duplicate();
 		int restype = res.type;
@@ -298,7 +298,7 @@ public class RotamericTools implements Residues, AtomTypes, KeyWords, Rot1Arrays
 	// (non-hydrogen) sidechain atoms (including the CB atom).
 	// If the two lists do not contain exactly the same atoms (in term of names not instances) then -1 is returned.
 	// The order in the lists is irrelevent.
-	public static double calcRMS(AtomList al1, AtomList al2) {
+	private static double calcRMS(AtomList al1, AtomList al2) {
 		al1 = al1.filter(new AtomList.NonHydrogen()).noOXTFilter();
 		al2 = al2.filter(new AtomList.NonHydrogen()).noOXTFilter();
 		if (al1.size()!=al2.size())
@@ -433,8 +433,8 @@ public class RotamericTools implements Residues, AtomTypes, KeyWords, Rot1Arrays
 	// Limit should be given in DEGREES.
 	// One of the inputs to the method is the sidechain angles. The method "getSidechainTorsions" in this class can get them for you. 
 	// Any "restype" not in [1..4,6..19] (Ala,Gly,Unk etc.) will return (-1) too.
-	public static int nearestRotAngles(DunbrackLib lib, int restype, double phi, double psi, 
-			double[] sidechainAng, double limit) {
+	private static int nearestRotAngles(DunbrackLib lib, int restype, double phi, double psi,
+	                                    double[] sidechainAng, double limit) {
 		if ((restype<CYS) || (restype==GLY) || (restype>TYR))
 			return -1;
 		limit = limit*Math.PI/180.0;
@@ -509,8 +509,7 @@ public class RotamericTools implements Residues, AtomTypes, KeyWords, Rot1Arrays
 		boolean cont = true;
 		for (int ind=0 ; cont && (ind<angles.length) ; ind++) {
 			tmprot = new double[angles[ind].length];
-			for (int tmp=0 ; tmp<tmprot.length ; tmp++) 
-				tmprot[tmp] = angles[ind][tmp];
+			System.arraycopy(angles[ind], 0, tmprot, 0, tmprot.length);
 			try {
 				ResidueBuilder.build(res, restype, tmprot);
 			}
@@ -611,7 +610,7 @@ public class RotamericTools implements Residues, AtomTypes, KeyWords, Rot1Arrays
 
 
 	// This method flip the terminals of ASP GLU PHY ARG and TYR.  
-	public static void flipTerm(Residue res) {
+	private static void flipTerm(Residue res) {
 		int restype = res.type;
 		if ((restype==ASP) || (restype==GLU) || (restype==PHE) || (restype==ARG) ||  (restype==TYR)) {
 			Atom a1=null,a2=null;

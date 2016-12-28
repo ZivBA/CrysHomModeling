@@ -15,8 +15,7 @@ import meshi.molecularElements.AtomList;
  *           CD2- CE2 - CZ
  **/
 public class Phe extends ResidueExtendedAtoms {
-    public final Atom CG, CD1, CE1, CZ, CD2, CE2;
-    public static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
+	private static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
 	"               O\n"+
 	"               |\n"+
 	"      N - CA - C...n\n"+
@@ -39,22 +38,28 @@ public class Phe extends ResidueExtendedAtoms {
 
 	Object[] temp = new Object[6];
 	int i=0;
-	temp[i++] = CG = getAtom("CG",FCG, atomList, this);
-	temp[i++] = CD1 = getAtom("CD1",FCD, atomList, this);
-	temp[i++] = CE1 = getAtom("CE1",FCE, atomList, this);
-	temp[i++] = CZ = getAtom("CZ",FCZ, atomList, this);
-	temp[i++] = CD2 = getAtom("CD2",FCD, atomList, this);
-	temp[i++] = CE2 = getAtom("CE2",FCE, atomList, this);
+	    Atom CG;
+	    temp[i++] = CG = getAtom("CG",FCG, atomList, this);
+	    Atom CD1;
+	    temp[i++] = CD1 = getAtom("CD1",FCD, atomList, this);
+	    Atom CE1;
+	    temp[i++] = CE1 = getAtom("CE1",FCE, atomList, this);
+	    Atom CZ;
+	    temp[i++] = CZ = getAtom("CZ",FCZ, atomList, this);
+	    Atom CD2;
+	    temp[i++] = CD2 = getAtom("CD2",FCD, atomList, this);
+	    Atom CE2;
+	    temp[i++] = CE2 = getAtom("CE2",FCE, atomList, this);
 	for (i = 0; i <temp.length; i++)
 	    if (temp[i] != null) atoms.add(temp[i]);
 
-	if ((CB  != null)   && (CG  != null)) bonds.add(CB.bond(CG));
-	if ((CG  != null)   && (CD1  != null)) bonds.add(CG.bond(CD1));
-	if ((CG  != null)   && (CD2  != null)) bonds.add(CG.bond(CD2));
-	if ((CD1  != null)   && (CE1  != null)) bonds.add(CD1.bond(CE1));
-	if ((CD2  != null)   && (CE2  != null)) bonds.add(CD2.bond(CE2));
-	if ((CE1  != null)   && (CZ  != null)) bonds.add(CE1.bond(CZ));
-	if ((CE2  != null)   && (CZ  != null)) bonds.add(CE2.bond(CZ));
+	if ((CB  != null)   && (CG != null)) bonds.add(CB.bond(CG));
+	if ((CG != null)   && (CD1 != null)) bonds.add(CG.bond(CD1));
+	if ((CG != null)   && (CD2 != null)) bonds.add(CG.bond(CD2));
+	if ((CD1 != null)   && (CE1 != null)) bonds.add(CD1.bond(CE1));
+	if ((CD2 != null)   && (CE2 != null)) bonds.add(CD2.bond(CE2));
+	if ((CE1 != null)   && (CZ != null)) bonds.add(CE1.bond(CZ));
+	if ((CE2 != null)   && (CZ != null)) bonds.add(CE2.bond(CZ));
     }
     public String comment() {
 	return COMMENT;

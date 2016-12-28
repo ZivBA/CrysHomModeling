@@ -31,16 +31,17 @@ import meshi.util.CommandList;
 import meshi.util.rotamericTools.RotamericTools;
 
 
-public class LoopRock {
+class LoopRock {
 
 
-private Protein prot;
-private int resBegin , resEnd;
-private CommandList commands;
+private final Protein prot;
+private final int resBegin;
+	private final int resEnd;
+private final CommandList commands;
 private DistanceMatrix dm;
-private DunbrackLib lib;
+private final DunbrackLib lib;
 private double[][] pp; 
-private double weightEV;
+private final double weightEV;
 
 
 public LoopRock(Protein prot , int resBegin , int resEnd , int nIter , CommandList commands) {
@@ -48,7 +49,7 @@ public LoopRock(Protein prot , int resBegin , int resEnd , int nIter , CommandLi
 }
 
 
-public LoopRock(Protein prot , int resBegin , int resEnd , int nIter , double weightEV, CommandList commands) {
+private LoopRock(Protein prot, int resBegin, int resEnd, int nIter, double weightEV, CommandList commands) {
 	this.prot = prot;
 	this.resBegin = resBegin;
 	this.resEnd = resEnd;
@@ -187,7 +188,7 @@ private void rotateRes(int resNum , double ang) {
 	}
 }
 
-public static double[][] buildRotMatrix(double x, double y, double z, double ang) {
+private static double[][] buildRotMatrix(double x, double y, double z, double ang) {
 	double cosang = Math.cos(ang);
 	double sinang = Math.sin(ang);	
 	double[][] rot = new double[3][3];
@@ -204,7 +205,7 @@ public static double[][] buildRotMatrix(double x, double y, double z, double ang
 }
 
 
-public static Atom find(AtomList al , String name) {
+private static Atom find(AtomList al, String name) {
 	for (int c=0 ; c<al.size() ; c++)
 		if (al.atomAt(c).name().equals(name))
              return al.atomAt(c);       

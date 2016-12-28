@@ -8,7 +8,13 @@ import java.util.Iterator;
 
 public class ResidueExtendedAtoms extends Residue implements Residues, AtomTypes, ResidueCreator {
     private static final double RADIUS = 2;
-    public final Atom H, N, CA, CB, C, O, OXT;
+    private final Atom H;
+	final Atom N;
+	private final Atom CA;
+	final Atom CB;
+	private final Atom C;
+	private final Atom O;
+	private final Atom OXT;
     private static final int Ns[] =  {AN,  CN,  DN,  EN,  FN,  GN,  HN,  IN,  KN,  LN,  
 				      MN,  NN,  PN,  QN,  RN,  SN,  TN,  VN,  WN,  YN};
 
@@ -51,7 +57,7 @@ public class ResidueExtendedAtoms extends Residue implements Residues, AtomTypes
     /**
      * Do not use this constructor to instantiate a creator object.
      **/
-    public ResidueExtendedAtoms(int type, AtomList atomList, int number, int mode, int addAtomsFlag) {
+    ResidueExtendedAtoms(int type, AtomList atomList, int number, int mode, int addAtomsFlag) {
 	super(nameThreeLetters(type), type, number,mode);
 	this.addAtomsFlag = addAtomsFlag;
 	String name =  nameThreeLetters(type);
@@ -123,7 +129,7 @@ public class ResidueExtendedAtoms extends Residue implements Residues, AtomTypes
 	if ((OXT != null) & (C != null)) bonds.add(C.bond(OXT));
     }
 	
-    public Atom getAtom(String name, int type, Atom Ca1, Atom Ca2, double fraction, Residue residue) {
+    private Atom getAtom(String name, int type, Atom Ca1, Atom Ca2, double fraction, Residue residue) {
 	if (type < 0) return null;
 	double centerX = Ca1.x()+fraction*(Ca2.x() - Ca1.x());
 	double centerY = Ca1.y()+fraction*(Ca2.y() - Ca1.y());
@@ -133,7 +139,7 @@ public class ResidueExtendedAtoms extends Residue implements Residues, AtomTypes
     }
 
 
-    public Atom getAtom(String name, int type, AtomList atomList, Residue residue) {
+    Atom getAtom(String name, int type, AtomList atomList, Residue residue) {
 	if (type < 0) return null;
 	double centerX = atomList.atomAt(0).x();
 	double centerY = atomList.atomAt(0).y();
@@ -161,7 +167,7 @@ public class ResidueExtendedAtoms extends Residue implements Residues, AtomTypes
 	return null;
     }
 		
-    public static boolean hydrogen(int type) {
+    private static boolean hydrogen(int type) {
 	if (type == AH) return true;
 	if (type == CH) return true;
 	if (type == DH) return true;
@@ -264,7 +270,7 @@ public class ResidueExtendedAtoms extends Residue implements Residues, AtomTypes
 	return name;
     }
     
-    protected static AtomList getList(double x, double y, double z) {
+    static AtomList getList(double x, double y, double z) {
 	AtomList out = new AtomList();
 	out.add(new Atom(x, y, z, "dummy", new DummyResidue(-1), -1));
 	return out;
@@ -443,7 +449,7 @@ public class ResidueExtendedAtoms extends Residue implements Residues, AtomTypes
     }
 
     //b)
-    protected void genericToAA(ResidueExtendedAtoms residue) {
+    private void genericToAA(ResidueExtendedAtoms residue) {
 	residue.setSecondaryStructure(secondaryStructure());
 	residue.setAccessibility(accessibility());
 	setBackboneAtoms(residue,this);
@@ -472,8 +478,7 @@ public class ResidueExtendedAtoms extends Residue implements Residues, AtomTypes
 	residue.N.setReliability(BACKBONE_RELIABILITY);
 	residue.O.setReliability(BACKBONE_RELIABILITY);
 	residue.C.setReliability(BACKBONE_RELIABILITY);
-	return;
-    
+	
     } //end method genericToAA
 
     //c)
@@ -548,27 +553,24 @@ public class ResidueExtendedAtoms extends Residue implements Residues, AtomTypes
 			
         Atom temp[]= new Atom[newList.length+1];
         temp[0]=residue.N;
-        
-        for (int i=1; i<temp.length;i++)
-	    temp[i]=newList[i-1];
+	
+	    System.arraycopy(newList, 0, temp, 1, temp.length - 1);
 	return temp;
     }
     private static Atom[] listAddO(Atom[] newList, ResidueExtendedAtoms residue) {
 
         Atom temp[]= new Atom[newList.length+1];
         temp[0]=residue.O;
-		
-        for (int i=1; i<temp.length;i++)
-	    temp[i]=newList[i-1];
+	
+	    System.arraycopy(newList, 0, temp, 1, temp.length - 1);
 	return temp;
     }
     private static Atom[] listAddC(Atom[] newList, ResidueExtendedAtoms residue) {
 
         Atom temp[]= new Atom[newList.length+1];
         temp[0]=residue.C;
-		
-        for (int i=1; i<temp.length;i++)
-	    temp[i]=newList[i-1];
+	
+	    System.arraycopy(newList, 0, temp, 1, temp.length - 1);
 	return temp;
     }
     //g)
@@ -682,7 +684,7 @@ public class ResidueExtendedAtoms extends Residue implements Residues, AtomTypes
 
     }
     //m)
-    public int getAddAtomsFlag() {return addAtomsFlag;}
+    int getAddAtomsFlag() {return addAtomsFlag;}
     //n)
 
     private static double minDist(double x,double y,double z,Atom[] list,int place)
@@ -714,20 +716,22 @@ public class ResidueExtendedAtoms extends Residue implements Residues, AtomTypes
 
 	if (c1==c2)  //same distance from CA, compare positions( 1 or 2 )
 	    {
-		for   (int i=0; i<dArray.length ; i++)
-		    {
-			if ((a1.name()).charAt(2)==dArray[i]) return -1;
-			if ((a2.name()).charAt(2)==dArray[i]) return 1;
+		    for (char aDArray : dArray) {
+			    if ((a1.name()).charAt(2) == aDArray)
+				    return -1;
+			    if ((a2.name()).charAt(2) == aDArray)
+				    return 1;
 		    }
 	    }
 
 	else
 	    {
-		for   (int i=0; i<cArray.length ; i++)
-		    {
-			if (c1==cArray[i]) return -1;
-			if (c2==cArray[i]) return 1;
-
+		    for (char aCArray : cArray) {
+			    if (c1 == aCArray)
+				    return -1;
+			    if (c2 == aCArray)
+				    return 1;
+			
 		    }
 	    }
 

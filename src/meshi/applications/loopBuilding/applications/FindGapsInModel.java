@@ -14,7 +14,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.Vector;
 
-public class FindGapsInModel extends MeshiProgram implements Residues, AtomTypes {
+class FindGapsInModel extends MeshiProgram implements Residues, AtomTypes {
 
 	private static String alignmentFileName = null;  
 	
@@ -31,14 +31,14 @@ public class FindGapsInModel extends MeshiProgram implements Residues, AtomTypes
 		int firstResInQuery = -1;
 		String queryAlignment = "";
 		int resNumCounterQ=0;
-		Vector<Integer> badRes = new Vector<Integer>();
+		Vector<Integer> badRes = new Vector<>();
 
 
 		
 		// Reading the alignment file
 		model = new ExtendedAtomsProtein(modelFileName,DO_NOT_ADD_ATOMS);
 		String[] alignmentStrings = File2StringArray.f2a(alignmentFileName);
-		firstResInQuery = (new Integer(alignmentStrings[1])).intValue();
+		firstResInQuery = new Integer(alignmentStrings[1]);
 		System.out.println("Alignment in query starts at: " + firstResInQuery);
 		queryAlignment = alignmentStrings[3].trim();
 		System.out.println("QUERY " + queryAlignment);
@@ -53,12 +53,12 @@ public class FindGapsInModel extends MeshiProgram implements Residues, AtomTypes
 				if ((model.residue(resNumCounterQ)!= null) && (model.residue(resNumCounterQ).ca()!= null)) {
 					if (lastViewedCA!=null) {
 						if (Math.abs(model.residue(resNumCounterQ).ca().distanceFrom(lastViewedCA) - 3.75)>0.25) // A gap here
-							badRes.add(new Integer(resNumCounterQ));
+							badRes.add(resNumCounterQ);
 					}
 					lastViewedCA = model.residue(resNumCounterQ).ca();
 				}
 				else { // Missing residue
-					badRes.add(new Integer(resNumCounterQ));
+					badRes.add(resNumCounterQ);
 					lastViewedCA = null;
 				}
 			}
@@ -70,22 +70,20 @@ public class FindGapsInModel extends MeshiProgram implements Residues, AtomTypes
 			BufferedWriter bw = new BufferedWriter(new FileWriter(outFileName));
 			int gapStart = -999;
 			int gapEnd = -999;
-			for (int cc=0 ; cc<badRes.size() ; cc++) {
-				if (badRes.get(cc).intValue()!=(gapEnd+1)) {
-					if (gapStart!=-999) {
-						if (gapStart!=firstResInQuery) {
-							bw.write((gapStart-residuesAroundGap) + " " + (gapEnd+residuesAroundGap) + " 999 \n");
-							System.out.println("BAD: " + (gapStart-residuesAroundGap) + " " + (gapEnd+residuesAroundGap) + " 999 ");
-						}
-						else {
-							bw.write(gapStart + " " + (gapEnd+residuesAroundGap) + " 999 \n");
-							System.out.println("BAD: " + gapStart + " " + (gapEnd+residuesAroundGap) + " 999 ");							
+			for (Integer badRe : badRes) {
+				if (badRe.intValue() != (gapEnd + 1)) {
+					if (gapStart != -999) {
+						if (gapStart != firstResInQuery) {
+							bw.write((gapStart - residuesAroundGap) + " " + (gapEnd + residuesAroundGap) + " 999 \n");
+							System.out.println("BAD: " + (gapStart - residuesAroundGap) + " " + (gapEnd + residuesAroundGap) + " 999 ");
+						} else {
+							bw.write(gapStart + " " + (gapEnd + residuesAroundGap) + " 999 \n");
+							System.out.println("BAD: " + gapStart + " " + (gapEnd + residuesAroundGap) + " 999 ");
 						}
 					}
-					gapStart = badRes.get(cc).intValue();
+					gapStart = badRe;
 					gapEnd = gapStart;
-				}
-				else {
+				} else {
 					gapEnd++;
 				}
 			}
@@ -120,7 +118,7 @@ public class FindGapsInModel extends MeshiProgram implements Residues, AtomTypes
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -136,7 +134,7 @@ public class FindGapsInModel extends MeshiProgram implements Residues, AtomTypes
 				"Usage java -Xmx600m FindGapsInModel <alignment file name> <model filename> <output filename> <take buffer around gap>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		alignmentFileName = getOrderedArgument(args);
 		if (alignmentFileName == null) throw new RuntimeException(errorMessage);
@@ -152,7 +150,7 @@ public class FindGapsInModel extends MeshiProgram implements Residues, AtomTypes
 
 		String tmp = getOrderedArgument(args);
 		if (tmp == null) throw new RuntimeException(errorMessage);
-		residuesAroundGap = (new Integer(tmp.trim())).intValue();
+		residuesAroundGap = new Integer(tmp.trim());
 		System.out.println("# Residues to take around gap: "+residuesAroundGap);
 		
 		initRandom(999);

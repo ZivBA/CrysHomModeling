@@ -6,13 +6,9 @@ import meshi.geometry.DistanceMatrix;
 import meshi.molecularElements.Atom;
 
 public  class LennardJonesEnergyElement extends NonBondedEnergyElement {
-	public final double MAX_ENERGY = 30;
-	public final double ALPHA = 0.1;
-	private DistanceMatrix distanceMatrix;
 	private Atom atom1, atom2;
 	private double epsilon, sigma, sigma6, sigma6EpsilonFour, minusTwelveSigma6;
 	private boolean frozen;
-	private double dEdD;
 	private double dEdX;
 	private double dEdY;
 	private double dEdZ;
@@ -22,27 +18,10 @@ public  class LennardJonesEnergyElement extends NonBondedEnergyElement {
 	private double breakEnergy4;
 	private double breakEnergySquare4;
 	private double rMax;
-	private double contact, dCdD;
 	private Distance distance;
 	private LennardJonesParametersList parametersList;
 	
-	// --- Auxilary variables used in the evaluation --------
-	private double LJ;
-	private double LJPlus;
-	private double dLJdD;
-	private double invD = 0;
-	private double invD2;
-	private double invD6 = 0;
-	private double invD7;
-	private double invD12 = 0;
-	private double invD13;
 	private double dis = -1;
-	private double  rMaxMinusDis;
-	private double energy1, dE1dD;
-	private double rMaxMinusDisSquare;
-	private double rMaxMinusDisSquarePlusAlpha;
-	private double rMaxMinusDisTimesAlpha;
-	private double rMaxMinusDisSquarePlusAlphaSquare;
 	
 	// ------------------------------------------------------
 
@@ -50,12 +29,12 @@ public  class LennardJonesEnergyElement extends NonBondedEnergyElement {
 	
 	
 	public  LennardJonesEnergyElement() {}
-	public  LennardJonesEnergyElement(LennardJonesParametersList parametersList, 
-			DistanceMatrix distanceMatrix, int type, double weight){
+	public  LennardJonesEnergyElement(LennardJonesParametersList parametersList,
+	                                  DistanceMatrix distanceMatrix, double weight){
 		this.parametersList = parametersList;
 		this.weight = weight;
-		this.distanceMatrix = distanceMatrix;
-		breakEnergy = MAX_ENERGY/3;
+		double MAX_ENERGY = 30;
+		breakEnergy = MAX_ENERGY /3;
 		breakEnergy4 = breakEnergy*4;
 		breakEnergySquare4 =  breakEnergy4*breakEnergy;
 		rMax = DistanceMatrix.rMax();
@@ -96,21 +75,23 @@ public  class LennardJonesEnergyElement extends NonBondedEnergyElement {
 	}
 
 	private double updateEnergy() {
-		rMaxMinusDis = rMax - dis;
-		invD = distance.invDistance();		
-		invD2 = invD*invD;
-		invD6 = invD2*invD2*invD2;
-		invD7 = invD6*invD;
-		invD12 = invD6*invD6;
-		invD13 = invD12*invD;
-		LJ = sigma6EpsilonFour * (sigma6*invD12 - invD6);
-		dLJdD =  sigma6EpsilonFour * ( minusTwelveSigma6*invD13 + 6*invD7);
+		double rMaxMinusDis = rMax - dis;
+		double invD = distance.invDistance();
+		double invD2 = invD * invD;
+		double invD6 = invD2 * invD2 * invD2;
+		double invD7 = invD6 * invD;
+		double invD12 = invD6 * invD6;
+		double invD13 = invD12 * invD;
+		double LJ = sigma6EpsilonFour * (sigma6 * invD12 - invD6);
+		double dLJdD = sigma6EpsilonFour * (minusTwelveSigma6 * invD13 + 6 * invD7);
 
 		//smooth high energies
+		double dE1dD;
+		double energy1;
 		if (LJ >= breakEnergy) {
-			LJPlus = LJ+breakEnergy;
-			energy1 = breakEnergy4*LJ/LJPlus-breakEnergy;
-			dE1dD =breakEnergySquare4/(LJPlus*LJPlus)*dLJdD;
+			double LJPlus = LJ + breakEnergy;
+			energy1 = breakEnergy4* LJ / LJPlus -breakEnergy;
+			dE1dD =breakEnergySquare4/(LJPlus * LJPlus)* dLJdD;
 		}
 		else {
 			energy1 = LJ;
@@ -118,18 +99,19 @@ public  class LennardJonesEnergyElement extends NonBondedEnergyElement {
 		}
 
 		//quench to zero in rMax
-		rMaxMinusDisSquare = rMaxMinusDis*rMaxMinusDis;
-		rMaxMinusDisSquarePlusAlpha = rMaxMinusDisSquare+ALPHA;
-		rMaxMinusDisTimesAlpha = rMaxMinusDis*ALPHA;
-		rMaxMinusDisSquarePlusAlphaSquare = rMaxMinusDisSquarePlusAlpha*rMaxMinusDisSquarePlusAlpha;
-		contact = rMaxMinusDisSquare/rMaxMinusDisSquarePlusAlpha;
-		dCdD = -2*rMaxMinusDisTimesAlpha/rMaxMinusDisSquarePlusAlphaSquare; //The minus comes from rMaxMinusDis
-		energy = energy1*contact;
-		dEdD = dE1dD*contact + dCdD*energy1;	    
+		double rMaxMinusDisSquare = rMaxMinusDis * rMaxMinusDis;
+		double ALPHA = 0.1;
+		double rMaxMinusDisSquarePlusAlpha = rMaxMinusDisSquare + ALPHA;
+		double rMaxMinusDisTimesAlpha = rMaxMinusDis * ALPHA;
+		double rMaxMinusDisSquarePlusAlphaSquare = rMaxMinusDisSquarePlusAlpha * rMaxMinusDisSquarePlusAlpha;
+		double contact = rMaxMinusDisSquare / rMaxMinusDisSquarePlusAlpha;
+		double dCdD = -2 * rMaxMinusDisTimesAlpha / rMaxMinusDisSquarePlusAlphaSquare;
+		energy = energy1 * contact;
+		double dEdD = dE1dD * contact + dCdD * energy1;
 
-		dEdX = dEdD*distance.dDistanceDx();
-		dEdY = dEdD*distance.dDistanceDy();
-		dEdZ = dEdD*distance.dDistanceDz();
+		dEdX = dEdD *distance.dDistanceDx();
+		dEdY = dEdD *distance.dDistanceDy();
+		dEdZ = dEdD *distance.dDistanceDz();
 		return energy;
 	}        
 
@@ -152,7 +134,7 @@ public  class LennardJonesEnergyElement extends NonBondedEnergyElement {
 				"atom1 = "+atom1+"\n"+
 				"atom2 = "+atom2); 
 		return ("LennardJonesEnergyElement sigma = "+sigma+" epsilon = "+epsilon+
-				" rMax = "+rMax+"\n"+atom1.verbose(1)+"\n"+atom2.verbose(1));
+				" rMax = "+rMax+"\n"+atom1.verbose()+"\n"+atom2.verbose());
 	}
 
 }

@@ -1,7 +1,6 @@
 package meshi.energy.torsionVal;
 
 import meshi.energy.EnergyElement;
-import meshi.energy.Parameters;
 import meshi.geometry.Angle;
 import meshi.geometry.Torsion;
 import meshi.molecularElements.Atom;
@@ -9,14 +8,17 @@ import meshi.molecularElements.AtomList;
 
 public class TorsionValEnergyElement extends EnergyElement {
 
-    protected Atom atom1, atom2, atom3, atom4;
-    protected double target;
-    protected Torsion torsion;
-    protected double weight;
+    private Atom atom1;
+	private Atom atom2;
+	private Atom atom3;
+	private Atom atom4;
+    private double target;
+    private final Torsion torsion;
+    private double weight;
     private int torCode;
     private boolean targetSet = false;
 
-    public TorsionValEnergyElement(Torsion torsion, Parameters parameters, double weight) {
+    public TorsionValEnergyElement(Torsion torsion, double weight) {
     	this.torsion = torsion;
     	target = torsion.torsion();
     	if (!((torsion.getTorsionName().equals("CHI1"))||
@@ -45,7 +47,7 @@ public class TorsionValEnergyElement extends EnergyElement {
     	targetSet = true;
     }
 
-    public void setAtoms() {
+    protected void setAtoms() {
     	atoms = new AtomList();
     	atoms.add(atom1);
     	atoms.add(atom2);
@@ -100,6 +102,6 @@ public class TorsionValEnergyElement extends EnergyElement {
     	return ("TorsionValEnergyElement "+torsion.name()+" target = "+ Angle.rad2deg(target)+
     			" force = "+dFormatSrt.f(weight)+" torsion = "+
     			dFormatSrt.f(Angle.rad2deg(torsion.torsion()))+" energy = "+dFormatSrt.f(evaluate())+"\n"+
-    			atom1.verbose(1)+"\n"+atom2.verbose(1)+"\n"+atom3.verbose(1)+"\n"+atom4.verbose(1));
+    			atom1.verbose()+"\n"+atom2.verbose()+"\n"+atom3.verbose()+"\n"+atom4.verbose());
     }
 }

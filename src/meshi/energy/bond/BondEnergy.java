@@ -22,7 +22,7 @@ public class BondEnergy extends SimpleEnergyTerm {
     /**
      * The constructor associates any bond with its parameters.
      **/
-    protected DistanceMatrix distanceMatrix;
+    private DistanceMatrix distanceMatrix;
 
     public BondEnergy() {}
 

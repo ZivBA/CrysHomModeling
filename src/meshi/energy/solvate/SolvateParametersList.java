@@ -104,7 +104,7 @@ import java.util.StringTokenizer;
 
 public class SolvateParametersList extends ParametersList {
 	
-	public final int NTsai = 14; // The number of atom types used in Tsai 99'. Any Hydrogen is type 14.
+	private final int NTsai = 14; // The number of atom types used in Tsai 99'. Any Hydrogen is type 14.
     public final int[] atomicTypeConverter; // From MESHI atom types to Tsai 99'.
     public final double maxEnd; // The maximal distance where any sigmoid is not zero. This value must be less than the Rmax in the distance matrix. 
     public final Spline2D[] scPolarSplines;
@@ -197,7 +197,7 @@ public class SolvateParametersList extends ParametersList {
 	    while (line != null) {
 	    	stok = new StringTokenizer(line);
 	    	tmp = Atom.type(stok.nextToken().trim());
-	    	atomicTypeConverter[tmp] = Integer.valueOf(stok.nextToken().trim()).intValue()-1;
+	    	atomicTypeConverter[tmp] = Integer.valueOf(stok.nextToken().trim()) -1;
 	    	line = br.readLine();
 	    }
 	    br.close();
@@ -290,7 +290,7 @@ public class SolvateParametersList extends ParametersList {
 					NTsai + " array of doubles");
 				stok = new StringTokenizer(line);
 				for (int ind2=0 ; ind2<NTsai ; ind2++) 
-					ar[ind1][ind2] = Double.valueOf(stok.nextToken().trim()).doubleValue();
+					ar[ind1][ind2] = Double.valueOf(stok.nextToken().trim());
 			}
 			br.close();
 		}

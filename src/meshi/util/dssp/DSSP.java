@@ -8,13 +8,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 
 public class DSSP implements Residues {
-    protected String fileName;
+    private final String fileName;
     private char[] aa;
     private int[] resNum;
     private char[] ss;
     private char[] chainID;
     private double[] solvACC;
-    private double[] fullSol = {115,135,150,190,210,
+    private final double[] fullSol = {115,135,150,190,210,
 				75 ,195,175,200,170,
 				185,160,145,180,225,
 				115,140,155,255,230};
@@ -136,7 +136,7 @@ public class DSSP implements Residues {
     	return ans;
     }
 
-    public String getRelativeACC(){
+    private String getRelativeACC(){
     	String ans = "";
     	for (int i=0; i<resNum.length ; i++)
     		if (resNum[i] > -999){
@@ -148,7 +148,7 @@ public class DSSP implements Residues {
     	return ans;
     }
 
-    public String getAA(){
+    private String getAA(){
     	String ans = "";
     	for (int i=0; i<resNum.length ; i++){
     		if (resNum[i] > -999)
@@ -187,7 +187,7 @@ public class DSSP implements Residues {
     	return ans;
     }
 
-    public String getSSInOneLineConventional() {
+    private String getSSInOneLineConventional() {
     	String ans = "";
     	for (int i=0; i<resNum.length ; i++) {
     		if (resNum[i] > -999)
@@ -206,7 +206,7 @@ public class DSSP implements Residues {
     	return ans;
     }
 
-    public void readDSSP()  {
+    private void readDSSP()  {
     	int i=0;
     	boolean cont = true;
     	String line;
@@ -261,7 +261,7 @@ public class DSSP implements Residues {
     			line = fdssp.readLine();
     		} 
     		while (line != null) {
-    			if (line.indexOf("!") > -1) {
+    			if (line.contains("!")) {
     				i--;
     			}
     			else {

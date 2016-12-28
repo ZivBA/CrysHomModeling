@@ -2,13 +2,13 @@ package meshi.util.formats;
 import meshi.util.MeshiException;
 
 public class Format {
-    public final int FIELD;
-    public final int INDENT;
+    final int FIELD;
+    final int INDENT;
     public static final Format STANDARD = new Format(12,-1);
     public static final Format SHORTER = new Format(7,-1);
     public static final Format SHORT = new Format(8,-1);
     public static final Format VERY_SHORT = new Format(4,-1);
-    public Format(int field, int indent) {
+    Format(int field, int indent) {
 	FIELD = field;
 	INDENT = indent;
     }
@@ -53,10 +53,10 @@ public class Format {
 	    stringd.substring(expIndex,stringd.length()); 
 	return stringd;
     }
-    public static String fdoubleL(double d,int precision,int fieldSize) {
+    static String fdoubleL(double d, int precision, int fieldSize) {
 	return fstringL(fdouble(d,precision,fieldSize), fieldSize);
     }
-    public static String fdoubleR(double d,int precision,int fieldSize) {
+    static String fdoubleR(double d, int precision, int fieldSize) {
 	return fstringR(fdouble(d,precision,fieldSize), fieldSize);
     }
     private static String fint(int ii,int fieldSize) {
@@ -69,10 +69,10 @@ public class Format {
 	}
 	return temp;
     }	
-    public static String fintL(int ii,int fieldSize) {
+    static String fintL(int ii, int fieldSize) {
 	return fstringL(fint(ii,fieldSize), fieldSize);
     }
-    public static String fintR(int ii,int fieldSize) {
+    static String fintR(int ii, int fieldSize) {
 	return fstringR(fint(ii,fieldSize), fieldSize);
     }
     private static String fstring(String s,int fieldSize) {
@@ -80,13 +80,13 @@ public class Format {
 	return s.substring(0,fieldSize);
     }
 	
-    public static String fstringL(String s,int fieldSize) {
+    private static String fstringL(String s, int fieldSize) {
 	String temp = fstring(s,fieldSize);
 	for (int i = temp.length(); i < fieldSize; i++)
 	    temp +=" ";
 	return temp;
     }	
-    public static String fstringR(String s,int fieldSize) {
+    private static String fstringR(String s, int fieldSize) {
 	String temp = fstring(s,fieldSize); 
 	for (int i = temp.length(); i < fieldSize; i++)
 	    temp =" "+temp;

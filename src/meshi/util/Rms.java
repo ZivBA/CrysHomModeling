@@ -21,17 +21,17 @@ import java.util.Iterator;
 public class Rms implements KeyWords{
 
     private static boolean debug = true;
-    private boolean alive = true;
+    private final boolean alive = true;
     //data members
     private double[][] rotateMatrix;
     private double rms;
-    private Coordinates centerOfMass0 = new Coordinates();
-    private Coordinates centerOfMass1 = new Coordinates();
+    private final Coordinates centerOfMass0 = new Coordinates();
+    private final Coordinates centerOfMass1 = new Coordinates();
         
 
     //constructors
 
-    public Rms(ResidueAlignment residueAlignment) {
+    protected Rms(ResidueAlignment residueAlignment) {
 	this(new AtomAlignment( residueAlignment));
     }
 	
@@ -93,7 +93,7 @@ public class Rms implements KeyWords{
     private Coordinates centerOfMass0() { return centerOfMass0;}
     private Coordinates centerOfMass1() { return centerOfMass1;}
 
-    public static double superimpose(Protein protein0, Protein protein1, ResidueAlignment residueAlignment){
+    public static double superimpose(Protein protein1, ResidueAlignment residueAlignment){
 	AtomAlignment atomAlignment = new AtomAlignment(residueAlignment);
 	 Rms rms = new Rms(atomAlignment);
 	 Coordinates centerOfMass0 = rms.centerOfMass0();
@@ -130,7 +130,7 @@ public class Rms implements KeyWords{
 
     //methods
 
-    public double[][] getMatrix(){
+    private double[][] getMatrix(){
 	if (alive) return rotateMatrix;
 	else return null;
     }

@@ -9,7 +9,7 @@ import meshi.util.CommandList;
 import meshi.util.KeyWords;
 
 public class TwoTorsionsCreator extends EnergyCreator  implements KeyWords {
-    protected ParametersList parametersList = null;
+    private ParametersList parametersList = null;
  
     public TwoTorsionsCreator(double weight) {
 	super(weight);

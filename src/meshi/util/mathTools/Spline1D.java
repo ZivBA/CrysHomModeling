@@ -54,13 +54,13 @@ public class Spline1D {
 		breaks = new double[(st.countTokens()-1)/5 + 1];
 		coefs = new double[(st.countTokens()-1)/5][4];
 		for (i=0 ; st.countTokens()>1 ; i++) {
-			breaks[i] = Double.valueOf(st.nextToken().trim()).doubleValue();
-			coefs[i][0] = Double.valueOf(st.nextToken().trim()).doubleValue();
-			coefs[i][1] = Double.valueOf(st.nextToken().trim()).doubleValue();
-			coefs[i][2] = Double.valueOf(st.nextToken().trim()).doubleValue();
-			coefs[i][3] = Double.valueOf(st.nextToken().trim()).doubleValue();
+			breaks[i] = Double.valueOf(st.nextToken().trim());
+			coefs[i][0] = Double.valueOf(st.nextToken().trim());
+			coefs[i][1] = Double.valueOf(st.nextToken().trim());
+			coefs[i][2] = Double.valueOf(st.nextToken().trim());
+			coefs[i][3] = Double.valueOf(st.nextToken().trim());
 		}
-		breaks[i] = Double.valueOf(st.nextToken().trim()).doubleValue(); // value of the last break point
+		breaks[i] = Double.valueOf(st.nextToken().trim()); // value of the last break point
 		n = i;
 		// testing for even breaks
 		for (i=1 ; i<breaks.length-1 ; i++)
@@ -93,7 +93,7 @@ public class Spline1D {
 			coefs[index][2];				
 	}
 	
-	private final void calcEvenBreaks(double x) {
+	private void calcEvenBreaks(double x) {
 		int index = (int) ((x-breaks[0])/breakInterval);
 		double offset = x - breaks[0] - index*breakInterval;
 		double offset2 = offset*offset;

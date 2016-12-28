@@ -6,26 +6,27 @@ import meshi.molecularElements.Atom;
 
 
 public  class ExcludedVolEnergyElement extends NonBondedEnergyElement {
-    protected DistanceMatrix distanceMatrix;
-    protected Atom atom1, atom2;
-    protected Distance distance;
-    protected double sigma,C,Rfac;
+	private Atom atom1;
+	private Atom atom2;
+    private Distance distance;
+    private double sigma;
+	private double C;
+	private double Rfac;
     protected boolean frozen;
     protected double dEdD;
     protected double dEdX;
     protected double dEdY;
     protected double dEdZ;
-    protected double energy;
-    protected double weight;
-    protected double rMax;
-    protected ExcludedVolParametersList parametersList;
+	private double weight;
+    private double rMax;
+    private ExcludedVolParametersList parametersList;
 
     public  ExcludedVolEnergyElement() {}
     public  ExcludedVolEnergyElement(ExcludedVolParametersList parametersList, DistanceMatrix distanceMatrix,
                double Rfac, double weight) {
 	this.parametersList = parametersList;
 	this.weight = weight;
-	this.distanceMatrix = distanceMatrix;
+	    DistanceMatrix distanceMatrix1 = distanceMatrix;
 	this.Rfac = Rfac;
 	this.rMax = DistanceMatrix.rMax();
         //----------------------
@@ -63,7 +64,8 @@ public  class ExcludedVolEnergyElement extends NonBondedEnergyElement {
 	   else
 	      localSigma = sigma*Rfac;
     }
-	if (dis>localSigma) {
+	    double energy;
+	    if (dis>localSigma) {
 	    energy = dEdD = 0;
 	}
 	else {
@@ -102,6 +104,6 @@ public  class ExcludedVolEnergyElement extends NonBondedEnergyElement {
 									  "atom2 = "+atom2); 
 	double dis = distance.distance();
 	return ("ExcludedVolumeEnergyElement sigma = "+sigma+" Distance = "+
-		dFormatSrt.f(dis)+" rMax = "+rMax+"\n"+atom1.verbose(1)+"\n"+atom2.verbose(1));
+		dFormatSrt.f(dis)+" rMax = "+rMax+"\n"+atom1.verbose()+"\n"+atom2.verbose());
     }
 }

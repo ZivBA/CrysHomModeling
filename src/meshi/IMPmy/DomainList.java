@@ -4,13 +4,13 @@ import meshi.util.crossLinking.CrosslinkVector;
 
 import java.util.Vector;
 
-public abstract class DomainList  extends Vector<Domain>  {
+abstract class DomainList  extends Vector<Domain>  {
 	
 	private static final long serialVersionUID = 1L;
 
 	private DistanceConstraintList disConstList;
 	
-	public DomainList() { 
+	DomainList() {
 		disConstList = new DistanceConstraintList();
 	}
 	
@@ -24,7 +24,7 @@ public abstract class DomainList  extends Vector<Domain>  {
 		
 	public abstract void report(int reportNumber); 
 	
-	public Domain findDomain(String protName, int resNum) {
+	Domain findDomain(String protName, int resNum) {
 		for (Domain domain : this) {
 			if (domain.proteinName().equals(protName) && domain.isResNumInDomain(resNum)) {
 				return domain;
@@ -42,7 +42,7 @@ public abstract class DomainList  extends Vector<Domain>  {
 		}
 	}
 
-	public DistanceConstraintList disConstList() {
+	DistanceConstraintList disConstList() {
 		return disConstList;
 	}
 	

@@ -7,14 +7,14 @@ import meshi.util.file.MeshiWriter;
 
 import java.io.IOException;
 
-public class Splice {
+class Splice {
 
 	/**
 	 * The purpose of this class is to put changes made into one subunit in one ring into all the 4 occurrences of the subunit in the unit cell.
 	 */
 	
 	
-	public static AtomList splice(AtomList oldList , AtomList newList , int firstResToTake , int lastResToTake, String chainName) {
+	private static AtomList splice(AtomList oldList, AtomList newList, int firstResToTake, int lastResToTake, String chainName) {
 		System.out.println("\n\n" + oldList.atomAt(0) + "\n" + newList.atomAt(0) + "\n" + chainName);
 		AtomList outList = new AtomList();
 		AtomList oldListUnchanged = new AtomList();
@@ -46,7 +46,7 @@ public class Splice {
 	}
 	
 
-	public static AtomList fixAtomNumbers(AtomList oldList) {
+	private static AtomList fixAtomNumbers(AtomList oldList) {
 		AtomList outList = new AtomList();
 
 		String oldChain = "-";

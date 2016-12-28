@@ -6,7 +6,7 @@ import meshi.util.file.MeshiWriter;
 
 import java.io.IOException;
 
-public class ConvertTINKERtoMESHI {
+class ConvertTINKERtoMESHI {
 
 	/**
 	 * Run as: ConvertTINKERtoMESHI <TINKER pdb> <original PDB> <output PDB>

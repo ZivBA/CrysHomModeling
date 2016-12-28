@@ -6,7 +6,7 @@ import meshi.util.file.File2StringArray;
  * Simple reading of a sequence from a FASTA file. 
  * @author Nir 
  **/
-public class FastaSeq {
+class FastaSeq {
 
     private String fileName = null;
     private String title = null;
@@ -17,16 +17,15 @@ public class FastaSeq {
         String[] lines = File2StringArray.f2a(fileName);
         String title = null;
         String seq = "";
-        for (int c=0 ; c<lines.length ; c++) {
-        	if (!lines[c].startsWith("#")) {  // Skipping comments
-        		if (lines[c].startsWith(">")) { // found a title
-        			title = lines[c].substring(1).trim();
-        		} 
-        		else {
-        			seq += lines[c].trim();
-        		}
-        	}
-        }
+		for (String line : lines) {
+			if (!line.startsWith("#")) {  // Skipping comments
+				if (line.startsWith(">")) { // found a title
+					title = line.substring(1).trim();
+				} else {
+					seq += line.trim();
+				}
+			}
+		}
 		this.title = title;
 		this.seq = seq;
 	}

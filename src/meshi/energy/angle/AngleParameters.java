@@ -9,7 +9,9 @@ import java.util.StringTokenizer;
 
 public class AngleParameters extends Parameters implements Comparable {
     public final double target, force, force2;
-    public final int type1, type2, type3;
+    private final int type1;
+	private final int type2;
+	private final int type3;
     public AngleParameters() {
 	this(-1,-1,-1,-9999.9,-9999.9); 
     }
@@ -26,7 +28,7 @@ public class AngleParameters extends Parameters implements Comparable {
 	     toDouble(line.nextToken()), toDouble(line.nextToken()));
     }
 
-    public AngleParameters(int type1, int type2, int type3, double  targetAngle, double forceConstant) {
+    private AngleParameters(int type1, int type2, int type3, double targetAngle, double forceConstant) {
 	this.type2 = type2;
 	if (type1 < type3) {
 	    this.type1 = type1;

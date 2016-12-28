@@ -18,13 +18,12 @@ public class HB_DistanceAttribute implements MeshiAttribute{
     public double deDyHAtom;
     public double deDzHAtom;
     public Atom oAtom, hAtom;
-    public final boolean isHbond;
-    public double epsilon, sigma, sigma6, sigma6EpsilonFour, minusTwelveSigma6;
+	public double epsilon, sigma, sigma6, sigma6EpsilonFour, minusTwelveSigma6;
     public HydrogenBondsParameters parameters;
     public static final int key = HYDROGEN_BONDS_ATTRIBUTE;
 
     public HB_DistanceAttribute (boolean isHbond){
-	this.isHbond = isHbond;
+	    boolean isHbond1 = isHbond;
     }
 
     public void setParameters(HydrogenBondsParameters parameters){

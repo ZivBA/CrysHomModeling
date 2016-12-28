@@ -7,7 +7,7 @@ import meshi.energy.NonBondedEnergyTerm;
 import meshi.geometry.DistanceMatrix;
 import meshi.util.Classes;
 
-public class EVenergy extends NonBondedEnergyTerm implements Classes{
+class EVenergy extends NonBondedEnergyTerm implements Classes{
     public EVenergy(){super();}
 
     public EVenergy(DistanceMatrix distanceMatrix, 

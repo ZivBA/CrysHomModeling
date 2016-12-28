@@ -7,15 +7,16 @@ import meshi.util.UpdateableException;
 import java.util.Iterator;
 
 public class Grid {
-    public final double edge;
+    private final double edge;
     private final int minSphereRadiusToEdge;
-    private final long  MAX_GRID_SIZE = 500000;
-    private final double SPHERE_COND = 1.3;
-    int xSize = 0, ySize = 0, zSize = 0;
-    int xSizeNew, ySizeNew, zSizeNew;
-    public double minX, minY, minZ, maxX, maxY, maxZ;
-    Object[] atoms;
-    GridCell[][][] cells;
+	private int xSize = 0;
+	private int ySize = 0;
+	private int zSize = 0;
+	private double minX;
+	private double minY;
+	private double minZ;
+	private Object[] atoms;
+    private GridCell[][][] cells;
     GridCell defaultCell;
     private double[][] prevCoor;
     private AtomList movingAtoms;
@@ -63,37 +64,45 @@ public class Grid {
     public boolean build()  throws UpdateableException {
 	double bufferOneThirdSqr = DistanceMatrix.bufferOneThirdSqr;
 	minX = minY = minZ = 10000;
-	maxX = maxY = maxZ = -10000;
+	    double maxZ;
+	    double maxY;
+	    double maxX = maxY = maxZ = -10000;
 	Atom atom;
 	int size = atoms.length;
 			
 	movingAtoms.reset();
-	for (int i = 0; i < size; i++) {
-	    atom = (Atom) atoms[i];
-	    double x = atom.x(); 
-	    double y = atom.y(); 
-	    double z = atom.z();
-	    if (x < minX) minX = x; 
-	    if (y < minY) minY = y; 
-	    if (z < minZ) minZ = z;
-	    if (x > maxX) maxX = x; 
-	    if (y > maxY) maxY = y; 
-	    if (z > maxZ) maxZ = z;
-	    int atomNumber = atom.number();
-	    double dx = x - prevCoor[atomNumber][0]; 
-	    double dy = y - prevCoor[atomNumber][1]; 
-	    double dz = z - prevCoor[atomNumber][2];
-	    double d2 = dx*dx + dy*dy + dz*dz;
-	    if (d2 > bufferOneThirdSqr) { 
-		prevCoor[atomNumber][0] = x; 
-		prevCoor[atomNumber][1] = y; 
-		prevCoor[atomNumber][2] = z;
-		movingAtoms.add(atom);
+	    for (Object atom1 : atoms) {
+		    atom = (Atom) atom1;
+		    double x = atom.x();
+		    double y = atom.y();
+		    double z = atom.z();
+		    if (x < minX)
+			    minX = x;
+		    if (y < minY)
+			    minY = y;
+		    if (z < minZ)
+			    minZ = z;
+		    if (x > maxX)
+			    maxX = x;
+		    if (y > maxY)
+			    maxY = y;
+		    if (z > maxZ)
+			    maxZ = z;
+		    int atomNumber = atom.number();
+		    double dx = x - prevCoor[atomNumber][0];
+		    double dy = y - prevCoor[atomNumber][1];
+		    double dz = z - prevCoor[atomNumber][2];
+		    double d2 = dx * dx + dy * dy + dz * dz;
+		    if (d2 > bufferOneThirdSqr) {
+			    prevCoor[atomNumber][0] = x;
+			    prevCoor[atomNumber][1] = y;
+			    prevCoor[atomNumber][2] = z;
+			    movingAtoms.add(atom);
+		    }
 	    }
-	}
-	xSizeNew = round((maxX-minX)/edge )+1;
-	ySizeNew = round((maxY-minY)/edge )+1;
-	zSizeNew = round((maxZ-minZ)/edge )+1;
+	    int xSizeNew = round((maxX - minX) / edge) + 1;
+	    int ySizeNew = round((maxY - minY) / edge) + 1;
+	    int zSizeNew = round((maxZ - minZ) / edge) + 1;
 	if ((xSizeNew > xSize)|
 	    (ySizeNew > ySize)|
 	    (zSizeNew > zSize)|
@@ -103,11 +112,12 @@ public class Grid {
 	    xSize = xSizeNew;
 	    ySize = ySizeNew;
 	    zSize = zSizeNew;
-	    if (xSize*ySize*zSize > MAX_GRID_SIZE) {
+		long MAX_GRID_SIZE = 500000;
+		if (xSize*ySize*zSize > MAX_GRID_SIZE) {
 		System.out.println(" An Error wile creating a new grid"+
 				   "The requested grid size "+xSize+"*"+ySize+"*"+zSize+"="+
 				   (xSize*ySize*zSize)+
-				   "is larger than MAX_GRID_SIZE="+MAX_GRID_SIZE);
+				   "is larger than MAX_GRID_SIZE="+ MAX_GRID_SIZE);
 		failToBuild = true;
 		return false;
 	    } 
@@ -119,7 +129,7 @@ public class Grid {
 				   "The program failed in building the requested "
 				   +xSize+"*"+ySize+"*"+zSize+" array.\n"+
 				   "probably the array is too large. You may solve this problem by "+
-				   "reducing MAX_GRID_SIZE which is currently "+MAX_GRID_SIZE);
+				   "reducing MAX_GRID_SIZE which is currently "+ MAX_GRID_SIZE);
 		throw new UpdateableException();
 	    } 
 	    for (int X = 0; X < xSize; X++)
@@ -163,8 +173,9 @@ public class Grid {
             else  {
                 double cellR = (minSphereRadiusToEdge+0.5)*(minSphereRadiusToEdge+0.5);
 		for (int i = xFrom; i < xTo; i++ )
-                    for (int j = yFrom; j < yTo; j++ ) {                    
-			if ( ((i-X)*(i-X)+(j-Y)*(j-Y)) / cellR > SPHERE_COND) continue;
+                    for (int j = yFrom; j < yTo; j++ ) {
+	                    double SPHERE_COND = 1.3;
+	                    if ( ((i-X)*(i-X)+(j-Y)*(j-Y)) / cellR > SPHERE_COND) continue;
 			for (int k = zFrom; k < zTo; k++ ) {
 			    if ( ((i-X)*(i-X)+(k-Z)*(k-Z)) / cellR > SPHERE_COND) continue;
 			    cells[i][j][k].add(atom);
@@ -182,7 +193,7 @@ public class Grid {
 	return cells[X][Y][Z];
     }
 
-    public static int round(double d){
+    private static int round(double d){
         return (int)(d+0.5);
     }
     public boolean failToBuild() {return failToBuild;}

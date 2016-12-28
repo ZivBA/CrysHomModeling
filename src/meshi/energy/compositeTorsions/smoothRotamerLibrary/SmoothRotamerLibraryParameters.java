@@ -16,14 +16,14 @@ import meshi.parameters.Residues;
  * @author El-ad David Amir
  *
  */
-public abstract class SmoothRotamerLibraryParameters extends Parameters 
+abstract class SmoothRotamerLibraryParameters extends Parameters
 	implements CompositeTorsionsDefinitions, Residues {
 
 	/** residue type */
 	private final int residueType;
 	
 	/** polynomials used */
-	protected SplinedPolynomial polynomials[];
+	SplinedPolynomial[] polynomials;
 	
 	/* The following types of polynomials are used:
 	 * no. of chi
@@ -39,7 +39,7 @@ public abstract class SmoothRotamerLibraryParameters extends Parameters
 	
 	/** Updates residue type of parameters.
 	 */
-	public SmoothRotamerLibraryParameters( int residueType ) {
+	SmoothRotamerLibraryParameters(int residueType) {
 		this.residueType = residueType;
 		
 		if( !legalResidueType() )

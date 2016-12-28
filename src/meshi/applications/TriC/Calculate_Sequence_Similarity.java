@@ -9,7 +9,7 @@ import meshi.applications.corpus.Corpus;
  *
  */
 
-public class Calculate_Sequence_Similarity {
+class Calculate_Sequence_Similarity {
 	
 	
 	public static void main(String[] args) {
@@ -39,7 +39,7 @@ public class Calculate_Sequence_Similarity {
 			boolean foundGap = false;
 			for (int unit=0 ; unit<8 ; unit++) {
 				String tmp = vec.getProfile(conversion.charAt(unit), pos);
-				if (tmp.indexOf("-")!=-1) {
+				if (tmp.contains("-")) {
 					foundGap = true;
 				}				
 			}

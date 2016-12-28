@@ -2,8 +2,6 @@ package ModellingTool;
 
 import ModellingUtilities.molecularElements.ProteinActions;
 import ModellingUtilities.molecularElements.SimpleProtein;
-import ScoreUtilities.MRC_Map_New;
-import ScoreUtilities.SFCheckIntegration.SFCheckThread;
 import ScoreUtilities.ScoringGeneralHelpers;
 import ScoreUtilities.scwrlIntegration.SCWRLactions;
 import ScoreUtilities.scwrlIntegration.SCWRLrunner;
@@ -27,62 +25,84 @@ import static ScoreUtilities.ScoringGeneralHelpers.csvToMatrix;
 /**
  * Created by zivben on 09/04/16.
  */
-public class CRYS_Score {
+class CRYS_Score {
 	private final RunParameters params;
-	private MRC_Map_New myMap;
+	private RvalAlignerCluster alignThread;
+	
+	public SimpleProtein getMyProt() {
+		return myProt;
+	}
+	
 	private SimpleProtein myProt;
-	public char requestedChain;
-	private double[][] chainIntensityMatrix;
-	public ArrayList<String> logFile = new ArrayList<>();
-	public ArrayList<File> toDelete = new ArrayList<>();
-	private List<Integer[]> originalPos;
-	private File scwrlOutput;
+	private char requestedChain;
+	private final ArrayList<File> toDelete = new ArrayList<>();
 	private File fastaFile;
 	private String fastaSequence;
-
-	public int getExpectedTotalNumberOfFiles() {
-		return expectedTotalNumberOfFiles;
-	}
-
 	private int expectedTotalNumberOfFiles;
-
-	public CRYS_Score(RunParameters params) {
+	
+	/**
+	 * Constructor for CRYS_Score main program object.
+	 * Creates the SimpleProtein object and sets the requested chains to process according to Params.
+	 * also calculates the expected number of files to process for progress tracking.
+	 *
+	 * @param params a RunParameters object used to track and pass around the program parameters.
+	 */
+	CRYS_Score(RunParameters params) {
 		this.params = params;
 		try {
 			this.myProt = new SimpleProtein(params.getPDBsrc(), params);
 			requestedChain = params.getChainToProcess();
 			expectedTotalNumberOfFiles = myProt.getChain(requestedChain).getLength() * 20;
-			//TODO find a way to read CIF files to map object to allow for multithreading of SFCHECK
-
-
+//			TODO find a way to read CIF files to map object to allow for multithreading of SFCHECK
+			
+			
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 			System.out.println("Problem processing PDB file");
 		} catch (Exception e) {
 			e.printStackTrace();
+			
 		}
 	}
-
+	
+	/**
+	 * Getter for AminoAcid distribution (currently not used)
+	 *
+	 * @return 2D array of the acid distribution in the protein.
+	 * @throws InvalidPropertiesFormatException when the protein file cannot be processed for some reason.
+	 */
 	public int[][] getAcidDist() throws InvalidPropertiesFormatException {
 		return (myProt.acidDist != null ? myProt.acidDist : myProt.calcAcidDist());
 	}
-
-	public List<List<SCWRLrunner>> iterateAndGenScwrl() throws IOException, MissingChainID {
-
+	
+	/**
+	 * Combinatorical and main part of the program -
+	 * Processes "myProt" protein object - strips all amino acids and converts them to ALA.
+	 * then iterates over each position, placing each AA in that position and generates a new PDB file.
+	 * Generates a SCWRLrunner object for each such permutation. to be executed later.
+	 *
+	 * @return List of Lists of SCWRLrunner objects. topmost list is of chains, each lower list is for
+	 * SCWRL future executions per PDB permutation.
+	 * @throws IOException    If there's a problem reading some files or writing to disk.
+	 * @throws MissingChainID if there is no Chain ID to use for reference.
+	 */
+	List<List<SCWRLrunner>> iterateAndGenScwrl() throws IOException, MissingChainID {
+		
 		List<List<SCWRLrunner>> taskList = new LinkedList<>();
-		// if cannot read existing results, generate new files.
+		// For faster executions when changing calculation parameters, if the raw data exists, only go through the calculation part of the program.
 		if (!checkExistingCSVs()) {
-
+			
 			System.out.println("Starting protein scoring, saving original positions.");
 			myProt.saveOriginalPositions();
-			originalPos = myProt.getOriginalPositions();
-
-			System.out.println("Stripping all amino acid resiudes and setting to ALA.");
+			
+			System.out.println("Stripping all amino acid resiudes and setting to ALA for selected chains.");
 			ProteinActions.stripAndAllALAToObject(myProt, params);
 			System.out.println("Iterating all acid permutations and creating SCWRL input files");
-			scwrlOutput = ProteinActions.iterateAcids(myProt, params);
+			System.out.flush();
+			File scwrlOutput = ProteinActions.iterateAcids(myProt, params);
 			params.setScwrlOutputFolder(scwrlOutput);
 			File chainSubFolders[] = scwrlOutput.listFiles();
+			assert chainSubFolders != null;
 			for (File chain : chainSubFolders) {
 				if (chain.isDirectory()) {
 					if (chain.getAbsolutePath().endsWith(File.separator + requestedChain) || requestedChain == '\0') {
@@ -93,33 +113,38 @@ public class CRYS_Score {
 					}
 				}
 			}
-
-
+			
+			
 		} else {
 			calculations();
 			return null;
 		}
 		return taskList;
 	}
-
-
+	
+	/**
+	 * looks for the raw data CSV files that are generated by SCWRL and other parts of the program.
+	 * if they exist, read them and populate the relevant fields with the data for further processing.
+	 *
+	 * @return true if all raw data is present, false if something is missing or unreadable.
+	 */
 	private boolean checkExistingCSVs() {
-
+		
 		//try reading CSVs
 		try {
 			File tempCSVfolder = ScoringGeneralHelpers.makeFolder(new File(myProt.getSource().getParent() + File
 					.separator + "tempCSVs"));
-
-
+			
+			
 			for (SimpleProtein.ProtChain chain : myProt) {
 				if (chain.getChainID() == requestedChain || requestedChain == '\0') {
 					File resultCSV = new File(tempCSVfolder.getAbsolutePath() + File.separator + myProt.getFileName()
 							+ "_" + chain.getChainID() + "_resultMatrix.csv");
-
+					
 					File correctPositions = new File(
 							tempCSVfolder.getAbsolutePath() + File.separator + myProt.getFileName()
 									+ "_" + chain.getChainID() + "_originalPositions.csv");
-
+					
 					double[][] temp;
 					temp = csvToMatrix(resultCSV);
 					if (temp != null) {
@@ -128,91 +153,40 @@ public class CRYS_Score {
 						System.out.println("Existing CSVs not found or malformed, processing from scratch.");
 						return false;
 					}
-
+					
 					double[][] tempPositions = csvToMatrix(correctPositions);
 					if (tempPositions == null) {
 						System.out.println("Existing CSVs not found or malformed, processing from scratch.");
 						return false;
 					}
 					chain.originalPositions = new Integer[tempPositions[0].length];
-					for (int i = 0; i < tempPositions.length; i++) {
-						for (int j = 0; j < tempPositions[i].length; j++) {
-							chain.originalPositions[j] = (int) tempPositions[i][j];
+					for (double[] tempPosition : tempPositions) {
+						for (int j = 0; j < tempPosition.length; j++) {
+							chain.originalPositions[j] = (int) tempPosition[j];
 						}
 					}
+					return true;
 				}
-				return true;
+				
 			}
-
+			
 		} catch (Exception e) {
 			System.out.println("Existing CSVs not found or malformed, processing from scratch.");
 			return false;
 		}
-
-
+		
+		
 		return false;
 	}
-
-
-	List<SFCheckThread> processSCWRLfolder() throws IOException, MissingChainID {
-
-		List<SFCheckThread> taskList = new LinkedList<>();
-		SimpleProtein tempProt;
-
-		/**
-		 * get input File object, read and convert to List of Files (PDB Iterations) for processing.
-		 */
-		List<File> chainFolders = new ArrayList<>();
-		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(scwrlOutput.toPath())) {
-			for (Path path : directoryStream) {
-				if (path.toString().endsWith(File.separator + requestedChain)) {
-					chainFolders.add(path.toFile());
-				} else if (requestedChain == '\0') {
-					chainFolders.add(path.toFile());
-				}
-			}
-		} catch (IOException ex) {
-			System.out.println("There was a problem processing the SCWRL input folder.");
-			System.err.println(ex.getLocalizedMessage());
-			System.err.println(ex.getMessage());
-			throw ex;
-		}
-
-		/**
-		 * read each chain File object
-		 */
-		for (File chain : chainFolders) {
-			if (chain.isDirectory()) {
-				try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(chain.toPath())) {
-					for (Path path : directoryStream) {
-						if (path.getFileName().toString().endsWith("_SCWRLed.pdb")) {
-							taskList.add(new SFCheckThread(path.toFile(), params));
-						}
-
-					}
-				} catch (ArrayIndexOutOfBoundsException ex) {
-					System.out.println("array index OOB exception for file: " + chain.getAbsolutePath());
-				} catch (IOException ex) {
-					System.out.println("array index OOB exception for file: " + chain.getAbsolutePath());
-					System.err.println(ex.getMessage());
-					throw ex;
-				}
-			}
-
-		}
-		return taskList;
-	}
-
-	private void scoreSingleScwrl(SimpleProtein tempProt) {
-		//TODO process SCWRL file with SFCHECK
-	}
-
-
-	public void deleteChains() {
+	
+	/**
+	 * once done processing the temporary PDB files, delete them if requested.
+	 */
+	void deleteChains() {
 		if (!params.isDebug()) {
 			for (File deleteCandidate : toDelete) {
 				deleteCandidate.delete();
-
+				
 				try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(deleteCandidate.toPath())) {
 					for (Path path : directoryStream) {
 						if (!path.getFileName().toString().endsWith("_SCWRLed.pdb")) {
@@ -225,17 +199,22 @@ public class CRYS_Score {
 			}
 		}
 	}
-
-
-	public void processSFCheckResults(List<String[]> sfCheckResultSet) throws SfCheckResultError, IOException {
+	
+	/**
+	 * Read the SFCheck result list and populate the relevant fields with the CC values.
+	 *
+	 * @param sfCheckResultSet the list of SFCheck results for this chain.
+	 * @throws SfCheckResultError if the result line from the SFCheck logfile is not according to known pattern, an error is thrown.
+	 */
+	RvalAlignerCluster processSFCheckResults(List<String[]> sfCheckResultSet) throws SfCheckResultError {
+//		if (sfCheckResultSet.size() != 2){
+//			throw new SfCheckResultError(sfCheckResultSet.get(0)[0]);
+//		}
 		int chainLength = myProt.getChain(requestedChain).getLength();
-
-
-
 		Pattern p = Pattern.compile(".*?(?:_(\\d+)_).*?_([A-Z]+)_.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		Matcher m = p.matcher("");
-
-		chainIntensityMatrix = new double[20][chainLength];
+		
+		double[][] chainIntensityMatrix = new double[20][chainLength];
 		for (String[] line : sfCheckResultSet) {
 			m.reset(line[0]);
 			if (!m.matches()) {
@@ -250,65 +229,66 @@ public class CRYS_Score {
 				System.out.println("Problem matching string: " + line[0]);
 				e.printStackTrace();
 			}
-			chainIntensityMatrix[resNum][position] = Double.parseDouble(line[1]);
-			myProt.getChain(requestedChain).resIntensityValueMatrix = chainIntensityMatrix;
+			try {
+				chainIntensityMatrix[resNum][position] = Double.parseDouble(line[1]);
+				myProt.getChain(requestedChain).resIntensityValueMatrix = chainIntensityMatrix;
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
 		}
-
+		
 		calculations();
-
-	}
-
-	private void calculations() {
-		calcMedian(myProt.getChain(requestedChain));
-		calcZvalue(myProt.getChain(requestedChain));
-		calcSVMweightedZvalue(myProt.getChain(requestedChain));
-
+		alignThread = null;
 		try {
-			createCSVs(myProt.getChain(requestedChain));
+			alignThread = createCSVs(myProt.getChain(requestedChain));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		return alignThread;
 	}
-
-	public List<String> getScwrledFiles() throws IOException {
-		List<String> filesToScwrl = new ArrayList<>();
-
-		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(scwrlOutput.toPath())) {
-			for (Path path : directoryStream) {
-				if (!path.getFileName().toString().endsWith("_SCWRLed.pdb")) {
-					filesToScwrl.add(path.toString());
-				}
-			}
-		} catch (IOException ex) {
-			throw ex;
-		}
-		return filesToScwrl;
+	
+	
+	/**
+	 * Calculate Z-Scores, Medians and SVM-Weighted Z-Score from raw data.
+	 */
+	private void calculations() {
+		System.out.println("Starting calculations\n");
+		calcMedian(myProt.getChain(requestedChain));
+		calcZvalue(myProt.getChain(requestedChain));
+		calcSVMweightedZvalue(myProt.getChain(requestedChain));
 	}
-
+	
 	private void calcSVMweightedZvalue(SimpleProtein.ProtChain chain) {
-		for (int i =0; i<chain.newZvalue.length; i++){
-			for (int j=0; j < chain.newZvalue[i].length; j++){
-				double tempNewZvalue = 0d;
-				for (int k=0; k < chain.newZvalue.length; k++){
-					tempNewZvalue += (chain.allZvalueMatrix[k][j] * crysSVMmatrix[i][k]);
+		
+		for (int i = 0; i < chain.newZvalue[0].length; i++) {
+			for (int j = 0; j < 20; j++) {
+				double tmpVal = 0d;
+				for (int k = 0; k < 20; k++) {
+					tmpVal += crysSVMmatrix[j][k] * chain.allZvalueMatrix[k][i];
 				}
-				tempNewZvalue += crysSVMmatrix[i][20];
-				chain.newZvalue[i][j] = tempNewZvalue;
+				tmpVal += crysSVMmatrix[j][20];
+				
+				chain.newZvalue[j][i] = tmpVal;
 			}
 		}
 	}
-
-
-
+		
+	/**
+	 * calculate the Median score for a protein chain. this is used for Z-Score calculations later.
+	 * also calculate seperate Median for the True results and False results (results in true positions Vs. all other iterations).
+	 *
+	 * @param chain The chain to calculate for.
+	 */
 	private void calcMedian(SimpleProtein.ProtChain chain) {
 		List<List<Double>> falseValuesList = new LinkedList<>();
 		List<List<Double>> trueValuesList = new LinkedList<>();
 		List<List<Double>> allValuesList = new LinkedList<>();
-
+		
 		for (int i = 0; i < chain.resIntensityValueMatrix.length; i++) {
-			falseValuesList.add(new LinkedList<Double>());
-			trueValuesList.add(new LinkedList<Double>());
-			allValuesList.add(new LinkedList<Double>());
+			falseValuesList.add(new LinkedList<>());
+			trueValuesList.add(new LinkedList<>());
+			allValuesList.add(new LinkedList<>());
 			for (int j = 0; j < chain.resIntensityValueMatrix[i].length; j++) {
 				if (chain.originalPositions[j] != i) {
 					falseValuesList.get(i).add(chain.resIntensityValueMatrix[i][j]);
@@ -325,8 +305,8 @@ public class CRYS_Score {
 		double[] falseValuesMedian = new double[falseValuesList.size()];
 		double[] trueValuesMedian = new double[trueValuesList.size()];
 		double[] allValuesMedian = new double[allValuesList.size()];
-
-
+		
+		
 		for (int i = 0; i < falseValuesList.size(); i++) {
 			if (falseValuesList.get(i).size() == 0) {
 				falseValuesMedian[i] = 0;
@@ -339,7 +319,7 @@ public class CRYS_Score {
 				}
 			}
 		}
-
+		
 		for (int i = 0; i < allValuesList.size(); i++) {
 			if (allValuesList.get(i).size() == 0) {
 				allValuesMedian[i] = 0;
@@ -352,7 +332,7 @@ public class CRYS_Score {
 				}
 			}
 		}
-
+		
 		for (int i = 0; i < trueValuesList.size(); i++) {
 			if (trueValuesList.get(i).size() == 0) {
 				trueValuesMedian[i] = 0;
@@ -365,29 +345,18 @@ public class CRYS_Score {
 				}
 			}
 		}
-
+		
 		chain.medianTrue = trueValuesMedian;
 		chain.medianFalse = falseValuesMedian;
 		chain.allMedian = allValuesMedian;
-
+		
 		for (int i = 0; i < chain.signalMaybe.length; i++) {
 			chain.signalMaybe[i] = chain.medianTrue[i] - chain.medianFalse[i];
 		}
-
+		
 	}
-
-	public void calcZvalue() throws InvalidPropertiesFormatException {
-
-
-		for (SimpleProtein.ProtChain chain : myProt) {
-			logFile.add("Calculating Z-Values for chain: " + chain.getChainID());
-			calcZvalue(chain);
-			//			zValueHelperWithBackBone(chain);
-			calcMedian(chain);
-		}
-
-
-	}
+	
+	
 	/**
 	 * calc zValue per position/AA combination. only for residue atoms, no BB
 	 *
@@ -397,140 +366,168 @@ public class CRYS_Score {
 		double tempAvg[] = new double[20];
 		double tempStD[] = new double[20];
 		chain.allZvalueMatrix = new double[20][chain.resIntensityValueMatrix[0].length];
-
-
+		
+		
 		// ture z-score uses mean, we use Median.
-
-//		// calc tempAvg per column in the intensity value matrix ( avarage of scores per amino acid in every pos)
+		
+		//		// calc tempAvg per column in the intensity value matrix ( avarage of scores per amino acid in every pos)
 		for (int i = 0; i < chain.resIntensityValueMatrix.length; i++) {
 			for (int j = 0; j < chain.resIntensityValueMatrix[i].length; j++) {
 				tempAvg[i] += chain.resIntensityValueMatrix[i][j];
 			}
 			tempAvg[i] = tempAvg[i] / chain.resIntensityValueMatrix[i].length;
-
-//			calc standard deviation for each column
+			
+			//			calc standard deviation for each column
 			for (int j = 0; j < chain.resIntensityValueMatrix[i].length; j++) {
 				tempStD[i] += ((chain.resIntensityValueMatrix[i][j] - tempAvg[i]) * (chain.resIntensityValueMatrix[i][j] - tempAvg[i]));
 			}
-			tempStD[i] = (double) Math.round((Math.sqrt(tempStD[i] / (double) chain.resIntensityValueMatrix[i].length)) * 10000d) / 10000d ;
+			tempStD[i] = (double) Math.round((Math.sqrt(tempStD[i] / (double) chain.resIntensityValueMatrix[i].length)) * 10000d) / 10000d;
 		}
-
-
+		
+		
 		// calc Z-Value for each discrete acid in every position
 		for (int i = 0; i < chain.resIntensityValueMatrix.length; i++) {
 			for (int j = 0; j < chain.resIntensityValueMatrix[i].length; j++) {
-
+				
 				if (tempStD[i] < (0.00009d)) {
 					chain.allZvalueMatrix[i][j] = 0.0d;
 				} else {
 					Double tmpScore = (double) Math.round(
-							(((chain.resIntensityValueMatrix[i][j]) - chain.allMedian[i]) / tempStD[i]) *10000d  ) / 10000d;
+							(((chain.resIntensityValueMatrix[i][j]) - chain.allMedian[i]) / tempStD[i]) * 10000d) / 10000d;
 					if (tmpScore.isNaN()) {
 						tmpScore = 0.0;
 					}
 					// add score to original acid score only if right position
 					if (chain.originalPositions[j] == i) {
-						chain.trueZvalues[j] = tmpScore;
+						chain.trueZvalues[j] = tmpScore>4?4:tmpScore<-4?-4:tmpScore;
 					}
-					chain.allZvalueMatrix[i][j] = tmpScore;
-
+					if (tmpScore > 4.0) {
+						chain.allZvalueMatrix[i][j] = 4.0;
+					} else if (tmpScore < -4.0) {
+						chain.allZvalueMatrix[i][j] = -4.0;
+					} else {
+						chain.allZvalueMatrix[i][j] = tmpScore;
+					}
 				}
 			}
 		}
-
-
+		
+		
 	}
-
-	public void createCSVs(SimpleProtein.ProtChain chain) throws IOException {
-
-		logFile.add("Creating CSV Files");
+	
+	private RvalAlignerCluster createCSVs(SimpleProtein.ProtChain chain) throws IOException {
+		
+		System.out.println("Creating CSV Files");
 		File tempCSVfolder = ScoringGeneralHelpers.makeFolder(new File(myProt.getSource().getParent() + File.separator + "tempCSVs"));
-
-
+		
+		
 		// run zvaluematrix through de-negativeation vector (try to make all values positive)
-
+		
 		File resultCSV = new File(tempCSVfolder.getAbsolutePath() + File.separator + myProt.getFileName()
 				+ "_" + chain.getChainID() + "_resultMatrix.csv");
-
-
+		
+		
 		File zscoreCSV = new File(tempCSVfolder.getAbsolutePath() + File.separator + myProt.getFileName()
 				+ "_" + chain.getChainID() + "_allZscore.csv");
-
-
+		
+		
 		File trueMedian = new File(tempCSVfolder.getAbsolutePath() + File.separator + myProt.getFileName()
 				+ "_" + chain.getChainID() + "_trueMedian.csv");
-
+		
 		File falseMedian = new File(tempCSVfolder.getAbsolutePath() + File.separator + myProt.getFileName()
 				+ "_" + chain.getChainID() + "_falseMedian.csv");
-
-
+		
+		
 		File combinedMatrix = new File(tempCSVfolder.getAbsolutePath() + File.separator + myProt.getFileName()
 				+ "_" + chain.getChainID() + "_profileNoVec.txt");
+		
 		File postSvmMatrix = new File(tempCSVfolder.getAbsolutePath() + File.separator + myProt.getFileName()
 				+ "_" + chain.getChainID() + "_profileWithSVM.txt");
-
+		
+		
 		File combinedMatrixLatestVec = new File(tempCSVfolder.getAbsolutePath() + File.separator + myProt
 				.getFileName() + "_" + chain.getChainID() + "_profileLatestVec.txt");
-
-
+		
+		
 		File zscoreCorrect = new File(
 				tempCSVfolder.getAbsolutePath() + File.separator + myProt.getFileName() + "_" + chain
 						.getChainID() + "_zscoreCorrect.csv");
-
+		
 		File correctPositions = new File(
 				tempCSVfolder.getAbsolutePath() + File.separator + myProt.getFileName() + "_" + chain
 						.getChainID() +
 						"_originalPositions.csv");
-
-
+		
+		
 		File logFileTarget = new File(
 				tempCSVfolder.getAbsolutePath() + File.separator + myProt.getFileName() + "_" +
 						chain.getChainID() + "_log.txt");
-
+		
 		writeMatrixToCSV(trueMedian, chain.medianTrue);
 		writeMatrixToCSV(falseMedian, chain.medianFalse);
-		writeLogToTxtFile(logFileTarget, logFile);
-
+		
 		// generate profile files per vector
-
-		//			writeNewMatrixFormat(combinedMatrixVec4, chain, ScoringGeneralHelpers.vector4);
-		//			writeNewMatrixFormat(combinedMatrixVec3, chain, ScoringGeneralHelpers.vector3);
-		//			writeNewMatrixFormat(combinedMatrixLatestVec, chain, ScoringGeneralHelpers.latestVector, 2);
-		//			writeNewMatrixFormat(combinedMatrixLatestVec, chain, ScoringGeneralHelpers.latestVector, 5);
-		//			writeNewMatrixFormat(combinedMatrixLatestVec, chain, ScoringGeneralHelpers.latestVector, 10);
+		
+		// standard profile with normal VECTOR multiplication *without* SVM weights.
 		writeNewMatrixFormat(combinedMatrix, chain, ScoringGeneralHelpers.normalVector, false);
+		// with backbone score weight.
+		//			writeNewMatrixFormat(combinedMatrixLatestVec, chain, ScoringGeneralHelpers.latestVector, 10);
+		// standard profile with *latest* VECTOR mult and SVM weights.
 		writeNewMatrixFormat(postSvmMatrix, chain, ScoringGeneralHelpers.normalVector, true);
-
+		
 		writeMatrixToCSV(correctPositions, chain.originalPositions);
 		writeMatrixToCSV(resultCSV, chain.resIntensityValueMatrix);
 		writeMatrixToCSV(zscoreCSV, chain.allZvalueMatrix);
 		writeTrueValueCSVs(zscoreCorrect, chain);
-
-		//threading:
-		String swissProtPath = "/home/zivben/IdeaProjects/Results/uniprot_sprot_10_2015.fasta";
-
+		
+		/***********************************
+			********* threading: ***********
+		 **********************************/
+		
+		
 		String folderPath = myProt.getSource().getParent() + File.separator + "tempCSVs" + File.separator;
 		String filePrefix = myProt.getFileName() + "_" + requestedChain;
-
-		String seqListPath =  folderPath + filePrefix + ".fasta";
-		if (fastaFile != null){
+		
+		// look for FASTA file in default position, if none is given through GUI.
+		String seqListPath = folderPath + filePrefix + ".fasta";
+		
+		if (fastaFile != null) {
 			seqListPath = fastaFile.getAbsolutePath();
-
+			
 		} else if (fastaSequence != null) {
 			FileWriter FW = new FileWriter(seqListPath);
 			FW.write(fastaSequence);
 			FW.close();
 		}
-
-
-		String profileFilePathNovec = folderPath + filePrefix + "_profileNoVec.txt";
-
-		RvalAlignerCluster.runThread(swissProtPath, seqListPath, profileFilePathNovec,params.getFullFasta());
-
-
+		
+		
+		
+		
+		
+		
+		// return align thread without SVM.
+		//String profileFilePathNovec = folderPath + filePrefix + "_profileNoVec.txt";
+		//		RvalAlignerCluster alignThread = new RvalAlignerCluster(swissProtPath, finalSeqListPath, profileFilePathNovec, params);
+		
+		// return align thread with SVM
+		String profilePostSVM = postSvmMatrix.getAbsolutePath();
+		String profileNoSVM = combinedMatrix.getAbsolutePath();
+		final String finalSeqListPath = seqListPath;
+		
+		
+		alignThread = new RvalAlignerCluster(finalSeqListPath, profilePostSVM, params);
+		
+		
+		return alignThread;
 	}
-
+	
+	
+	///////////////////////////////////////////////////
 	// Matrix file writers for different type matrices
+	///////////////////////////////////////////////////
+	
+	
+	
 	private void writeMatrixToCSV(File outputCSV, double[][] matrix) throws IOException {
 		FileWriter FW = new FileWriter(outputCSV);
 		for (int i = 0; i < matrix[0].length; i++) {
@@ -546,51 +543,49 @@ public class CRYS_Score {
 		}
 		FW.close();
 	}
-
+	
 	private void writeMatrixToCSV(File outputCSV, double[] matrix) throws IOException {
 		FileWriter FW = new FileWriter(outputCSV);
-
+		
 		String row = "";
-		for (int j = 0; j < matrix.length; j++) {
-			row += matrix[j] + "\n";
+		for (double aMatrix : matrix) {
+			row += aMatrix + "\n";
 		}
 		FW.write(row);
-
+		
 		FW.close();
 	}
-
+	
 	private void writeMatrixToCSV(File outputCSV, Integer[] matrix) throws IOException {
 		FileWriter FW = new FileWriter(outputCSV);
-
+		
 		String row = "";
-		for (int j = 0; j < matrix.length; j++) {
-			row += matrix[j] + "\n";
+		for (Integer aMatrix : matrix) {
+			row += aMatrix + "\n";
 		}
 		FW.write(row);
-
+		
 		FW.close();
 	}
-
+	
 	private void writeNewMatrixFormat(File outputCSV, SimpleProtein.ProtChain chain, double[] vector, boolean useSVM)
 			throws
 			IOException {
 		double[][] workingMatrix;
-		if (useSVM){
+		if (useSVM) {
 			workingMatrix = chain.newZvalue;
-		} else{
+		} else {
 			workingMatrix = chain.allZvalueMatrix;
 		}
-
+		
 		double[][] zvaltemp = new double[workingMatrix.length][workingMatrix[0].length];
 		for (int i = 0; i < zvaltemp.length; i++) {
-			for (int j = 0; j < zvaltemp[0].length; j++) {
-				zvaltemp[i][j] = workingMatrix[i][j];
-			}
+			System.arraycopy(workingMatrix[i], 0, zvaltemp[i], 0, zvaltemp[0].length);
 		}
-
-
+		
+		
 		ScoringGeneralHelpers.multiplyMatrixByVector(zvaltemp, vector);
-
+		
 		FileWriter FW = new FileWriter(outputCSV);
 		for (int i = 0; i < zvaltemp[0].length; i++) {
 			String row = "";
@@ -599,14 +594,14 @@ public class CRYS_Score {
 			for (int j = 0; j < workingMatrix.length; j++) {
 				row += (zvaltemp[j][i]) + "\t";
 			}
-
+			
 			row += "\n";
 			FW.write(row);
 		}
 		FW.close();
-
+		
 	}
-
+	
 	//logfile writer for threading and such?
 	private void writeLogToTxtFile(File logFileTarget, ArrayList<String> logFile) throws IOException {
 		FileWriter FW = new FileWriter(logFileTarget);
@@ -615,12 +610,12 @@ public class CRYS_Score {
 		}
 		FW.close();
 	}
-
+	
 	private void writeTrueValueCSVs(File outputCSV, SimpleProtein.ProtChain chain) throws
 			IOException {
 		FileWriter FW = new FileWriter(outputCSV);
 		String row;
-
+		
 		// uncomment for table headers.
 		//		row = "Acid Sequence Id, Single Letter Name, Res zScore, Backbone zScore \n";
 		//		FW.write(row);
@@ -629,20 +624,29 @@ public class CRYS_Score {
 			row += chain.getAcidSequenceID(j) + ", ";
 			row += chain.originalPositions[j] + ", ";
 			row += chain.trueZvalues[j] + "\n";
-
+			
 			//			row += chain.backBoneZvalue[j] + "\n";
 		}
 		FW.write(row);
-
+		
 		FW.close();
 	}
-
-	public void setFastaFile(File fastaFile) {
+	
+	
+	int getExpectedTotalNumberOfFiles() {
+		return expectedTotalNumberOfFiles;
+	}
+	
+	void setFastaFile(File fastaFile) {
 		this.fastaFile = fastaFile;
 	}
-
-	public void setFastaSequence(String fastaSequence) {
-		this.fastaSequence =fastaSequence;
-
+	
+	void setFastaSequence(String fastaSequence) {
+		this.fastaSequence = fastaSequence;
+		
+	}
+	
+	public RvalAlignerCluster getRvalThread() throws IOException {
+		return createCSVs(myProt.getChain(requestedChain));
 	}
 }

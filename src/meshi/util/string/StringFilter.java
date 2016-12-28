@@ -6,11 +6,11 @@ import meshi.util.filters.Filter;
 import java.util.Iterator;
 
 public abstract class StringFilter  implements Filter{
-    protected StringList keys;
-    public StringFilter(String key) {
+    private final StringList keys;
+    StringFilter(String key) {
 	this(new StringList(key));
     }
-    public StringFilter(StringList keys) {
+    StringFilter(StringList keys) {
 	this.keys = keys;
     }
     public boolean accept(Object obj) {
@@ -24,5 +24,5 @@ public abstract class StringFilter  implements Filter{
         throw new MeshiException("Tried to StringFilter:\n"+
                               obj+" of class: "+obj.getClass());
     }
-    public abstract boolean accept(String string,String key);
+    protected abstract boolean accept(String string, String key);
 }

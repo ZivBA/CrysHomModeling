@@ -10,18 +10,10 @@ import meshi.util.KeyWords;
 import meshi.util.filters.Filter;
 
 public class TemplateDistanceConstrainsCreator extends EnergyCreator implements KeyWords {
-    private double intraSegmentFactor;
-    private double intraSegmentTolerance;
-    private double interSegmentFactor;
-    private double interSegmentTolerance;
-    private double saturation;
-    private double unsatisfiedCutoff;
-    private double upToCutoff;
-    private int[] fragments;
-    private String distanceConstrainsMask = null;
-    private boolean debug = true;
-    private static Protein protein;
-    private Filter filter;
+	private double unsatisfiedCutoff;
+	private int[] fragments;
+	private static Protein protein;
+    private final Filter filter;
 
     public TemplateDistanceConstrainsCreator(Filter filter)  {
 	super(TEMPLATE_DISTANCE_CONSTRAINS);
@@ -50,43 +42,44 @@ public class TemplateDistanceConstrainsCreator extends EnergyCreator implements 
 	TemplateDistanceConstrainsCreator.protein = protein;
 
 	CommandList constrainCommands = commands.firstWordFilter(key);
-
-	intraSegmentFactor = constrainCommands.secondWord(INTRA_SEGMENT_FACTOR).thirdWordDouble();
-	if (debug) System.out.println("intraSegmentFactor = "+intraSegmentFactor); 
-
-	intraSegmentTolerance = constrainCommands.secondWord(INTRA_SEGMENT_TOLERANCE).thirdWordDouble();
-	if (debug) System.out.println("intraSegmentTolerance = "+intraSegmentTolerance); 
-
-	interSegmentFactor = constrainCommands.secondWord(INTER_SEGMENT_FACTOR).thirdWordDouble();
-	if (debug) System.out.println("interSegmentFactor = "+interSegmentFactor); 
-
-	interSegmentTolerance = constrainCommands.secondWord(INTER_SEGMENT_TOLERANCE).thirdWordDouble();
-	if (debug) System.out.println("interSegmentTolerance = "+interSegmentTolerance); 
-
-	saturation = constrainCommands.secondWord(SATURATION).thirdWordDouble();
-	if (debug) System.out.println("saturation = "+saturation); 
+	
+	    double intraSegmentFactor = constrainCommands.secondWord(INTRA_SEGMENT_FACTOR).thirdWordDouble();
+	    boolean debug = true;
+	    if (debug) System.out.println("intraSegmentFactor = "+ intraSegmentFactor);
+	
+	    double intraSegmentTolerance = constrainCommands.secondWord(INTRA_SEGMENT_TOLERANCE).thirdWordDouble();
+	if (debug) System.out.println("intraSegmentTolerance = "+ intraSegmentTolerance);
+	
+	    double interSegmentFactor = constrainCommands.secondWord(INTER_SEGMENT_FACTOR).thirdWordDouble();
+	if (debug) System.out.println("interSegmentFactor = "+ interSegmentFactor);
+	
+	    double interSegmentTolerance = constrainCommands.secondWord(INTER_SEGMENT_TOLERANCE).thirdWordDouble();
+	if (debug) System.out.println("interSegmentTolerance = "+ interSegmentTolerance);
+	
+	    double saturation = constrainCommands.secondWord(SATURATION).thirdWordDouble();
+	if (debug) System.out.println("saturation = "+ saturation);
 
 	unsatisfiedCutoff = constrainCommands.secondWord(UNSATISFIED_CUTTOF).thirdWordDouble();
-	if (debug) System.out.println("unsatisfiedCutoff = "+unsatisfiedCutoff); 
-
-	upToCutoff = constrainCommands.secondWord(UP_TO_CUTOFF).thirdWordDouble();
-	if (debug) System.out.println("upToCutoff = "+upToCutoff); 
-
-	distanceConstrainsMask = getDistanceConstrainsMask(commands);
+	if (debug) System.out.println("unsatisfiedCutoff = "+unsatisfiedCutoff);
+	
+	    double upToCutoff = constrainCommands.secondWord(UP_TO_CUTOFF).thirdWordDouble();
+	if (debug) System.out.println("upToCutoff = "+ upToCutoff);
+	
+	    String distanceConstrainsMask = getDistanceConstrainsMask(commands);
 	System.out.println("# No constraints are taken from residues marked with X: \n"+ 
 			   distanceConstrainsMask.substring(1)); //To "hide" the first dummy residue (number 0)
 
 	//weightWasSet = true;
 
 	System.out.println(getFragments(protein));
-	parametersList = new DistanceConstrainParametersList(protein, fragments, 
-							     intraSegmentFactor,
-							     intraSegmentTolerance,
-							     interSegmentFactor,
-							     interSegmentTolerance,
-							     saturation,
-							     upToCutoff,
-							     distanceConstrainsMask,
+	parametersList = new DistanceConstrainParametersList(protein, fragments,
+			intraSegmentFactor,
+			intraSegmentTolerance,
+			interSegmentFactor,
+			interSegmentTolerance,
+			saturation,
+			upToCutoff,
+			distanceConstrainsMask,
 							     filter);
     }
 
@@ -131,7 +124,7 @@ public class TemplateDistanceConstrainsCreator extends EnergyCreator implements 
 
 
 
-    public static String getDistanceConstrainsMask(CommandList commands) {
+    private static String getDistanceConstrainsMask(CommandList commands) {
 	String dub = "";
 	String fragment = "";
 	String line;

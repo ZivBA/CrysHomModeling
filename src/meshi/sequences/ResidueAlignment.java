@@ -11,7 +11,7 @@ public class ResidueAlignment extends Alignment{
     /**
      * Empty alignment.
      **/
-    public ResidueAlignment() {
+    private ResidueAlignment() {
 	super(new IsAlignmentColumn());
     }
 

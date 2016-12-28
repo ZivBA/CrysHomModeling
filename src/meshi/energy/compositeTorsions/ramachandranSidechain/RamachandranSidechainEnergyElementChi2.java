@@ -57,7 +57,7 @@ public class RamachandranSidechainEnergyElementChi2
 		residueTorsions.applyForce( CHI_1, -chi_1_deriv );
 		residueTorsions.applyForce( CHI_2, -chi_2_deriv );
 
-		monitor( energy, chi_1_deriv, chi_2_deriv );
+		monitor();
 		return energy;
 	}
 

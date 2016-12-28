@@ -12,7 +12,7 @@ import meshi.util.MeshiProgram;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class Willison64PossibilitiesYaoLike extends MeshiProgram implements Residues,AtomTypes {
+class Willison64PossibilitiesYaoLike extends MeshiProgram implements Residues,AtomTypes {
 
 	public static void main(String[] args) throws Exception {
 //		String[] runs = {"ZQHBEDAG ZQHBEDAG 12_6784_7156",
@@ -433,13 +433,13 @@ public class Willison64PossibilitiesYaoLike extends MeshiProgram implements Resi
 				"HQBZEGAD GADHQBZE 02_2966_4265",
 				"DEZGBHAQ DEZGBHAQ 04_3636_4764",
 				"DHBGQEAZ AZDHBGQE 02_2986_4277",
-				"QGDHZBAE HZBAEQGD 01_2635_3989"};		
+				"QGDHZBAE HZBAEQGD 01_2635_3989"};
 		
-		for (int c=0 ; c<runs.length ; c++) {
+		for (String run : runs) {
 			String[] passTo = new String[3];
-			passTo[0] = runs[c].substring(0, 8);
-			passTo[1] = runs[c].substring(9, 17);
-			passTo[2] = runs[c].substring(18);
+			passTo[0] = run.substring(0, 8);
+			passTo[1] = run.substring(9, 17);
+			passTo[2] = run.substring(18);
 			maintmp(passTo);
 		}
 
@@ -449,8 +449,8 @@ public class Willison64PossibilitiesYaoLike extends MeshiProgram implements Resi
 		
 	}
 	
-	public static void maintmp(String[] args) throws Exception {
-		init(args);
+	private static void maintmp(String[] args) throws Exception {
+		init();
 		
 		// Defining the arrangement 
 		String topTrue = args[0]; 
@@ -562,7 +562,7 @@ public class Willison64PossibilitiesYaoLike extends MeshiProgram implements Resi
 						GDTcalculator.alignBySubset(template, apicUnit, 0.75);
 						// Finally doing the alignment 
 						Atom.resetNumberOfAtoms();
-						AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), 'K',unit);
+						AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), unit);
 						finalUnit.setChain(chainID+"");
 						// Writing
 						for (int c=0 ; c<finalUnit.size() ; c++) {
@@ -583,7 +583,7 @@ public class Willison64PossibilitiesYaoLike extends MeshiProgram implements Resi
 						GDTcalculator.alignBySubset(template, apicUnit, 0.75);
 						// Finally doing the alignment 
 						Atom.resetNumberOfAtoms();
-						AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), 'K',unit);
+						AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), unit);
 						finalUnit.setChain(chainID+"");
 						// Writing
 						for (int c=0 ; c<finalUnit.size() ; c++) {
@@ -605,7 +605,7 @@ public class Willison64PossibilitiesYaoLike extends MeshiProgram implements Resi
 						GDTcalculator.alignBySubset(template, apicUnit, 0.75);
 						// Finally doing the alignment 
 						Atom.resetNumberOfAtoms();
-						AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), 'K',unit);
+						AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,alignments.getAlignment("K"), unit);
 						finalUnit.setChain(chainID+"");
 						// Writing
 						for (int c=0 ; c<finalUnit.size() ; c++) {
@@ -626,7 +626,7 @@ public class Willison64PossibilitiesYaoLike extends MeshiProgram implements Resi
 						GDTcalculator.alignBySubset(template, apicUnit, 0.75);
 						// Finally doing the alignment 
 						Atom.resetNumberOfAtoms();
-						AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,  alignments.getAlignment("K"), 'K', unit);
+						AtomList finalUnit = HMunit(alignments.getAlignment(toPut+""), toPut,  alignments.getAlignment("K"), unit);
 						finalUnit.setChain(chainID+"");
 						// Writing
 						for (int c=0 ; c<finalUnit.size() ; c++) {
@@ -647,7 +647,7 @@ public class Willison64PossibilitiesYaoLike extends MeshiProgram implements Resi
 	}
 
 	
-	protected static AtomList HMunit(String querySeq,char queryUnit , String templateSeq, char templateUnit, AtomList template) {
+	private static AtomList HMunit(String querySeq, char queryUnit, String templateSeq, AtomList template) {
 		Atom.resetNumberOfAtoms();
 		AtomList newList = new AtomList();
 		int templateCounter = 0;
@@ -694,7 +694,7 @@ public class Willison64PossibilitiesYaoLike extends MeshiProgram implements Resi
 	}
 
 	
-	protected static AtomList turnWillisonTo1Q3R(AtomList oldList, String chainsTop, String genesTop, String chainsBot, String genesBot, boolean isE) {
+	private static AtomList turnWillisonTo1Q3R(AtomList oldList, String chainsTop, String genesTop, String chainsBot, String genesBot, boolean isE) {
 		TricYeastAlignment alignments = new TricYeastAlignment();
 		AtomList newList = new AtomList();
 		// Doing top ring first
@@ -762,21 +762,18 @@ public class Willison64PossibilitiesYaoLike extends MeshiProgram implements Resi
 		return newList;
 	}
 
-	protected static AtomList filterDomainAccordingTo1Q3R(AtomList fullList, char subunit , char domain) {
+	private static AtomList filterDomainAccordingTo1Q3R(AtomList fullList, char subunit, char domain) {
 		int[][] parsingQ3R; 
 		TricYeastAlignment alignments = new TricYeastAlignment();
 		switch (domain) {
     	case 'E': // Equatorial 
-    		int[][] newParse = {{1,149} , {404,535}};
-    		parsingQ3R = newParse;
+		    parsingQ3R = new int[][]{{1,149} , {404,535}};
     		break;
     	case 'M': // Middle 
-    		int[][] newParse1 = {{150,217} , {369,403}};
-    		parsingQ3R = newParse1;
+		    parsingQ3R = new int[][]{{150,217} , {369,403}};
     		break;
     	case 'A': // Apical 
-    		int[][] newParse2 = {{218,368}};
-    		parsingQ3R = newParse2;
+		    parsingQ3R = new int[][]{{218,368}};
     		break;
 //    	case 'A': // Apical 
 //    		int[][] newParse2 = {{218,247} , {278,368}};
@@ -800,12 +797,12 @@ public class Willison64PossibilitiesYaoLike extends MeshiProgram implements Resi
 	}
 	
 	
-	protected static AtomList filterDomain(AtomList fullList, int[][] parsing) {
+	private static AtomList filterDomain(AtomList fullList, int[][] parsing) {
 		AtomList newList = new AtomList();
 		for (int c=0 ; c<fullList.size() ; c++) {
 			int resNum = fullList.atomAt(c).residueNumber();
-			for (int segID=0 ; segID<parsing.length ; segID++ ) {
-				if ((resNum>=parsing[segID][0]) & (resNum<=parsing[segID][1])) {
+			for (int[] aParsing : parsing) {
+				if ((resNum >= aParsing[0]) & (resNum <= aParsing[1])) {
 					newList.add(fullList.atomAt(c));
 				}
 			}
@@ -814,7 +811,7 @@ public class Willison64PossibilitiesYaoLike extends MeshiProgram implements Resi
 	}
 	
 	
-	protected static void init(String[] args) {
+	private static void init() {
 		int zvl = ALA; // force the reading of "meshi.parameters.Residues"
 		zvl = ACA;// force the reading of "meshi.parameters.AtomTypes"
 		initRandom(333);

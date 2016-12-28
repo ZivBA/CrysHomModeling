@@ -1,8 +1,6 @@
 package ScoreUtilities;
 
 
-import ModellingUtilities.molecularElements.SimpleProtein;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -47,11 +45,13 @@ public class ScoringGeneralHelpers {
 			1.0, 1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, 1.0, 1.0,};
 
 
-	public static double[] normalVector = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+	public static final double[] normalVector = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,};
-
-
-	public static double[][] crysSVMmatrix = {
+	
+	/**
+	 * weight factors according to SVM, last index in every line is the Bias for that AA.
+	 */
+	public static final double[][] crysSVMmatrix = {
 	/* A */	    {0.0000, 0.0527, 0.1114, -0.2430, -0.1421, 0.5098, -0.1455, -0.1554, 0.0150, -0.1954,
 					0.0127, -0.3766, -0.1646, -0.0523, 0.0370, -0.2226, -0.2443, -0.5130, 0.0876, 0.0930, -0.9717},
 	/* C */		{0.0000, 0.2390, 0.0742, 0.0271, 0.0370, -0.4777, 0.2232, 0.2759, -0.1789, 0.0998,
@@ -95,9 +95,8 @@ public class ScoringGeneralHelpers {
 	};
 
 	public static boolean debug = false;
-	private File source;
-	private File dest;
-
+	private final File source;
+	
 	/**
 	 * Constructor - gets File obj, sets destination.
 	 *
@@ -106,36 +105,13 @@ public class ScoringGeneralHelpers {
 	public ScoringGeneralHelpers(File toProcess, boolean debug) {
 		ScoringGeneralHelpers.debug = debug;
 		source = toProcess;
-		dest = new File(source.getAbsolutePath().replaceFirst("[.][pdb]+$", "_stripped" + PDB_EXTENSION));
+		File dest = new File(source.getAbsolutePath().replaceFirst("[.][pdb]+$", "_stripped" + PDB_EXTENSION));
 	}
-
-	public static File makeSubFolderAt(File sourceFile, String targetSubFolder) throws IOException {
-		File requestedFolder;
-		if (sourceFile.isFile()) {
-			requestedFolder = new File(sourceFile.getParent() + File.separator + targetSubFolder);
-		} else if (sourceFile.isDirectory()) {
-			requestedFolder = new File(sourceFile.getAbsolutePath() + File.separator + targetSubFolder);
-		} else {
-			throw new FileNotFoundException("source folder is not a proper path.");
-		}
-
-		if (requestedFolder.isDirectory()) {
-			if (debug)
-				System.out.println("Requested folder already exists at:\n" + requestedFolder.getAbsolutePath());
-		} else {
-			if (requestedFolder.mkdir()) {
-				if (debug)
-					System.out.println("Created requested folder \n" + requestedFolder.getAbsolutePath());
-			} else {
-				if (debug)
-					System.out.println("Requested Folder not created");
-				throw new IOException();
-			}
-		}
-
-		return requestedFolder;
-	}
-
+	
+	/*
+	Helper routines for creating folders and subfolders.
+	 */
+	
 	public static File makeFolder(File requestedFolder) throws IOException {
 
 		if (requestedFolder.isDirectory()) {
@@ -154,7 +130,26 @@ public class ScoringGeneralHelpers {
 
 		return requestedFolder;
 	}
+	
+	public static File makeSubFolderAt(File sourceFile, String targetSubFolder) throws IOException {
+		File requestedFolder;
+		if (sourceFile.isFile()) {
+			requestedFolder = new File(sourceFile.getParent() + File.separator + targetSubFolder);
+		} else if (sourceFile.isDirectory()) {
+			requestedFolder = new File(sourceFile.getAbsolutePath() + File.separator + targetSubFolder);
+		} else {
+			throw new FileNotFoundException("source folder is not a proper path.");
+		}
+		
+		requestedFolder = makeFolder(requestedFolder);
+		
+		return requestedFolder;
+	}
 
+	//*
+	//*
+	//*
+	
 	public static void multiplyMatrixByVector(double[][] allZvalueMatrix, double[] vector) {
 		for (int i = 0; i < allZvalueMatrix.length; i++) {
 			for (int j = 0; j < allZvalueMatrix[i].length; j++) {
@@ -162,34 +157,16 @@ public class ScoringGeneralHelpers {
 			}
 		}
 	}
-
-	public static void multiplyMatrixByVector(SimpleProtein.ProtChain chain, double[] vector) {
-		for (int i = 0; i < chain.allZvalueMatrix.length; i++) {
-			for (int j = 0; j < chain.allZvalueMatrix[i].length; j++) {
-				chain.allZvalueMatrix[i][j] *= vector[i];
-			}
-		}
-		for (int i = 0; i < chain.trueZvalues.length; i++) {
-			chain.trueZvalues[i] *= vector[chain.originalPositions[i]];
-		}
-	}
-
-	public static void multiplyMatrixByVector(double[] truzvaltmp, double[] vector) {
-		for (int i = 0; i < truzvaltmp.length; i++) {
-			truzvaltmp[i] *= vector[i];
-		}
-	}
-
-
-	public File getDest() {
-		return dest;
-	}
-
+	
 	public File getSource() {
 		return source;
 	}
-
-
+	
+	/**
+	 * helper method to read CSV file to array .
+	 * @param resultCSV the file to read from.
+	 * @return the matrix read from the csv.
+	 */
 	public static double[][] csvToMatrix(File resultCSV) {
 		double[][] resultMatrix;
 		try {

@@ -7,14 +7,14 @@ import meshi.energy.compositeTorsions.SplinedPolynomial;
 import meshi.energy.compositeTorsions.SplinedPolynomialsLoader;
 import meshi.parameters.Residues;
 
-public class RamachandranParameters extends Parameters
+class RamachandranParameters extends Parameters
 	implements CompositeTorsionsDefinitions, Residues {
 
 	/** residue type */
 	private final int residueType;
 
 	/** polynomial for this residue */
-	private SplinedPolynomial propPolynomial;
+	private final SplinedPolynomial propPolynomial;
 	
 	public RamachandranParameters( int residueType,
 			SplinedPolynomialsLoader spl ) {

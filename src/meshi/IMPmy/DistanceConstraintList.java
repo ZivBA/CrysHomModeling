@@ -2,7 +2,7 @@ package meshi.IMPmy;
 
 import java.util.Vector;
 
-public class DistanceConstraintList extends Vector<DistanceConstraint> {
+class DistanceConstraintList extends Vector<DistanceConstraint> {
 	
 	public String toString() {
 		String out = "";

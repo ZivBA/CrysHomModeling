@@ -120,7 +120,7 @@ public class BFGS extends Minimizer {
     private SteepestDecent steepestDecent;
     private WolfConditionLineSearch lineSearch;
     private int n; // number of variables
-    int np; // (n+1)*n/2 - size of H
+    private int np; // (n+1)*n/2 - size of H
     private double[] H; // Inverse Hessian
     private double[] P; // The search direction
     private double[] X; // The coordinates at iteration K
@@ -130,10 +130,8 @@ public class BFGS extends Minimizer {
     private double[] A; // Hk*Yk
     private double[][] coordinates; // The position and gradients of the system
     private double[][] bufferCoordinates;
-    private double magnitudeForce = 100000000;
-    private int iterationNum; // Iterations counter
-    private int bfgsError; // Error occured in the main bfgs loop
-    private String bfgsErrorString;
+	private int iterationNum; // Iterations counter
+	private String bfgsErrorString;
     private int numKickStarts; // The number of times the minimizer was restarted
 
 		
@@ -154,20 +152,17 @@ public class BFGS extends Minimizer {
     private static final int DEFAULT_MAX_NUM_EVALUATIONS_WOLF_SEARCH = 10;
 
     // Steepest descent module paramters
-    int numStepsSteepestDecent;
-    double initStepSteepestDecent;
-    double stepSizeReductionSteepestDecent;
-    double stepSizeExpansionSteepestDecent;
-    public static final int DEFAULT_NUM_STEP_STEEPEST_DECENT = 50;
+    private int numStepsSteepestDecent;
+    private double initStepSteepestDecent;
+    private double stepSizeReductionSteepestDecent;
+    private double stepSizeExpansionSteepestDecent;
+    private static final int DEFAULT_NUM_STEP_STEEPEST_DECENT = 50;
     private static final double DEFAULT_INIT_STEP_STEEPEST_DECENT = 0.0001;
     private static final double DEFAULT_STEP_SIZE_REDUCTION_STEEPEST_DECENT = 0.5;
     private static final double DEFAULT_STEP_SIZE_EXPENTION_STEEPEST_DECENT = 2;
 	
-    // Constant paramters
-    private final int MAX_NUM_VARIABLES = 3000; 
 	
-    
-    public BFGS(TotalEnergy energy) {
+	public BFGS(TotalEnergy energy) {
 	this(energy,
 	     DEFAULT_TOLERANCE,
 	     DEFAULT_MAX_ITERATIONS,
@@ -210,17 +205,17 @@ public class BFGS extends Minimizer {
     }
 	     
    //Full constructor
-	public BFGS(TotalEnergy energy,
-		    double tolerance, 
-		    int maxIteration,
-		    int reportEvery,
-		    double allowedMaxH,
-		    int maxNumKickStarts,
-		    double c1, double c2,
-		    double extendAlphaFactorWolfSearch,
-		    int maxNumEvaluationsWolfSearch,
-		    int numStepsSteepestDecent, double initStepSteepestDecent,
-		    double stepSizeReductionSteepestDecent, double stepSizeExpansionSteepestDecent) {
+   private BFGS(TotalEnergy energy,
+                double tolerance,
+                int maxIteration,
+                int reportEvery,
+                double allowedMaxH,
+                int maxNumKickStarts,
+                double c1, double c2,
+                double extendAlphaFactorWolfSearch,
+                int maxNumEvaluationsWolfSearch,
+                int numStepsSteepestDecent, double initStepSteepestDecent,
+                double stepSizeReductionSteepestDecent, double stepSizeExpansionSteepestDecent) {
     	super(energy,tolerance,maxIteration);
 	if (maxIteration <=  numStepsSteepestDecent) throw new RuntimeException(" numStepsSteepestDecent "+numStepsSteepestDecent+
 										" >= maxIteration "+ maxIteration+"\n"+
@@ -287,16 +282,18 @@ public class BFGS extends Minimizer {
     	init();
 	isConverged = 0; 
 		// Checking if the minimizing problem is not too large    	
-    	if (n > MAX_NUM_VARIABLES)
+	    int MAX_NUM_VARIABLES = 3000;
+	    if (n > MAX_NUM_VARIABLES)
     		throw new MinimizerException(0,"\n\nThe number of variables to be minimized is greater than the maximum\n" + 
     			"this minimizer can handle. Use a minimizer for large-scale problems such as Conjugated Gradients\n");     	
         // Starting the BFGS minimization by a few steepest descent steps, followed by inverse Hessian, gradients (G),
         // and position (X) initialization 
     	kickStart();
     	// The main BFGS loop
-    	while ((iterationNum < maxIteration) &&   
+	    double magnitudeForce = 100000000;
+	    while ((iterationNum < maxIteration) &&
         		((magnitudeForce = TotalEnergy.getGradMagnitude(coordinates)) > tolerance)) {
-        	bfgsError = 0;
+		    int bfgsError = 0;
         	// Pk=Hk*(-Gk)
         	for (i=0 ; i<n ; i++) 
         		G[i] = coordinates[i][1];

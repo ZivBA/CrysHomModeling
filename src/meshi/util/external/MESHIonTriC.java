@@ -7,7 +7,7 @@ import meshi.util.CommandList;
 import meshi.util.MeshiProgram;
 import meshi.util.rotamericTools.RotamericTools;
 
-public class MESHIonTriC {
+class MESHIonTriC {
 	
 	private Protein complex = null;
 	private DunbrackLib lib = null;
@@ -17,7 +17,7 @@ public class MESHIonTriC {
 		this.lib = lib;
 	}
 
-	public double[][] putIntoNearestRot() {
+	private double[][] putIntoNearestRot() {
 		return RotamericTools.putIntoNearestRot(complex, new DistanceMatrix(complex.atoms(), 2.0, 1.0), lib,true);	
 	}
 
@@ -25,7 +25,7 @@ public class MESHIonTriC {
 		return RotamericTools.putIntoNearestRot(complex, new DistanceMatrix(complex.atoms(), 2.0, 1.0), lib,false);	
 	}
 
-	public void writeComplexToDisk(String fileName) {
+	private void writeComplexToDisk(String fileName) {
 		ComplexMESHIconversion.writeMEHSI2complex(complex, fileName);
 	}
 	

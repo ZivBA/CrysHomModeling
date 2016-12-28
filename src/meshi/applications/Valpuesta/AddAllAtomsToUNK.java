@@ -10,10 +10,10 @@ import meshi.util.MeshiProgram;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class AddAllAtomsToUNK extends MeshiProgram implements Residues,AtomTypes {
+class AddAllAtomsToUNK extends MeshiProgram implements Residues,AtomTypes {
 
 	public static void main(String[] args) {
-		init(args);
+		init();
 
 		AtomList all = new AtomList("2XSM_allALA.pdb");
 		String outfile = "2XSM_allALA_full";
@@ -38,7 +38,7 @@ public class AddAllAtomsToUNK extends MeshiProgram implements Residues,AtomTypes
 }
 	
 		
-	protected static void init(String[] args) {
+	private static void init() {
 		int zvl = ALA; // force the reading of "meshi.parameters.Residues"
 		zvl = ACA;// force the reading of "meshi.parameters.AtomTypes"
 		initRandom(333);

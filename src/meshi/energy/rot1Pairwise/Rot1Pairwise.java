@@ -4,7 +4,7 @@ import meshi.energy.NonBondedEnergyTerm;
 import meshi.geometry.DistanceMatrix;
 import meshi.util.Classes;
 
-public class Rot1Pairwise extends NonBondedEnergyTerm implements Classes {
+class Rot1Pairwise extends NonBondedEnergyTerm implements Classes {
     public Rot1Pairwise(){super();}
 
     public Rot1Pairwise(DistanceMatrix distanceMatrix, 
@@ -14,6 +14,6 @@ public class Rot1Pairwise extends NonBondedEnergyTerm implements Classes {
 	super(toArray(distanceMatrix), parametersList, weight,distanceMatrix);
 	comment = "Rot1Pairwise";
 	this.distanceMatrix = distanceMatrix;
-	energyElement = new Rot1PairwiseEnergyElement(parametersList, type, weight);
+	energyElement = new Rot1PairwiseEnergyElement(parametersList, weight);
     }
 }

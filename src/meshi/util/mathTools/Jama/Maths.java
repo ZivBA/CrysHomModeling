@@ -1,6 +1,6 @@
 package meshi.util.mathTools.Jama;
 
-public class Maths {
+class Maths {
 
    /** sqrt(a^2 + b^2) without under/overflow. **/
 

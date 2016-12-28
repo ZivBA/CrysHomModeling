@@ -1,14 +1,14 @@
 package meshi.sequences;
 
 public class AccesibilitySequence  extends Sequence {
-    public static final AccesibilitySequenceCharFilter AccesibilityCharFilter =  new AccesibilitySequenceCharFilter();
+    private static final AccesibilitySequenceCharFilter AccesibilityCharFilter =  new AccesibilitySequenceCharFilter();
     public AccesibilitySequence(String sequence, String comment) {
 	super(sequence, comment, AccesibilityCharFilter);
     }
     
         private static class AccesibilitySequenceCharFilter extends SequenceCharFilter {
 	public boolean accept(Object obj) {
-	    Character c = ((Character) obj).charValue();
+	    Character c = (Character) obj;
 		return "AB".indexOf(c) >= 0;
 	}
     }

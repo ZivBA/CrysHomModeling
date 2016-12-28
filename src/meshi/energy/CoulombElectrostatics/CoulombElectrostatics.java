@@ -33,7 +33,7 @@ import meshi.util.Classes;
  * 
  **/
 
-public class CoulombElectrostatics extends NonBondedEnergyTerm implements Classes {
+class CoulombElectrostatics extends NonBondedEnergyTerm implements Classes {
     /**
      * default Constructor
      *

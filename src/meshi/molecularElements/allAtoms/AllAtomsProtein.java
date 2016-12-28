@@ -21,16 +21,16 @@ import meshi.util.KeyWords;
 import meshi.util.filters.Filter;
 
 public class AllAtomsProtein extends Protein implements Residues , KeyWords {
-    public AllAtomsProtein() {
+    protected AllAtomsProtein() {
 	super();
     }
 	
 
-    public AllAtomsProtein(AtomList atoms, ResidueCreator creator) {
+    protected AllAtomsProtein(AtomList atoms, ResidueCreator creator) {
         super(atoms, creator);
     }
 
-    public String relax(CommandList commands) throws MinimizerException, LineSearchException {
+    protected String relax(CommandList commands) throws MinimizerException, LineSearchException {
         System.out.println("--------- step 1 ----------------");
         CommandList minimizerCommands = commands.firstWordFilter(RELAX);
         double tolerance = minimizerCommands.secondWord(TOLERANCE).thirdWordDouble();
@@ -105,8 +105,8 @@ public class AllAtomsProtein extends Protein implements Residues , KeyWords {
     }
 
     private abstract class sideChainFilter implements Filter {
-	char[] excludedSecondChars;
-	int excludedSecondCharsLength;
+	final char[] excludedSecondChars;
+	final int excludedSecondCharsLength;
 	public sideChainFilter(char[] excludedSecondChars) {
 	    this.excludedSecondChars = excludedSecondChars;
 	    excludedSecondCharsLength = excludedSecondChars.length;

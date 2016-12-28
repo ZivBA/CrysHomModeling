@@ -69,24 +69,14 @@ public class PutHydrogens extends MeshiProgram implements Residues,
      * Reads, parse and stores the contents of the commands file. 
      **/ 
     private static CommandList commands;
-   
-    /**
-     * A string with the name of the command file.
-     **/
-    private static String commandsFileName = null;
- 
-    /**
+	
+	/**
      * A string with the name of the pdb file to minimize.
      **/
-    private static String modelFileName = null;  
-
-    /**
-     * The minimized protein object.
-     **/
-    private static Protein protein;
-
- 
-    public static void main(String[] args) throws MinimizerException, LineSearchException {
+    private static String modelFileName = null;
+	
+	
+	public static void main(String[] args) throws MinimizerException, LineSearchException {
 	/**
 	 * A static function for parsing of the command line arguments and assigning the 
 	 * variables commandsFileName, modelFileName and randomNumberSeed with the right values.
@@ -103,11 +93,14 @@ public class PutHydrogens extends MeshiProgram implements Residues,
 	 * minimization is able to fix this. This is obviously not a very wise decision but it 
 	 * is easy to implement. We are currently working on better solution.  <br>
 	 **/ 
-	protein = new ExtendedAtomsProtein(modelFileName,ADD_HYDROGENS_AND_FREEZE);
+	/*
+      The minimized protein object.
+     */
+		Protein protein = new ExtendedAtomsProtein(modelFileName, ADD_HYDROGENS_AND_FREEZE);
 //System.out.println(protein.sequence());
 	System.out.println("************* puting hydrogens *********");
 	
-	adjustHydrogens(commands,protein);
+	adjustHydrogens(commands, protein);
 
 	protein.atoms().print();  
     }
@@ -165,7 +158,7 @@ public class PutHydrogens extends MeshiProgram implements Residues,
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
  
 	/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 	 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -182,10 +175,13 @@ public class PutHydrogens extends MeshiProgram implements Residues,
 			       "Usage java -Xmx300m PutHydrogens <commands file name> <pdb file name>\n"+
 			       "                    ******************\n");
 			      
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-	commandsFileName = getOrderedArgument(args);
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+	/*
+      A string with the name of the command file.
+     */
+	    String commandsFileName = getOrderedArgument(args);
 	if (commandsFileName == null) throw new RuntimeException(errorMessage);
-	System.out.println("# commandsFileName = "+commandsFileName);
+	System.out.println("# commandsFileName = "+ commandsFileName);
 
 	commands = new CommandList(commandsFileName);
 	

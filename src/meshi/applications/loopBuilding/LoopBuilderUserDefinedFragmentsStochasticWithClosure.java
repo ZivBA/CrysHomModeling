@@ -10,20 +10,19 @@ import java.util.Vector;
 
 public class LoopBuilderUserDefinedFragmentsStochasticWithClosure extends LoopBuilderUserDefinedFragmentsStochastic {
 	
-	protected final double GAP_CUTOFF=1.0; // The building tree is pruned if the gap score is above this value 	
-	
 	private double closureToleranceSquared = -99999.0;  // We precalculate the square to save computaion time
-	protected Atom atom1C, atom2N; // The closing atoms over the final peptide bond
+	Atom atom1C;
+	Atom atom2N; // The closing atoms over the final peptide bond
 	
 	// Stats
 	private int numberReachClosure = 0;
 	private int DISaccepted = 0;
 	private int DISrejected = 0;
 
-	public LoopBuilderUserDefinedFragmentsStochasticWithClosure(CommandList commands,
-			String writePath, Corpus corpus, Protein prot, Protein ref,
-			int resStart, int resEnd, double rmsMatchCO, double rmsCutOff,
-			Vector<int[]> fragsDescription, double closureTolerance) {
+	LoopBuilderUserDefinedFragmentsStochasticWithClosure(CommandList commands,
+	                                                     String writePath, Corpus corpus, Protein prot, Protein ref,
+	                                                     int resStart, int resEnd, double rmsMatchCO, double rmsCutOff,
+	                                                     Vector<int[]> fragsDescription, double closureTolerance) {
 		super(commands, writePath, corpus, prot, ref, resStart, resEnd,
 				rmsMatchCO, rmsCutOff, fragsDescription);
 		this.closureToleranceSquared = closureTolerance*closureTolerance;
@@ -138,7 +137,8 @@ public class LoopBuilderUserDefinedFragmentsStochasticWithClosure extends LoopBu
 
 	@Override
 	protected boolean continueForNextCall(int libCounter) {
-		boolean goodDis = (temporaryDistEnergy(startResForClosingPotential[libCounter],endResForClosingPotential[libCounter])<GAP_CUTOFF);
+		double GAP_CUTOFF = 1.0;
+		boolean goodDis = (temporaryDistEnergy(startResForClosingPotential[libCounter],endResForClosingPotential[libCounter])< GAP_CUTOFF);
 		if (goodDis)
 			DISaccepted++;
 		else
@@ -146,7 +146,7 @@ public class LoopBuilderUserDefinedFragmentsStochasticWithClosure extends LoopBu
 		return (goodDis && super.continueForNextCall(libCounter));
 	}
 
-	protected void 	printStats() {
+	void 	printStats() {
 	    System.out.println("Number of closure assessed: " + numberReachClosure);	
 	    System.out.println("Number of distance acceptances: " + DISaccepted);	
 	    System.out.println("Number of distance rejectences: " + DISrejected);	

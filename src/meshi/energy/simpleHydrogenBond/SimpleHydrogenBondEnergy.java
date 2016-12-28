@@ -71,14 +71,14 @@ public class SimpleHydrogenBondEnergy extends AbstractEnergy {
 		coordinates[1] = atom.Y();
 		coordinates[2] = atom.Z();
 		for(int i = 0; i< 3; i++) {
-			try{totalEnergy.update();}catch(UpdateableException ue){}
+			try{totalEnergy.update();}catch(UpdateableException ignored){}
 			double x = coordinates[i][0];
 			coordinates[i][1] = 0;
 			double e1 = evaluate();
 			double analiticalForce = coordinates[i][1];
 			coordinates[i][0] += DX;
 			// Whatever should be updated ( such as distance matrix torsion list etc. )
-			try{totalEnergy.update();}catch(UpdateableException ue){}
+			try{totalEnergy.update();}catch(UpdateableException ignored){}
 			double e2 = evaluate();
 			double de = e2-e1;
 			double numericalForce = - de/DX;

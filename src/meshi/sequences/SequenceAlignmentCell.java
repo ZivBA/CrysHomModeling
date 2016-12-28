@@ -5,13 +5,13 @@ import meshi.util.MeshiAttribute;
 
 public class SequenceAlignmentCell extends AlignmentCell implements Attributable, MeshiAttribute {
     public static final char GAP_CHAR = '-';
-    public static final Character GAP = new Character(GAP_CHAR);
-    private AttributesRack attributes = new AttributesRack();
+    private static final Character GAP = GAP_CHAR;
+    private final AttributesRack attributes = new AttributesRack();
     public static final char WILDCARD_CHAR = 'X';
-    public static final char WILDCARD = new Character(WILDCARD_CHAR);
+    private static final char WILDCARD = WILDCARD_CHAR;
 
     public SequenceAlignmentCell(char c, int number) {
-	super(new Character(c), number);
+	super(c, number);
     }
     public SequenceAlignmentCell(int number) {
 	super(GAP, number);
@@ -20,7 +20,7 @@ public class SequenceAlignmentCell extends AlignmentCell implements Attributable
 	super(GAP, -1);
     }
  	
-    public char getChar() {return ((Character) obj).charValue();}
+    public char getChar() {return (Character) obj;}
     public String getCharAsString() {
 	char[] cc = new char[1];
 	cc[0] = getChar();

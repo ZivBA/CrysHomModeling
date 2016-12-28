@@ -4,7 +4,7 @@ import meshi.geometry.Distance;
 
 public abstract class AbstractCBParameters extends AbstractROT1Parameters {
 
-	public AbstractCBParameters(String parameterFileName) {
+	AbstractCBParameters(String parameterFileName) {
 		super(parameterFileName);
 	}
 

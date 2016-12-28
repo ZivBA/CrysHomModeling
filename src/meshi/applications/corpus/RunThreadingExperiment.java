@@ -2,7 +2,7 @@ package meshi.applications.corpus;
 
 import meshi.util.MeshiProgram;
 
-public class RunThreadingExperiment  extends MeshiProgram {
+class RunThreadingExperiment  extends MeshiProgram {
   
     private static String corpusFileName = null;
 
@@ -35,18 +35,18 @@ public class RunThreadingExperiment  extends MeshiProgram {
      *that MinimizeProtein inherits.
      **/
      
-    protected static void init(String[] args) {
+    private static void init(String[] args) {
 
 	String line;
 	String errorMessage = ("\n                  ******************\n"+
 			       "Usage java -Xmx800m RunThreadingExperiment <random seed> <corpus filename> <Num of Experiments> <Num of instances in experiment> <fragL> <RMSind1> <RMSind2>\n"+
 			       "                    ******************\n");
 			      
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 	String seedString = getOrderedArgument(args);
 	if (seedString== null) throw new RuntimeException(errorMessage);
-	int seed = (new Integer(seedString)).intValue();
+	int seed = new Integer(seedString);
 	System.out.println("# seed is "+seed);
 	initRandom(seed);
 
@@ -56,27 +56,27 @@ public class RunThreadingExperiment  extends MeshiProgram {
 	
 	line = getOrderedArgument(args);
 	if (line== null) throw new RuntimeException(errorMessage);
-	Nexp = (new Integer(line)).intValue();
+	Nexp = new Integer(line);
 	System.out.println("# Nexp "+Nexp);
 
 	line = getOrderedArgument(args);
 	if (line== null) throw new RuntimeException(errorMessage);
-	Ninst = (new Integer(line)).intValue();
+	Ninst = new Integer(line);
 	System.out.println("# Ninst "+Ninst);
 	
 	line = getOrderedArgument(args);
 	if (line== null) throw new RuntimeException(errorMessage);
-	fragL = (new Integer(line)).intValue();
+	fragL = new Integer(line);
 	System.out.println("# fragL "+fragL);
 
 	line = getOrderedArgument(args);
 	if (line== null) throw new RuntimeException(errorMessage);
-	RMSind1 = (new Integer(line)).intValue();
+	RMSind1 = new Integer(line);
 	System.out.println("# RMSind1 "+RMSind1);
 
 	line = getOrderedArgument(args);
 	if (line== null) throw new RuntimeException(errorMessage);
-	RMSind2 = (new Integer(line)).intValue();
+	RMSind2 = new Integer(line);
 	System.out.println("# RMSind2 "+RMSind2);
     }
 }

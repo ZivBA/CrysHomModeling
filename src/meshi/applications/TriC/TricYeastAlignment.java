@@ -20,42 +20,42 @@ public class TricYeastAlignment {
 
 	public TricYeastAlignment() {
 		String[] clustal = File2StringArray.f2a("C:\\Users\\Nir\\TRiC\\Organisms\\TRiC_11_2_2011_alignment_1line");
-		for (int c=0 ; c<clustal.length ; c++) {
-			StringTokenizer st = new StringTokenizer(clustal[c]);
-			if (st.countTokens()>=2) {
+		for (String aClustal : clustal) {
+			StringTokenizer st = new StringTokenizer(aClustal);
+			if (st.countTokens() >= 2) {
 				String prefix = st.nextToken();
 				String seq = st.nextToken();
-				if (prefix.equals("1Q3R=A")) { 
+				if (prefix.equals("1Q3R=A")) {
 					Q3R += seq;
 				}
-				if (prefix.equals("1A6D=A")) { 
+				if (prefix.equals("1A6D=A")) {
 					thermoA += seq;
 				}
-				if (prefix.equals("1A6D=B")) { 
+				if (prefix.equals("1A6D=B")) {
 					thermoB += seq;
 				}
-				if (prefix.equals("YeastA")) { 
+				if (prefix.equals("YeastA")) {
 					A += seq;
 				}
-				if (prefix.equals("YeastB")) { 
+				if (prefix.equals("YeastB")) {
 					B += seq;
 				}
-				if (prefix.equals("YeastG")) { 
+				if (prefix.equals("YeastG")) {
 					G += seq;
 				}
-				if (prefix.equals("YeastD")) { 
+				if (prefix.equals("YeastD")) {
 					D += seq;
 				}
-				if (prefix.equals("YeastE")) { 
+				if (prefix.equals("YeastE")) {
 					E += seq;
 				}
-				if (prefix.equals("YeastH")) { 
+				if (prefix.equals("YeastH")) {
 					H += seq;
 				}
-				if (prefix.equals("YeastQ")) { 
+				if (prefix.equals("YeastQ")) {
 					Q += seq;
 				}
-				if (prefix.equals("YeastZ")) { 
+				if (prefix.equals("YeastZ")) {
 					Z += seq;
 				}
 			}

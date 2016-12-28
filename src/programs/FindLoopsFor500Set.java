@@ -7,15 +7,15 @@ import meshi.parameters.Residues;
 import meshi.util.dssp.CrystalContacts;
 import meshi.util.dssp.DSSP;
 
-public class FindLoopsFor500Set implements Residues, AtomTypes {
+class FindLoopsFor500Set implements Residues, AtomTypes {
 
-	public static final int loopL = 8; 
-	public static final int loopOverlap = 3; 
-	public static final double crystalContactDis = 4.0; 
-	public static final String protPath = "proteins/";
-	public static final int minNumberOfCoils = 3;
-	public static final int minNumberOfExposed = 2;	 
-	public static final double exposureTH = 0.6;	 
+	private static final int loopL = 8;
+	private static final int loopOverlap = 3;
+	private static final double crystalContactDis = 4.0;
+	private static final String protPath = "proteins/";
+	private static final int minNumberOfCoils = 3;
+	private static final int minNumberOfExposed = 2;
+	private static final double exposureTH = 0.6;
 
 	public static void main(String[] args) {
 		String protName = args[0].trim();

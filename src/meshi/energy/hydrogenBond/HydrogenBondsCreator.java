@@ -28,7 +28,7 @@ public class HydrogenBondsCreator extends EnergyCreator implements KeyWords, Ato
     //------------------------- data fields ---------------------------
     
     //private IsN isN = new IsN(); old version
-    HydrogenBondsEnergy hydrogenBondsEnergy;
+    private HydrogenBondsEnergy hydrogenBondsEnergy;
 
 
     /**
@@ -39,7 +39,7 @@ public class HydrogenBondsCreator extends EnergyCreator implements KeyWords, Ato
     private DistanceList specialDis = null;
     public final DistanceList getSpecialDis(){return specialDis ;}
 
-    int[ ] specialDisArray = null;
+    private int[ ] specialDisArray = null;
     public int[] getSpecialDisArray() {
         return specialDisArray;
     }
@@ -127,8 +127,9 @@ public class HydrogenBondsCreator extends EnergyCreator implements KeyWords, Ato
            hydrogenBondsEnergy = new HydrogenBondsEnergy(distanceMatrix,
                                                                   (HydrogenBondsParametersList) parametersList,
                                                                   weight(),
-                                                                  new HBondList(distanceMatrix,(HydrogenBondsParametersList)parametersList,specialDis ),
-                                                                  specialDis);
+                                                                  new HBondList(distanceMatrix,(HydrogenBondsParametersList)parametersList,specialDis )
+		           
+           );
 
         }
         else{

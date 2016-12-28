@@ -18,7 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
-public class CalculateLoopConsistencyOnProtein extends MeshiProgram implements Residues, AtomTypes {
+class CalculateLoopConsistencyOnProtein extends MeshiProgram implements Residues, AtomTypes {
 
 	private static String loopDirString = null;  
 	private static String loopStartString = null;  
@@ -121,7 +121,7 @@ public class CalculateLoopConsistencyOnProtein extends MeshiProgram implements R
 		
 	}
 	
-	public static void calcConsistencyOneLoop(String loopDir,int startRes, int endRes) throws Exception {
+	private static void calcConsistencyOneLoop(String loopDir, int startRes, int endRes) throws Exception {
 		// Paramteres:
 		// -----------
 		int takeToModel = 5;
@@ -172,7 +172,7 @@ public class CalculateLoopConsistencyOnProtein extends MeshiProgram implements R
 	}
 
 	
-	public static void calcConsistencyAllGaps(String loopDir) throws Exception {
+	private static void calcConsistencyAllGaps(String loopDir) throws Exception {
 		// Paramteres:
 		// -----------
 		int loopLength = 12;
@@ -185,28 +185,28 @@ public class CalculateLoopConsistencyOnProtein extends MeshiProgram implements R
 		DecimalFormat fmt2 = new DecimalFormat("0.##");
 		BufferedWriter bw = new BufferedWriter(new FileWriter("output"));		
 		int[][] gaps = MakeLimitsForScan.getScanLimits(origTemplate, loopLength, scanShift);
-		for (int gapC=0 ; gapC<gaps.length ; gapC++) {
-			if ((gaps[gapC][1] - gaps[gapC][0] + 1) == loopLength) {
+		for (int[] gap : gaps) {
+			if ((gap[1] - gap[0] + 1) == loopLength) {
 				try {
-					Protein template = takeNearResidues(origTemplate, gaps[gapC][0], gaps[gapC][1], 12.0);
+					Protein template = takeNearResidues(origTemplate, gap[0], gap[1], 12.0);
 					GDTcalculator.alignBySubset(template.atoms(), conc.atoms(), 1.5);
 					GDTcalculator.alignBySubset(template.atoms(), reference.atoms(), 1.5);
-					String loopSubDir = loopDir + "/Loop_" + gaps[gapC][0] + "_" + gaps[gapC][1];
-					Protein shortTemplate = extractLoopFromTemplate(template , gaps[gapC][0] , gaps[gapC][1]);
-					Protein shortConc = extractLoopFromTemplate(conc , gaps[gapC][0] , gaps[gapC][1]);
+					String loopSubDir = loopDir + "/Loop_" + gap[0] + "_" + gap[1];
+					Protein shortTemplate = extractLoopFromTemplate(template, gap[0], gap[1]);
+					Protein shortConc = extractLoopFromTemplate(conc, gap[0], gap[1]);
 					double[] bestLoop = bestRMSinLoopGroup(template, loopSubDir, takeToModel);
 					int bestModel = ((int) bestLoop[0]);
-					if (bestModel>=0) {
-						Protein loop = new Protein(loopSubDir+"/0.pdb.min", new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
+					if (bestModel >= 0) {
+						Protein loop = new Protein(loopSubDir + "/0.pdb.min", new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
 						double rmsNo1 = calcRMSonHonigBackbone(loop, reference);
 						double rmsTemp = calcRMSonHonigBackbone(shortTemplate, reference);
 						double rmsConc = calcRMSonHonigBackbone(shortConc, reference);
-						bw.write("99999 " + gaps[gapC][0] + " " + gaps[gapC][1] + " " +
-								bestModel + " " + fmt2.format(bestLoop[1]) + " " + 
+						bw.write("99999 " + gap[0] + " " + gap[1] + " " +
+								bestModel + " " + fmt2.format(bestLoop[1]) + " " +
 								fmt2.format(rmsTemp) + " " + fmt2.format(rmsConc) + " " +
 								fmt2.format(rmsNo1) + " ");
-						System.out.print("99999 " + gaps[gapC][0] + " " + gaps[gapC][1] + " " +
-								bestModel + " " + fmt2.format(bestLoop[1]) + " " + 
+						System.out.print("99999 " + gap[0] + " " + gap[1] + " " +
+								bestModel + " " + fmt2.format(bestLoop[1]) + " " +
 								fmt2.format(rmsTemp) + " " + fmt2.format(rmsConc) + " " +
 								fmt2.format(rmsNo1) + " ");
 						double[] bestLoopToNat = bestRMSinLoopGroup(reference, loopSubDir, takeToModel);
@@ -214,8 +214,7 @@ public class CalculateLoopConsistencyOnProtein extends MeshiProgram implements R
 						bw.write(fmt2.format(bestLoopToNat[1]) + " " + bestModelToNat + "\n");
 						System.out.println(fmt2.format(bestLoopToNat[1]) + " " + bestModelToNat);
 					}
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					// Do nothing
 				}
 			}
@@ -276,8 +275,8 @@ public class CalculateLoopConsistencyOnProtein extends MeshiProgram implements R
 	
 	private static int howManyClosures(String[] logFile) {
 		int counter999 = 0;
-		for (int c=0 ; c<logFile.length ; c++) {
-			if (logFile[c].startsWith("999111111"))
+		for (String aLogFile : logFile) {
+			if (aLogFile.startsWith("999111111"))
 				counter999++;
 		}
 		return counter999++;
@@ -327,7 +326,7 @@ public class CalculateLoopConsistencyOnProtein extends MeshiProgram implements R
 		return new Protein(al , new ResidueExtendedAtoms(DO_NOT_ADD_ATOMS));
 	}
 
-	protected static Protein takeNearResidues(Protein tmpprot, int start, int end, double disCO) {
+	private static Protein takeNearResidues(Protein tmpprot, int start, int end, double disCO) {
 		tmpprot.freeze();
 		for (int c=start; c<=end ; c++)
 			tmpprot.residue(c).atoms().defrost();
@@ -370,7 +369,7 @@ public class CalculateLoopConsistencyOnProtein extends MeshiProgram implements R
 	 *that MinimizeProtein inherits.
 	 **/
 
-	protected static void init(String[] args) {
+	private static void init(String[] args) {
 
 		/**** NOTE *** the next two lines. Because of a BUG in the Java VM, the 
 		 * interfaces "Residues" and "AtomTypes" are not loaded automatically when MinimizeProtein initialize. 
@@ -385,7 +384,7 @@ public class CalculateLoopConsistencyOnProtein extends MeshiProgram implements R
 				"Usage java -Xmx600m CalculateLoopConsistencyOnProtein <directory of Loops> \n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 		loopDirString = getOrderedArgument(args);
 		if (loopDirString == null) throw new RuntimeException(errorMessage);

@@ -20,9 +20,9 @@ import java.util.StringTokenizer;
  **/
 
 public class Spline2D {
-	private double[] breaksX;
-	private double[] breaksY;
-	private double[][][] coefs;
+	private final double[] breaksX;
+	private final double[] breaksY;
+	private final double[][][] coefs;
 	private boolean evenBreaks = false;
 	private double breakIntervalX;
 	private double breakIntervalY;
@@ -57,19 +57,19 @@ public class Spline2D {
 	
 	public Spline2D(StringTokenizer st) {
 		int i,j,k;
-		int numXbreak = Integer.valueOf(st.nextToken().trim()).intValue();
-		int numYbreak = Integer.valueOf(st.nextToken().trim()).intValue();
+		int numXbreak = Integer.valueOf(st.nextToken().trim());
+		int numYbreak = Integer.valueOf(st.nextToken().trim());
 		breaksX = new double[numXbreak];
 		breaksY = new double[numYbreak];
 		coefs = new double[numXbreak][numYbreak][16];
 		for (i=0 ; i<numXbreak ; i++) 
-			breaksX[i] = Double.valueOf(st.nextToken().trim()).doubleValue();
+			breaksX[i] = Double.valueOf(st.nextToken().trim());
 		for (i=0 ; i<numYbreak ; i++) 
-			breaksY[i] = Double.valueOf(st.nextToken().trim()).doubleValue();
+			breaksY[i] = Double.valueOf(st.nextToken().trim());
 		for (i=0 ; i<(numXbreak-1) ; i++) 
 			for (j=0 ; j<(numYbreak-1) ; j++) 
 				for (k=0 ; k<16 ; k++)
-					coefs[i][j][k] = Double.valueOf(st.nextToken().trim()).doubleValue();
+					coefs[i][j][k] = Double.valueOf(st.nextToken().trim());
 		// testing for even breaks
 		evenBreaks = testForEvenBreaks(breaksX) && testForEvenBreaks(breaksY);
 		if (evenBreaks) {
@@ -143,7 +143,7 @@ public class Spline2D {
 			coefs[indexX][indexY][15]*3*offsetY2*offsetX3;
 	}
 	
-	private final void calcEvenBreaks(double x, double y) {
+	private void calcEvenBreaks(double x, double y) {
 		int indexX = (int) ((x-breaksX[0])/breakIntervalX);
 		int indexY = (int) ((y-breaksY[0])/breakIntervalY);
 		double offsetX =  x - breaksX[0] - indexX*breakIntervalX;

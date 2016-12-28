@@ -12,19 +12,13 @@ import java.util.Iterator;
  * (typically) many such elements. 
  **/
 public abstract class EnergyElement {
-    protected boolean frozen;
+    private boolean frozen;
     protected AtomList atoms;
-    // protected double[][] coordinates = new double[3][];
-    public final double  DX = 1e-7;  /* should be roughly the sqrare root of the machine's relative precision. 
-					In java this is about sqrt(1e-15) */
-    // should be 3-4 orders of magnitude higer than DX.
-    public final double relativeDiffTolerance = 0.0005; 
-    public final double verySmall = Math.exp(-15);
-    public final String XYZ = "xyz";
-    protected static Fdouble dFormatStd = Fdouble.STANDARD;
-    protected static Fdouble dFormatSrt = Fdouble.SHORT;
+	private final double verySmall = Math.exp(-15);
+	protected static Fdouble dFormatStd = Fdouble.STANDARD;
+    protected static final Fdouble dFormatSrt = Fdouble.SHORT;
 
-    public EnergyElement() {
+    protected EnergyElement() {
 	atoms = null;
 	frozen = false;
     }
@@ -33,7 +27,7 @@ public abstract class EnergyElement {
     
     public final AtomList atoms() { return atoms;}
 
-    public boolean updateFrozen() {
+    protected boolean updateFrozen() {
 	Iterator atomsIter;
 	try {
 	    atomsIter = atoms.iterator();
@@ -91,23 +85,26 @@ public abstract class EnergyElement {
         coordinates[1] = atom.Y();
         coordinates[2] = atom.Z();
         for(int i = 0; i< 3; i++) {
-            try{totalEnergy.update();}catch(UpdateableException ue){}
+            try{totalEnergy.update();}catch(UpdateableException ignored){}
             double x = coordinates[i][0];
             coordinates[i][1] = 0;
             double e1 = evaluate();
             double analiticalForce = coordinates[i][1];
-            coordinates[i][0] += DX;
+	        double DX = 1e-7;
+	        coordinates[i][0] += DX;
             // Whatever should be updated ( such as distance matrix torsion list etc. )
-            try{totalEnergy.update();}catch(UpdateableException ue){}
+            try{totalEnergy.update();}catch(UpdateableException ignored){}
             double e2 = evaluate();
             double de = e2-e1;
-            double numericalForce = - de/DX;
+            double numericalForce = - de/ DX;
             coordinates[i][0] -= DX;
             double diff = Math.abs(analiticalForce - numericalForce);
-            
-            if ((2*diff/(Math.abs(analiticalForce)+Math.abs(numericalForce)+verySmall)) > relativeDiffTolerance){
+	
+	        double relativeDiffTolerance = 0.0005;
+	        if ((2*diff/(Math.abs(analiticalForce)+Math.abs(numericalForce)+verySmall)) > relativeDiffTolerance){
                 System.out.println("Testing "+this);
-                System.out.println("Atom["+atom.number()+"]."+XYZ.charAt(i)+" = "+x);
+	            String XYZ = "xyz";
+	            System.out.println("Atom["+atom.number()+"]."+ XYZ.charAt(i)+" = "+x);
                 System.out.println("Analytical force = "+analiticalForce);
                 System.out.println("Numerical force  = "+numericalForce);
                 

@@ -10,11 +10,11 @@ import meshi.energy.TotalEnergy;
  *(direction + magnitude) from the initial point sould be given in the second column of 'coordinates'.  
  **/ 
 
-public abstract class  LineSearch {
+abstract class  LineSearch {
 	
-    protected TotalEnergy energy;
+    final TotalEnergy energy;
 
-	public LineSearch(TotalEnergy energy){
+	LineSearch(TotalEnergy energy){
 		this.energy = energy;
 	}
 		

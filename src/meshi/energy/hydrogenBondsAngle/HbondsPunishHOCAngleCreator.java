@@ -19,7 +19,7 @@ public class HbondsPunishHOCAngleCreator extends EnergyCreator {
 
     HbondsPunishHOCAngleEnergy hBondsPunishHOCAngleEnergy;
 
-    HydrogenBondsCreator hydrogenBondsCreator;
+    private final HydrogenBondsCreator hydrogenBondsCreator;
 
 
     /**

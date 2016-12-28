@@ -25,7 +25,7 @@ public class EVenergyParameters extends Parameters {
 		A = B = C = D = -1;
 	}
 
-	public EVenergyParameters(StringTokenizer st) {this(st,1.0);}
+	private EVenergyParameters(StringTokenizer st) {this(st,1.0);}
 
 	public EVenergyParameters(StringTokenizer st,double frac) {
 		int first = Atom.type(st.nextToken());

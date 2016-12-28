@@ -9,18 +9,18 @@ import java.util.Vector;
  * This class encapsulates the No. 3 atom in each torsion, with all the data that is relevant to it.
  * It is supposed to be created and run from "TorsionMinimizationTree" 
  **/
-public class TorsionMinimizationElement {
-	private DistanceMatrix dm;
+class TorsionMinimizationElement {
+	private final DistanceMatrix dm;
 	private final Atom a1,a2,a3;
 	private final Atom mainTorsionAtom;
 	private final double angle;
 	private final double bond;
 	private final boolean isElementAroundSignificantTorsion; // i.e. around any IUPAC names torsion that is not OMEGA
-	private double[] torsionCoors;      // 0 - torsion value    1 - torsion gradient
-	private double[] grad = new double[6];
+	private final double[] torsionCoors;      // 0 - torsion value    1 - torsion gradient
+	private final double[] grad = new double[6];
 	private TorsionMinimizationElement sonMain = null;
-	private Distance disMain;
-	private Distance axis;
+	private final Distance disMain;
+	private final Distance axis;
 	
 	// All the data that is needed to know about the other branches
 	private class DataOtherBranch {
@@ -31,15 +31,15 @@ public class TorsionMinimizationElement {
 		Distance dis = null;
 		TorsionMinimizationElement son = null;
 	}
-	private Vector<DataOtherBranch> otherTorsionAtoms;
+	private final Vector<DataOtherBranch> otherTorsionAtoms;
 	
-	protected TorsionMinimizationElement(Atom a1, Atom a2, Atom a3, Atom mainTorsionAtom, DistanceMatrix dm) {
+	TorsionMinimizationElement(Atom a1, Atom a2, Atom a3, Atom mainTorsionAtom, DistanceMatrix dm) {
 		this.dm = dm;
 		this.a1 = a1;
 		this.a2 = a2;
 		this.a3 = a3;
 		this.mainTorsionAtom = mainTorsionAtom;
-		otherTorsionAtoms = new Vector<DataOtherBranch>();
+		otherTorsionAtoms = new Vector<>();
 		torsionCoors = new double[2];
 		axis = dm.distance(a2,a3);
 		Angle angleInstance = new Angle(a2,a3,mainTorsionAtom,dm,false);
@@ -51,7 +51,7 @@ public class TorsionMinimizationElement {
 		isElementAroundSignificantTorsion = TorsionList.isNameInIUPAC(torsion) && !TorsionList.isOmega(torsion);
 	}
 
-	protected void addBranch(Atom otherAtom, TorsionMinimizationElement tme) {
+	void addBranch(Atom otherAtom, TorsionMinimizationElement tme) {
 		DataOtherBranch dataOtherBranch = new DataOtherBranch();
 		dataOtherBranch.otherAtom = otherAtom;
 		Angle angleInstance = new Angle(a2,a3,otherAtom,dm,false);
@@ -64,17 +64,17 @@ public class TorsionMinimizationElement {
 		otherTorsionAtoms.add(dataOtherBranch);
 	}
 	
-	protected void setSonMain(TorsionMinimizationElement tme) {
+	void setSonMain(TorsionMinimizationElement tme) {
 		sonMain = tme;
 	}
 	
-	protected void buildTorsionInProt(TempCalcForthAtom tempCalcForthAtom) {
+	void buildTorsionInProt(TempCalcForthAtom tempCalcForthAtom) {
 		tempCalcForthAtom.setForthAtom(bond, angle, torsionCoors[0], a1, a2, a3, mainTorsionAtom);
 		for (DataOtherBranch dob : otherTorsionAtoms)
 			tempCalcForthAtom.setForthAtom(dob.bond, dob.angle, torsionCoors[0] + dob.torsionDiffFromMain, a1, a2, a3, dob.otherAtom);
 	}
 	
-	protected void calcDericatives() {
+	void calcDericatives() {
 		//mainTorsion.update();
 		//for (DataOtherBranch dob : otherTorsionAtoms)
 		//	dob.torsion.update();

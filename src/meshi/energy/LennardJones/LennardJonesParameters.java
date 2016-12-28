@@ -18,7 +18,7 @@ public class LennardJonesParameters extends Parameters{
     	smallType = largeType = -1;
     }
 
-    public LennardJonesParameters(StringTokenizer st) {
+    protected LennardJonesParameters(StringTokenizer st) {
     	this(st,1.0);
     }
 

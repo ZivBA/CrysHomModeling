@@ -6,29 +6,32 @@ import meshi.molecularElements.Atom;
 
 
 public  class EVenergyElement extends NonBondedEnergyElement {
-	protected DistanceMatrix distanceMatrix;
-	protected Atom atom1, atom2;
-	protected Distance distance;
-	int type;
-	protected double sigma,mini,A,B,C,D;
+	private Atom atom1;
+	private Atom atom2;
+	private Distance distance;
+	private int type;
+	private double sigma;
+	private double mini;
+	private double A;
+	private double B;
+	private double C;
+	private double D;
 	protected boolean frozen;
 	protected double dEdD;
 	protected double dEdX;
 	protected double dEdY;
 	protected double dEdZ;
-	protected double energy;
-	protected double weight;
-	protected double rMax;
-	protected EVenergyParametersList parametersList;
-	protected int fragStart=100000000,fragEnd=1000000000;
-
+	private double weight;
+	private double rMax;
+	private EVenergyParametersList parametersList;
+	
 	public  EVenergyElement() {}
 	public  EVenergyElement(EVenergyParametersList parametersList, DistanceMatrix distanceMatrix,
 			int type, double weight) {
 		this.parametersList = parametersList;
 		this.type = type;
 		this.weight = weight;
-		this.distanceMatrix = distanceMatrix;
+		DistanceMatrix distanceMatrix1 = distanceMatrix;
 		this.rMax = DistanceMatrix.rMax();
 		//----------------------
 	}
@@ -38,8 +41,8 @@ public  class EVenergyElement extends NonBondedEnergyElement {
 	}
 
 	public void setFragLimits(int start , int end) {
-		fragStart = start;
-		fragEnd = end;
+		int fragStart = start;
+		int fragEnd = end;
 	}
 
 
@@ -63,6 +66,7 @@ public  class EVenergyElement extends NonBondedEnergyElement {
 	public double evaluate() {
 		double dEdD;
 		double dis = distance.distance();
+		double energy;
 		if (type==0) {    // This functional form of the repulsive part is similar to that of Summa and Levitt (2007)
 			if (dis>mini || (atom1.residueNumber()==atom2.residueNumber())) {
 				energy = 0;
@@ -110,6 +114,6 @@ public  class EVenergyElement extends NonBondedEnergyElement {
 				"atom2 = "+atom2); 
 		double dis = distance.distance();
 		return ("ExcludedVolumeEnergyElement sigma = "+sigma+" Distance = "+
-				dFormatSrt.f(dis)+" rMax = "+rMax+"\n"+atom1.verbose(1)+"\n"+atom2.verbose(1));
+				dFormatSrt.f(dis)+" rMax = "+rMax+"\n"+atom1.verbose()+"\n"+atom2.verbose());
 	}
 }

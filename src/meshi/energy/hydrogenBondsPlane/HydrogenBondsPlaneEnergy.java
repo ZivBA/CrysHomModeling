@@ -11,9 +11,9 @@ import java.util.Iterator;
 public class HydrogenBondsPlaneEnergy extends NonBondedEnergyTerm implements AtomTypes {
 
     //--------------------------------- data fields ----------------------------------
-    protected meshi.energy.hydrogenBondsPlane.CNList CNList; //element list
-    private HydrogenBondsPlaneEnergyElement energyElement;
-    private HydrogenBondsPlaneParametersList parametersList;
+    private final meshi.energy.hydrogenBondsPlane.CNList CNList; //element list
+    private final HydrogenBondsPlaneEnergyElement energyElement;
+    private final HydrogenBondsPlaneParametersList parametersList;
 
     public meshi.energy.hydrogenBondsPlane.CNList CNList() {
         return CNList;

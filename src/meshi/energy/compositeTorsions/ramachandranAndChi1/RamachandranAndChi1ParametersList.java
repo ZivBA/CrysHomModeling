@@ -32,10 +32,10 @@ public class RamachandranAndChi1ParametersList extends ParametersList
 		}		
 	}
 	
-	public Parameters createParameters2D( int residueType ) {
+	private Parameters createParameters2D(int residueType) {
 		return new RamachandranAndChi12DParameters( residueType, spl );
 	}
-	public Parameters createParameters3D( int residueType ) {
+	private Parameters createParameters3D(int residueType) {
 		return new RamachandranAndChi13DParameters( residueType, spl );
 	}
 

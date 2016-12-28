@@ -47,11 +47,12 @@ public class Distance implements Comparable, Attributable{
     /**
      * This object represent the distance between atom1 and atom2.
      **/
-    protected Atom atom1, atom2;
-    protected int atom1Number;
-    protected int atom2Number;
+    Atom atom1;
+	Atom atom2;
+    int atom1Number;
+    int atom2Number;
     protected final int atom1Number() { return atom1Number;}
-    protected final int atom2Number() { return atom2Number;}
+    final int atom2Number() { return atom2Number;}
     public static final Filter filter = new IsDistance();
 	
     /**
@@ -98,7 +99,7 @@ public class Distance implements Comparable, Attributable{
      * improves computational efficiency but opens a wide door 
      * for bugs.
      **/
-    protected double distance2;
+    double distance2;
 	
     /**
      * The distance between atom1 & atom2  <br>
@@ -106,7 +107,7 @@ public class Distance implements Comparable, Attributable{
      * improves computational efficiency but opens a wide door 
      * for bugs.
      **/
-    protected double distance;
+    double distance;
     /**
      * The distance between atom1 & atom2 on the previous step <br>
      **/
@@ -137,29 +138,30 @@ public class Distance implements Comparable, Attributable{
     /**
      * The coordinates of atom1.
      **/
-    protected Coordinates coor1;
+    private Coordinates coor1;
 	
     /**
      * The coordinates of atom2.
      **/
-    protected Coordinates coor2;
+    private Coordinates coor2;
     //protected double rMax = DistanceMatrix.rMax();    
     //protected double rMax2 = DistanceMatrix.rMax2();    
     //protected double rMaxPlusBuffer2 = DistanceMatrix.rMaxPlusBuffer2();      
     private int debugFlag = -1;
-    protected boolean bonded = false;
+    boolean bonded = false;
     public boolean bonded() {return bonded;}
-    protected void setBonded() {
+    void setBonded() {
 	bonded = true;
     }
-    protected boolean mirror;
-    protected boolean mirror() {return mirror;}
+    boolean mirror;
+    boolean mirror() {return mirror;}
     public final boolean frozen;
-    protected int largeType, smallType;
+    private int largeType;
+	private int smallType;
     public int largeType()  {return largeType;}
     public int smallType()  {return smallType;}
     private AtomList atoms;
-    private AttributesRack attributes = new AttributesRack();
+    private final AttributesRack attributes = new AttributesRack();
     public final void addAttribute(MeshiAttribute attribute){ attributes.addAttribute(attribute); }
     public final MeshiAttribute getAttribute(int key){ return attributes.getAttribute(key); }
     
@@ -210,7 +212,7 @@ public class Distance implements Comparable, Attributable{
      * This constructor should be used with caution. It helps to save time in DistanceMatrix update. 
      * We see no reason to use it anywhere else.  
      **/
-    protected  Distance(Atom atom1, Atom atom2, double realD2, double dx, double dy, double dz,double rMax2) {
+    Distance(Atom atom1, Atom atom2, double realD2, double dx, double dy, double dz, double rMax2) {
 	this.atom1 = atom1;
 	this.atom2 = atom2;
 	atom1Number = atom1.number();
@@ -254,16 +256,14 @@ public class Distance implements Comparable, Attributable{
 	
     public boolean equals(Object obj) {
 	    Distance other = (Distance) obj;
-	   boolean y = ((atom1.equals(other.atom1) && atom2.equals(other.atom2)) ||
-                    (atom1.equals(other.atom2) && atom2.equals(other.atom1)));
-        return y;
+	    return ((atom1.equals(other.atom1) && atom2.equals(other.atom2)) ||
+                     (atom1.equals(other.atom2) && atom2.equals(other.atom1)));
    }
 
       public boolean amiEquals(Object obj) {
 	    Distance other = (Distance) obj;
-	   boolean y = ((atom1.number() == other.atom1Number && atom2.number() == other.atom2Number) ||
-                    (atom1.number() == other.atom2Number && atom2.number() == other.atom1Number));
-        return y;
+	      return ((atom1.number() == other.atom1Number && atom2.number() == other.atom2Number) ||
+                       (atom1.number() == other.atom2Number && atom2.number() == other.atom1Number));
     }
     
     //method equals for NonBondedList testing 
@@ -283,8 +283,8 @@ public class Distance implements Comparable, Attributable{
      * The distance values.
      * This method should be used with caution. We see no point in using it outside DistanceMatrix. 
      **/
- 
-    protected boolean update(double rMax2, double rMaxPlusBuffer2) { 
+
+    boolean update(double rMax2, double rMaxPlusBuffer2) {
 	distancePrev = this.distance;	
         try {
 		dx  = coor1.x[0] - coor2.x[0];	
@@ -376,7 +376,7 @@ public class Distance implements Comparable, Attributable{
 	    dformat.f(dDistanceDy)+" "+ 
 	    dformat.f(dDistanceDz);
     }
-    public String comment() { return "Distance";}
+    String comment() { return "Distance";}
 
     public boolean isDistanceOf(Atom toCueck){
         return atom1.equals(toCueck ) | atom2 .equals(toCueck );

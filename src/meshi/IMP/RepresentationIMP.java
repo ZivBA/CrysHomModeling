@@ -3,9 +3,9 @@ package meshi.IMP;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-public class RepresentationIMP {
+class RepresentationIMP {
 
-	private DomainList domainList;
+	private final DomainList domainList;
 	
 	public RepresentationIMP(DomainList domainList) {
 		this.domainList = domainList;

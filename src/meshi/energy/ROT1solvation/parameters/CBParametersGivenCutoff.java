@@ -3,11 +3,10 @@ package meshi.energy.ROT1solvation.parameters;
 public class CBParametersGivenCutoff extends AbstractCBParameters {
 
 	private double cutoff = -999;
-	private double sigmoidRange = 0.1;	
 	
 	public CBParametersGivenCutoff(String path, String cutoffString) {
 		super(path + "/CB_" + cutoffString + ".txt");
-		cutoff = (new Double(cutoffString)).doubleValue();
+		cutoff = new Double(cutoffString);
 	}
 	
 	protected double cutoff() {
@@ -15,7 +14,7 @@ public class CBParametersGivenCutoff extends AbstractCBParameters {
 	}
 	
 	protected double sigmoidRange() {
-		return sigmoidRange;
+		return 0.1;
 	}
 	
 }

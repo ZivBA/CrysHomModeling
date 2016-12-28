@@ -10,7 +10,7 @@ public class Rot1PairwiseParameters extends Parameters {
 	public final int smallerType; 
 	public final int largerType;
 	public final double[] EofR;
-	public double maxDis;
+	public final double maxDis;
 
     public Rot1PairwiseParameters() {
     	EofR = null;
@@ -31,7 +31,7 @@ public class Rot1PairwiseParameters extends Parameters {
     	}	
     	EofR = new double[st.countTokens()];
     	for (int counter=0; st.hasMoreTokens() ; counter++) {
-    		EofR[counter] = (new Double(st.nextToken())).doubleValue();
+    		EofR[counter] = new Double(st.nextToken());
     	}
     	maxDis = EofR.length-1;
     }

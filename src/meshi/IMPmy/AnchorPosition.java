@@ -2,9 +2,9 @@ package meshi.IMPmy;
 
 public class AnchorPosition {
 
-	private String domainName;
-	private String proteinName;
-	private int resNum;
+	private final String domainName;
+	private final String proteinName;
+	private final int resNum;
 	private double x,y,z;
 	private double vx,vy,vz;
 	private double fx,fy,fz;

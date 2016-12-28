@@ -16,7 +16,7 @@ import java.util.Vector;
 public class LoopBuilderFinalCloseAtTerm extends
 		LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 	
-	protected int loopType = -999;
+	private int loopType = -999;
 	
 	public LoopBuilderFinalCloseAtTerm(CommandList commands,
 			String writePath, Corpus corpus, Protein prot, Protein ref,
@@ -86,13 +86,13 @@ public class LoopBuilderFinalCloseAtTerm extends
 						fmt2.format(results.propEnergy) + " " +
 						fmt2.format(results.evEnergy) + " " + 
 						fmt2.format(results.bbHBenergy) + "         ");
-				for (int tmpc=0 ; tmpc<fragRank.length ; tmpc++) {
-					System.out.print(fragRank[tmpc]+" ");
+				for (int aFragRank : fragRank) {
+					System.out.print(aFragRank + " ");
 					//score += 0.0*(Math.log(1+fragRank[tmpc]));
 				}
 				System.out.print("       ");
-				for (int tmpc=0 ; tmpc<actuallyTaken.length ; tmpc++) {
-					System.out.print(actuallyTaken[tmpc]+" ");
+				for (int anActuallyTaken : actuallyTaken) {
+					System.out.print(anActuallyTaken + " ");
 				}
 				System.out.println();
 			}

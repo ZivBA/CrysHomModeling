@@ -59,7 +59,7 @@ public class HierarchicalClusterer {
 						double numDis = 0.0;
 						for (int c1=0 ; c1<tree.get(cc).getClusterMembers().size() ; c1++) {
 							for (int c2=0 ; c2<newClust.getClusterMembers().size() ; c2++)  {
-								sumDis += largeMatrix[tree.get(cc).getClusterMembers().get(c1).intValue()][newClust.getClusterMembers().get(c2).intValue()];
+								sumDis += largeMatrix[tree.get(cc).getClusterMembers().get(c1)][newClust.getClusterMembers().get(c2)];
 								numDis++;
 							}
 						}
@@ -107,11 +107,10 @@ public class HierarchicalClusterer {
 	
 	
 	private void initialize() {
-		tree = new Vector<Cluster>();
+		tree = new Vector<>();
 		largeMatrix = new double[2*disMat.length-1][2*disMat.length-1];
 		for (int i=0 ; i<disMat.length ; i++)
-			for (int j=0 ; j<disMat.length ; j++)
-				largeMatrix[i][j] = disMat[i][j];
+			System.arraycopy(disMat[i], 0, largeMatrix[i], 0, disMat.length);
 		// make singletons
 		for (int i=0 ; i<disMat.length ; i++) {
 			tree.add(new Cluster(largeMatrix,i));

@@ -40,20 +40,15 @@ import java.text.DecimalFormat;
  *
  **/
 
-public class ExtractPairwiseCoarseFromLoops extends MeshiProgram implements Residues, AtomTypes {
+class ExtractPairwiseCoarseFromLoops extends MeshiProgram implements Residues, AtomTypes {
 
 	private static CommandList commands;
-	private static String commandsFileName = null;
-	private static String modelsFileName = null;  
+	private static String modelsFileName = null;
 	private static String refFileName = null;  
 	private static int resStart = -999;
 	private static int resEnd = -999;
-	private static int toTakeRef = 20;
-	private static int toTakeCorrect = 5;
-	private static double natCO = 1.5; //Ang
 	
-
-
+	
 	public static void main(String[] args) throws MinimizerException, LineSearchException {
 		init(args); 
 		DunbrackLib lib = new DunbrackLib(commands, 1.0, 1);
@@ -109,9 +104,11 @@ public class ExtractPairwiseCoarseFromLoops extends MeshiProgram implements Resi
 				findCorrectRes(reference,model,correctRes);
 				
 				// The extraction 
-				for (int res=resStart ; res<=resEnd ; res++) {
-					if ((correctRes[res] && (takenRot1correct[res]<toTakeCorrect)) || 
-							(!correctRes[res] && (takenRot1ref[res]<toTakeRef))) {
+				int toTakeCorrect = 5;
+				int toTakeRef = 20;
+				for (int res = resStart; res<=resEnd ; res++) {
+					if ((correctRes[res] && (takenRot1correct[res]< toTakeCorrect)) ||
+							(!correctRes[res] && (takenRot1ref[res]< toTakeRef))) {
 						Residue residue = model.residue(res);
 						for (int c1=0 ; c1<residue.atoms().size(); c1++) {
 							for (int c2=0 ; c2<model.atoms().size(); c2++) {
@@ -170,7 +167,7 @@ public class ExtractPairwiseCoarseFromLoops extends MeshiProgram implements Resi
 								
 				notFull=false;
 				for (int res=resStart ; res<=resEnd ; res++) {
-					if ((takenRot1correct[res]<toTakeCorrect) | (takenRot1ref[res]<toTakeRef))
+					if ((takenRot1correct[res]< toTakeCorrect) | (takenRot1ref[res]< toTakeRef))
 						notFull=true;
 				}
 			}
@@ -257,6 +254,7 @@ public class ExtractPairwiseCoarseFromLoops extends MeshiProgram implements Resi
 			Atom caModel = model.residue(res).ca();
 			Atom cbRef = reference.residue(res).atoms().findAtomInList("CB", res);
 			Atom cbModel = model.residue(res).atoms().findAtomInList("CB", res);
+			double natCO = 1.5;
 			if (cbRef==null) {
 				correctRes[res] = dis2atoms(caRef, caModel) < natCO;
 			}
@@ -295,10 +293,10 @@ public class ExtractPairwiseCoarseFromLoops extends MeshiProgram implements Resi
 				"<loop starting resisue> <loop ending residue> <Wev> <Whb> <Wtorval> <Wtether> <output PDB extension string>\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-		commandsFileName = getOrderedArgument(args);
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
-		System.out.println("# commandsFileName = "+commandsFileName);
+		System.out.println("# commandsFileName = "+ commandsFileName);
 
 		commands = new CommandList(commandsFileName);
 
@@ -314,12 +312,12 @@ public class ExtractPairwiseCoarseFromLoops extends MeshiProgram implements Resi
 
 		String tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		resStart = (new Integer(tmpString)).intValue();
+		resStart = new Integer(tmpString);
 		System.out.println("# Starting residue is " + resStart);
 
 		tmpString = getOrderedArgument(args);
 		if (tmpString== null) throw new RuntimeException(errorMessage);
-		resEnd = (new Integer(tmpString)).intValue();
+		resEnd = new Integer(tmpString);
 		System.out.println("# Ending residue is " + resEnd);
 
 	}

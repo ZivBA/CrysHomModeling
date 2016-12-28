@@ -12,11 +12,11 @@ public abstract class DomainListWithStructure extends DomainList {
 
 	private static final long serialVersionUID = 1L;
 
-	public DomainListWithStructure(String fileName) {
+	DomainListWithStructure(String fileName) {
 		String[] domainText = File2StringArray.f2a(fileName);
-		for (int c=0 ; c<domainText.length ; c++) {
-			Domain newDomain = new Domain(domainText[c]);
-			AtomList model = getAtomicModelFileName(newDomain.proteinName(), newDomain.domainName());
+		for (String aDomainText : domainText) {
+			Domain newDomain = new Domain(aDomainText);
+			AtomList model = getAtomicModelFileName(newDomain.proteinName());
 			newDomain.setCenter(model);
 			add(newDomain);
 		}
@@ -35,8 +35,8 @@ public abstract class DomainListWithStructure extends DomainList {
 				//throw new RuntimeException("\n\nCould not find domain for residue " + xl.absPos2() + " in protein " + xl.protName2() + "\n\n");
 			}
 			if ((dom1!=null) & (dom2!=null)) {
-				AnchorPosition pos1 = dom1.addPosition(getAtomicModelFileName(dom1.proteinName(),dom1.domainName()),xl.absPos1());
-				AnchorPosition pos2 = dom2.addPosition(getAtomicModelFileName(dom2.proteinName(),dom2.domainName()),xl.absPos2());
+				AnchorPosition pos1 = dom1.addPosition(getAtomicModelFileName(dom1.proteinName()),xl.absPos1());
+				AnchorPosition pos2 = dom2.addPosition(getAtomicModelFileName(dom2.proteinName()),xl.absPos2());
 				disConstList().add(new DistanceConstraint(pos1, pos2, DistanceConstraintType.CROSS_LINK,xlWeight));
 			}
 		}
@@ -54,12 +54,12 @@ public abstract class DomainListWithStructure extends DomainList {
 				String protName = get(c).proteinName();
 				int firstRes = get(c).firstRes();
 				int lastRes = get(c).lastRes();
-				for (int cc=0 ; cc<size() ; cc++) {
-					if ((get(cc).proteinName().equals(protName)) && (get(cc).firstRes()<firstRes)) {
-						firstRes = get(cc).firstRes();
+				for (Domain domain : this) {
+					if ((domain.proteinName().equals(protName)) && (domain.firstRes() < firstRes)) {
+						firstRes = domain.firstRes();
 					}
-					if ((get(cc).proteinName().equals(protName)) && (get(cc).lastRes()>lastRes)) {
-						lastRes = get(cc).lastRes();
+					if ((domain.proteinName().equals(protName)) && (domain.lastRes() > lastRes)) {
+						lastRes = domain.lastRes();
 					}
 				}
 				// Looping on that protein
@@ -71,8 +71,8 @@ public abstract class DomainListWithStructure extends DomainList {
 					}
 					if (thisDomain!=lastDomain) {
 						if (thisDomain.structured() && lastDomain.structured()) {
-						    AnchorPosition pos1 = lastDomain.addPosition(getAtomicModelFileName(lastDomain.proteinName(),lastDomain.domainName()),res-1);
-							AnchorPosition pos2 = thisDomain.addPosition(getAtomicModelFileName(thisDomain.proteinName(),thisDomain.domainName()),res);
+						    AnchorPosition pos1 = lastDomain.addPosition(getAtomicModelFileName(lastDomain.proteinName()),res-1);
+							AnchorPosition pos2 = thisDomain.addPosition(getAtomicModelFileName(thisDomain.proteinName()),res);
 							disConstList().add(new DistanceConstraint(pos1, pos2, DistanceConstraintType.CONNECTIVITY, boundaryWeight));
 						} else {
 							// Currently do nothing with unstructured domain but issue a warning
@@ -90,7 +90,7 @@ public abstract class DomainListWithStructure extends DomainList {
 		}
 	}
 	
-	public Domain findDomain(String protName, int resNum) {
+	Domain findDomain(String protName, int resNum) {
 		for (Domain domain : this) {
 			if (domain.proteinName().equals(protName) && domain.isResNumInDomain(resNum)) {
 				return domain;
@@ -197,6 +197,6 @@ public abstract class DomainListWithStructure extends DomainList {
 		}  				
 	}
 	
-	abstract AtomList getAtomicModelFileName(String protName, String domainName);
+	abstract AtomList getAtomicModelFileName(String protName);
 	
 }

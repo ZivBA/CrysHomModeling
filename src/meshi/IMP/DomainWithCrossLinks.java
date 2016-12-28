@@ -7,10 +7,10 @@ import meshi.util.crossLinking.CrosslinkVector;
 
 import java.util.Vector;
 
-public class DomainWithCrossLinks extends Domain {
+class DomainWithCrossLinks extends Domain {
 
-	Vector<CrossLinkedLysine> xlLysines;
-	Vector<CrossLinkedLysine> boundaries;
+	private Vector<CrossLinkedLysine> xlLysines;
+	private Vector<CrossLinkedLysine> boundaries;
 	
 	public DomainWithCrossLinks(String oneLongString) {
 		super(oneLongString);
@@ -27,10 +27,10 @@ public class DomainWithCrossLinks extends Domain {
 			}
 		}		
 		if (toBoundaries) {
-			boundaries = new Vector<CrossLinkedLysine>();
+			boundaries = new Vector<>();
 		}
 		else {
-			xlLysines = new Vector<CrossLinkedLysine>();
+			xlLysines = new Vector<>();
 		}
 		for (Crosslink xl : xlVec) {
 			if (xl.protName1().equals(proteinName())) {
@@ -56,7 +56,7 @@ public class DomainWithCrossLinks extends Domain {
 		}
 	}
 	
-	public CrossLinkedLysine findCrossLinkedLysine(int resNum,boolean toBoundaries) {
+	private CrossLinkedLysine findCrossLinkedLysine(int resNum, boolean toBoundaries) {
 		if (toBoundaries) {
 			for (CrossLinkedLysine xlK : boundaries) {
 				if (xlK.resNum()==resNum) {
@@ -74,7 +74,7 @@ public class DomainWithCrossLinks extends Domain {
 		return null;
 	}
 
-	protected void addXLlysine(int resNum , AtomList model, boolean toBoundaries) {
+	private void addXLlysine(int resNum, AtomList model, boolean toBoundaries) {
 		double cmx, cmy, cmz; // center of mass x, y and z
 		cmx = cmy = cmz = 0.0;
 		for (int c=0; c<model.size() ; c++) {

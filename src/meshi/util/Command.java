@@ -46,7 +46,7 @@ public class Command implements KeyWords{
 	if (words.size() < 2) throw new RuntimeException("No second word in "+line+"\n"+
 							 "comandsFile "+commandsComment);
 	try {
-	    return new Integer((String) words.elementAt(1)).intValue();
+	    return new Integer((String) words.elementAt(1));
 	}
 	catch (Exception e) { throw new RuntimeException("Failed to parse int in second word of "+line+"+\n"+
 							 "in "+commandsComment);}
@@ -56,7 +56,7 @@ public class Command implements KeyWords{
 	if (words.size() < 3) throw new RuntimeException("No third word in "+line+"\n"+
 							 "comandsFile "+commandsComment);
 	try {
-	    return new Integer((String) words.elementAt(2)).intValue();
+	    return new Integer((String) words.elementAt(2));
 	}
 	catch (Exception e) { throw new RuntimeException("Failed to parse int in third word of "+line+"+\n"+
 							 "in "+commandsComment);}
@@ -65,7 +65,7 @@ public class Command implements KeyWords{
     public int thirdWordPositiveInt() {
 	if (words.size() < 3) return -1;
 	try {
-	    return new Integer((String) words.elementAt(2)).intValue();
+	    return new Integer((String) words.elementAt(2));
 	}
 	catch (Exception e) { throw new RuntimeException("Failed to parse int in third word of "+line+"+\n"+
 							 "in "+commandsComment);}
@@ -74,7 +74,7 @@ public class Command implements KeyWords{
     public int fourthWordPositiveInt() {
 	if (words.size() < 4) return -1;
 	try {
-	    return new Integer((String) words.elementAt(3)).intValue();
+	    return new Integer((String) words.elementAt(3));
 	}
 	catch (Exception e) { throw new RuntimeException("Failed to parse int in third word of "+line+"+\n"+
 							 "in "+commandsComment);}
@@ -84,7 +84,7 @@ public class Command implements KeyWords{
 	if (words.size() < 2) throw new RuntimeException("No second word in "+line+"\n"+
 							 "comandsFile "+commandsComment);
 	try {
-	    return new Double((String) words.elementAt(1)).doubleValue();
+	    return new Double((String) words.elementAt(1));
 	}
 	catch (Exception e) { throw new RuntimeException("Failed to parse double in second word of "+line+"+\n"+
 							 "in "+commandsComment);}
@@ -94,7 +94,7 @@ public class Command implements KeyWords{
 	if (words.size() < 3) throw new RuntimeException("No third word in "+line+"\n"+
 							 "comandsFile "+commandsComment);
 	try {
-	    return new Double((String) words.elementAt(2)).doubleValue();
+	    return new Double((String) words.elementAt(2));
 	}
 	catch (Exception e) { throw new RuntimeException("Failed to parse double in third word of "+line+"\n"+
 							 words.elementAt(2)+"\n"+

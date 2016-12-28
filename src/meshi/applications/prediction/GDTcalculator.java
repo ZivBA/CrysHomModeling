@@ -82,9 +82,9 @@ public class GDTcalculator
 				coordinatesRef[2][c] = refAtom.z();
 				if (refAtom.name().equals("CA")) {
 					boolean inAlignedList = false;
-					for (int cc=0 ; cc<alignedRes.length ; cc++) {
-						if (alignedRes[cc]==refAtom.residueNumber()) {
-							inAlignedList=true;
+					for (int alignedRe : alignedRes) {
+						if (alignedRe == refAtom.residueNumber()) {
+							inAlignedList = true;
 						}
 					}
 					if (inAlignedList) {
@@ -102,12 +102,12 @@ public class GDTcalculator
 	}
 	
 	//---------------------------------------------------------------------------------------
-	public static int findNumBelow(double cutoff) {
+	private static int findNumBelow(double cutoff) {
 		return findNumBelow(cutoff,false);
 	}
 
 	
-	public static int findNumBelow(double cutoff, boolean toPrint) {
+	private static int findNumBelow(double cutoff, boolean toPrint) {
 		int temp_best = 0;
 		GDT_position bestPosition = null;
 		for(int subInd=0; subInd<3; subInd++) {
@@ -151,7 +151,7 @@ public class GDTcalculator
 
 	//-----------------------------------------------------------------------------------------------
 
-	public static void read_files(AtomList reference, AtomList protein1) {
+	private static void read_files(AtomList reference, AtomList protein1) {
 		AtomList al1,al2;
 		int resnum,ind1,ind2;
 		boolean found = false;

@@ -17,14 +17,8 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
-public class TINKERandMESHIcomparison implements Residues {
+class TINKERandMESHIcomparison implements Residues {
 	
-	private final double posRestrainSpringConst = 100.0;	
-	private final double posRestrainTolerance = 0.5;   
-	private final double torRestrainSpringConst = 1.0;
-	String inactiveString = "INACTIVE ";
-	String restrainString = "RESTRAIN-POSITION ";
-	String restrainTorString = "RESTRAIN-TORSION ";
 	/**
 	 * How to convert the indices of the atoms in the MESHI AtomList to the indices in the XYZ file. 
 	 * (-1) if no correspondence exists.
@@ -35,7 +29,7 @@ public class TINKERandMESHIcomparison implements Residues {
 	 * (-1) if no correspondence exists.
 	 */
 	private int[] tinker2meshi = null; 
-	private AtomList alMeshi;  // Atom list of the PDB file
+	private final AtomList alMeshi;  // Atom list of the PDB file
 	private String tinkerXYZ = null; // The tinker's XYZ file
 	/**
 	 * A record of the XYZ file atoms that are inactive.
@@ -101,11 +95,11 @@ public class TINKERandMESHIcomparison implements Residues {
 	}
 	
 	
-	public int tinker2meshi(int tinkerInd) {
+	private int tinker2meshi(int tinkerInd) {
 		return tinker2meshi[tinkerInd];
 	}
 	
-	public int meshi2tinker(int meshiInd) {
+	private int meshi2tinker(int meshiInd) {
 		return meshi2tinker[meshiInd];
 	}
 	
@@ -146,7 +140,7 @@ public class TINKERandMESHIcomparison implements Residues {
 	/*
 	 * This method will also freeze the inactive atoms in 'alMeshi'
 	 */
-	public void setInactiveFarFromInterface(double disCutOff) {
+	private void setInactiveFarFromInterface(double disCutOff) {
 		alMeshi.defrost();
 		inactive = new boolean[tinker2meshi.length];
 		for (int c=0 ; c<tinker2meshi.length ; c++) {
@@ -184,12 +178,10 @@ public class TINKERandMESHIcomparison implements Residues {
 	/*
 	 * This method will copy the inactivation data from the other object
 	 */
-	public void setInactiveFarFromInterface(TINKERandMESHIcomparison othertink) {
+	private void setInactiveFarFromInterface(TINKERandMESHIcomparison othertink) {
 		alMeshi.defrost();
 		inactive = new boolean[tinker2meshi.length];
-		for (int c=0 ; c<tinker2meshi.length ; c++) {
-			inactive[c] = othertink.inactive[c];
-		}
+		System.arraycopy(othertink.inactive, 0, inactive, 0, tinker2meshi.length);
 		for (int ac=0; ac<alMeshi.size() ; ac++) {
 			if (inactive[meshi2tinker(ac)]) {
 				alMeshi.atomAt(ac).freeze();
@@ -205,7 +197,8 @@ public class TINKERandMESHIcomparison implements Residues {
 			if (inactive[c]) {
 				int lastInactive=c;
 				for ( ; ((lastInactive+1)<inactive.length) && inactive[lastInactive+1] ; lastInactive++);
-				if (lastInactive==c) 
+				String inactiveString = "INACTIVE ";
+				if (lastInactive==c)
 					outString += (inactiveString + c + "\n"); 
 				else 
 					outString += (inactiveString + "-" + c + " " + lastInactive + "\n");
@@ -224,7 +217,10 @@ public class TINKERandMESHIcomparison implements Residues {
 			if (!inactive[c]) {
 				int ac = tinker2meshi(c);
 				if ((ac>-1) && alMeshi.atomAt(ac).isBackbone && !alMeshi.atomAt(ac).isHydrogen) {
-					outString += (restrainString + c + " " + 
+					double posRestrainTolerance = 0.5;
+					double posRestrainSpringConst = 100.0;
+					String restrainString = "RESTRAIN-POSITION ";
+					outString += (restrainString + c + " " +
 							alMeshi.atomAt(ac).x() + " " + 
 							alMeshi.atomAt(ac).y() + " " +
 							alMeshi.atomAt(ac).z() + " " +
@@ -247,7 +243,9 @@ public class TINKERandMESHIcomparison implements Residues {
 				distanceMatrix).filter(new TorsionList.FilterChi3() , new TorsionList());
 		TorsionList modelChi4 = (TorsionList) TorsionList.createTorsionList(meshiProtein,
 				distanceMatrix).filter(new TorsionList.FilterChi4() , new TorsionList());
-		for (int chiCounter = 0 ; chiCounter<modelChi1.size() ; chiCounter++ ) {
+		double torRestrainSpringConst = 1.0;
+		String restrainTorString = "RESTRAIN-TORSION ";
+		for (int chiCounter = 0; chiCounter<modelChi1.size() ; chiCounter++ ) {
 			Torsion tor = modelChi1.torsionAt(chiCounter);
 			if (!tor.frozen()) {
 				int ind1 = meshi2tinker(ComplexMESHIconversion.findAtomInOrigAtomList(alMeshi, tor.atom1));
@@ -305,9 +303,9 @@ public class TINKERandMESHIcomparison implements Residues {
 	public void addStringToKeyFile(String initialKeyFile, String outputKeyFile, String addString) {
 		String[] lines = File2StringArray.f2a(initialKeyFile);
 		try {
-			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(outputKeyFile)));	
-			for (int c=0 ; c<lines.length ; c++) {
-				pw.println(lines[c]);
+			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(outputKeyFile)));
+			for (String line : lines) {
+				pw.println(line);
 			}
 			pw.println();
 //			System.out.println(addString);

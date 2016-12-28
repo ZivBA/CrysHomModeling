@@ -9,9 +9,9 @@ import meshi.util.file.MeshiWriter;
 
 import java.io.IOException;
 
-public class DockThermosomIntoEM_V2 implements Residues {
+class DockThermosomIntoEM_V2 implements Residues {
 
-	public static boolean[] makeToTake() {
+	private static boolean[] makeToTake() {
 		boolean[] toTake = new boolean[522];
 		for (int c=0 ; c<toTake.length ; c++) {
 			toTake[c]=false;

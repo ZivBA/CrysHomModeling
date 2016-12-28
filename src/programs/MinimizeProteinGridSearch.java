@@ -41,11 +41,10 @@ import meshi.util.filters.KolDichfin;
  *
  **/
 
-public class MinimizeProteinGridSearch extends MeshiProgram implements Residues, AtomTypes {
+class MinimizeProteinGridSearch extends MeshiProgram implements Residues, AtomTypes {
 
 	private static CommandList commands;
-	private static String commandsFileName = null;
-	private static String modelFileName = null;  
+	private static String modelFileName = null;
 	private static double Wbonded = 0.0;  
 	private static double Wrg = 0.0;  
 	private static double Wlj = 3.0;  
@@ -177,10 +176,10 @@ public class MinimizeProteinGridSearch extends MeshiProgram implements Residues,
 				"Usage java -Xmx300m MinimizeProteinGridSearch <commands file name> <model's list file name> Wbonded Wrg Wlj Whb Whyd Wpol Wramach\n"+
 		"                    ******************\n");
 
-		if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-		commandsFileName = getOrderedArgument(args);
+		if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+		String commandsFileName = getOrderedArgument(args);
 		if (commandsFileName == null) throw new RuntimeException(errorMessage);
-		System.out.println("# commandsFileName = "+commandsFileName);
+		System.out.println("# commandsFileName = "+ commandsFileName);
 
 		commands = new CommandList(commandsFileName);
 
@@ -190,37 +189,37 @@ public class MinimizeProteinGridSearch extends MeshiProgram implements Residues,
 
 		String tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		Wbonded = (new Double(tmp)).doubleValue();
+		Wbonded = new Double(tmp);
 		System.out.println("# Wbonded is:"+Wbonded);
 
 		tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		Wrg = (new Double(tmp)).doubleValue();
+		Wrg = new Double(tmp);
 		System.out.println("# Wrg is:"+Wrg);
 		
 		tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		Wlj = (new Double(tmp)).doubleValue();
+		Wlj = new Double(tmp);
 		System.out.println("# Wlj is:"+Wlj);
 		
 		tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		Whb = (new Double(tmp)).doubleValue();
+		Whb = new Double(tmp);
 		System.out.println("# Whb is:"+Whb);
 		
 		tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		Whyd = (new Double(tmp)).doubleValue();
+		Whyd = new Double(tmp);
 		System.out.println("# Whyd is:"+Whyd);
 		
 		tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		Wpol = (new Double(tmp)).doubleValue();
+		Wpol = new Double(tmp);
 		System.out.println("# Wpol is:"+Wpol);
 		
 		tmp = getOrderedArgument(args);
 		if (tmp== null) throw new RuntimeException(errorMessage);
-		Wramach = (new Double(tmp)).doubleValue();
+		Wramach = new Double(tmp);
 		System.out.println("# Wramach is:"+Wramach);
 		
 		initRandom(999);

@@ -9,7 +9,10 @@ import java.util.StringTokenizer;
 
 public class OutOfPlaneParameters extends Parameters implements Comparable {
     public final double target, force, force2;
-    public final int type1, type2, type3, type4;
+    private final int type1;
+	private final int type2;
+	private final int type3;
+	private final int type4;
     public OutOfPlaneParameters() {
 	this(-1,-1,-1,-1,-9999.9,-9999.9); 
     }
@@ -27,9 +30,9 @@ public class OutOfPlaneParameters extends Parameters implements Comparable {
 	     toDouble(line.nextToken()), toDouble(line.nextToken()));
     }
 
-    public OutOfPlaneParameters(int type1, int type2,
-			   int type3, int type4,
-			   double target, double force) {
+    private OutOfPlaneParameters(int type1, int type2,
+                                 int type3, int type4,
+                                 double target, double force) {
 	this.type1 = type1;
 	this.type2 = type2;
 	this.type3 = type3;

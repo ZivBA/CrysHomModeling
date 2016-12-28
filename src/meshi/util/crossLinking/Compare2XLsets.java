@@ -1,6 +1,6 @@
 package meshi.util.crossLinking;
 
-public class Compare2XLsets {
+class Compare2XLsets {
 
 	/**
 	 * @param args

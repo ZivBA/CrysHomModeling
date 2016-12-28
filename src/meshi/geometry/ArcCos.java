@@ -6,14 +6,14 @@ package meshi.geometry;
  * @author <a href="mailto:ygleyzer@cs.bgu.ac.il">Yanik</a>
  * @version 1.0
  */
-public class ArcCos{
+class ArcCos{
    private final static double verySmall = Math.exp(-60);
    private final static double minusVerySmall = -1*verySmall;
-    protected static boolean USE_FAST_ARCCOS = false;
+    private static boolean USE_FAST_ARCCOS = false;
     // size of lookup table
-    protected static int LOOKUP_SIZE = 10000;
+    private static final int LOOKUP_SIZE = 10000;
     // pre-valuated acos
-    protected static double[]ACOS_LOOKUP;
+    private static double[]ACOS_LOOKUP;
     /**
        Set flag for using fast acos and initialize acos lookup table
      */
@@ -60,18 +60,17 @@ public class ArcCos{
         double term = (1-a*a);
 	if ((term > minusVerySmall) & (term < verySmall)) return a_acos;  
         double sqrt = Math.sqrt(term);
-        double out =  a_acos
+	    //	if (Math.abs(out-StrictMath.acos(x)) > 0.00000001)
+//			System.out.println("XXXXXXXXXXXXXXXXXXXX "+x+" "+out+" "+
+        return a_acos
             - x_a/sqrt
             - (x_a*x_a*a)/(2*term*sqrt)
             - (x_a*x_a*x_a*(term + 3*a*a))/(6*term*term*sqrt)
             - (x_a*x_a*x_a*x_a*(9*a*term + 15*a*a*a))/(24*term*term*term*sqrt);
-//	if (Math.abs(out-StrictMath.acos(x)) > 0.00000001)
-//			System.out.println("XXXXXXXXXXXXXXXXXXXX "+x+" "+out+" "+
-        return out;
     }
 
     // error for some values of NUMBER_OF_ITERATIONS vs Math.acos() :
-    public static int NUMBER_OF_ITERATIONS = 10;
+    private static final int NUMBER_OF_ITERATIONS = 10;
     //               Pi         N  1*3*5..(2n-1)x
     //   arccos x = ---- - x - SUM ------------------ , |x|<1
     //               2         n=1 2*4*6..(2n)(2n+1)

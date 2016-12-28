@@ -41,22 +41,22 @@ public class Residue implements ResidueCreator, Comparable, MeshiPotential, Resi
      **/
     protected AtomPairList bonds;
 
-    protected String chain;
+    final String chain;
 
     /**
      * First atom of the residue (typicaly N).
      * The one conncted to the previous residue.
      **/
-    protected Atom head;
+    private Atom head;
 
     /**
      * last atom of the residue (typicaly C).
      * The one conncted to the next residue.
      **/
-    protected Atom tail;
+    private Atom tail;
  
-    protected Atom prevAtom;
-    protected Atom nextAtom;
+    private Atom prevAtom;
+    private Atom nextAtom;
     /**
      * A list of Residue names3 (three letter code).
      **/
@@ -79,8 +79,8 @@ public class Residue implements ResidueCreator, Comparable, MeshiPotential, Resi
     private String secondaryStructure = null; 
     private String accessibility = null; 
 
-    protected boolean dummy;
-    public final int mode;
+    boolean dummy;
+    private final int mode;
     
     //----------------------------------------------------- constructors --------------------------------------------
     /**
@@ -103,20 +103,20 @@ public class Residue implements ResidueCreator, Comparable, MeshiPotential, Resi
      **/
     public Residue(int number) {name = "UNK"; this.number = number; type = -1; chain = " "; dummy = false; mode = NORMAL;} 
  
-   public Residue(String name, int type, int number) {
+   protected Residue(String name, int type, int number) {
        this(name, type, number, new AtomList(), NORMAL);
    }
 
    public Residue(String name, int type, int number, int mode) {
 	this(name, type, number, new AtomList(), mode);
     }
-    public Residue(String name, int type, int number, 
-		   AtomList atomList) {
+    Residue(String name, int type, int number,
+            AtomList atomList) {
 	this(name, type, number,  atomList, NORMAL);
     }
 
-    public Residue(String name, int type, int number, 
-		   AtomList atomList, int mode) {
+    private Residue(String name, int type, int number,
+                    AtomList atomList, int mode) {
 	this.name = name;
 	this.number = number;
 	this.type = type;
@@ -146,7 +146,7 @@ public class Residue implements ResidueCreator, Comparable, MeshiPotential, Resi
 	return name+"_"+number+attributes;
     }	    
 
-    public int getMode() {return mode;}
+    protected int getMode() {return mode;}
 
     public String test() {
 	String out = "Testing "+name+" "+comment()+"\n";
@@ -168,17 +168,17 @@ public class Residue implements ResidueCreator, Comparable, MeshiPotential, Resi
     public Atom tail() {return tail;}
     public Atom prevAtom() {return prevAtom;}
     public Atom nextAtom() {return nextAtom;}
-    protected void setPrevAtom(Atom atom) {
+    void setPrevAtom(Atom atom) {
 // 	if (prevAtom != null) 
 // 	    throw new RuntimeException("prevAtom already set");
 	prevAtom = atom;
     }
-    protected void setNextAtom(Atom atom) {
+    void setNextAtom(Atom atom) {
 // 	if (nextAtom != null) 
 // 	    throw new RuntimeException("nextAtom already set");
 	nextAtom = atom;
     }
-    public String comment() {
+    protected String comment() {
 	return "Residue";
     }
 
@@ -230,11 +230,11 @@ public class Residue implements ResidueCreator, Comparable, MeshiPotential, Resi
 	this.secondaryStructure = secondaryStructure;
     }
 
-    public final String accessibility() {
+    protected final String accessibility() {
 	return accessibility;
     }
 
-    public void  setAccessibility(String accessibility) {
+    protected void  setAccessibility(String accessibility) {
 	this.accessibility = accessibility;
     }
 
@@ -242,7 +242,7 @@ public class Residue implements ResidueCreator, Comparable, MeshiPotential, Resi
     /**
      * A list of residue types.
      **/
-    private static MeshiList types = new MeshiList(new IsType()); //Type Objects  stored by their intValue
+    private static final MeshiList types = new MeshiList(new IsType()); //Type Objects  stored by their intValue
     private static Object[] typesArray; //Type objects  stored by associated string.
 
     /**
@@ -251,10 +251,11 @@ public class Residue implements ResidueCreator, Comparable, MeshiPotential, Resi
     private static boolean typesDone = false;
 
     private static class Type implements Comparable{
-	public int type;
-	public String name3, name1;
-	public int ca;
-	public int cb;
+	public final int type;
+	public final String name3;
+	    public final String name1;
+	public final int ca;
+	public final int cb;
 	
 	public Type (String name3, String name1, int ca, int type) {
 	    this.type = type;
@@ -326,7 +327,7 @@ public class Residue implements ResidueCreator, Comparable, MeshiPotential, Resi
     /**
      * A convertor from one letter code to three letter code.
      **/
-    public static String one2three(String name1) {
+    private static String one2three(String name1) {
 	int i ;
 	for (i = 0; i < typesArray.length; i++) {
 	    if (((Type)typesArray[i]).name1.equals(name1)) return ((Type) typesArray[i]).name3;
@@ -347,7 +348,7 @@ public class Residue implements ResidueCreator, Comparable, MeshiPotential, Resi
     /**
      * A convertor from residue type to CA type.
      **/
-    public static int caOf(int type) {
+    private static int caOf(int type) {
 	int i ;
 	for (i = 0; i < typesArray.length; i++) {
 	    if (((Type)typesArray[i]).type == type) return ((Type) typesArray[i]).ca;
@@ -451,7 +452,7 @@ public class Residue implements ResidueCreator, Comparable, MeshiPotential, Resi
     public boolean dummy() {return dummy;}
 
     // ------------------------ for homology modeling -----------------------------
-    public void setPrevNextAtomsToNull(){
+    private void setPrevNextAtomsToNull(){
         prevAtom = null;
         nextAtom = null;
 

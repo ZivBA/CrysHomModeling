@@ -28,8 +28,8 @@ import java.util.StringTokenizer;
 *  
 **/
 
-public class ChargeParameter extends Parameters {
-    public double charge; //charge   
+class ChargeParameter extends Parameters {
+    private final double charge; //charge
     public int atomType;
     
     /**

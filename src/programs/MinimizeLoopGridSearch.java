@@ -38,11 +38,10 @@ import java.util.StringTokenizer;
  *
  **/
 
-public class MinimizeLoopGridSearch extends MeshiProgram implements Residues, AtomTypes {
+class MinimizeLoopGridSearch extends MeshiProgram implements Residues, AtomTypes {
 
     private static CommandList commands;
-    private static String commandsFileName = null;
-    private static String weightsFileName = null;  
+	private static String weightsFileName = null;
     private static String modelFileName = null;  
     private static String refFileName = null;  
     private static String endString = null;
@@ -204,7 +203,7 @@ public class MinimizeLoopGridSearch extends MeshiProgram implements Residues, At
     	StringTokenizer st = new StringTokenizer(s);
     	double[] result = new double[st.countTokens()];
     	for (int c=0; st.countTokens()>0 ; c++)
-    		result[c]=(new Double(st.nextToken())).doubleValue();
+    		result[c]= new Double(st.nextToken());
     	return result;
     }
     
@@ -261,10 +260,10 @@ public class MinimizeLoopGridSearch extends MeshiProgram implements Residues, At
     			       "Usage java -Xmx300m MinimizeLoopGridSearch <commands file name> <model file name> <ref pdb file name> <loop starting resisue> <loop ending residue> <Weights file>\n"+
     			       "                    ******************\n");
     			      
-    	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
-    	commandsFileName = getOrderedArgument(args);
+    	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
+	    String commandsFileName = getOrderedArgument(args);
     	if (commandsFileName == null) throw new RuntimeException(errorMessage);
-    	System.out.println("# commandsFileName = "+commandsFileName);
+    	System.out.println("# commandsFileName = "+ commandsFileName);
 
     	commands = new CommandList(commandsFileName);
     	
@@ -280,12 +279,12 @@ public class MinimizeLoopGridSearch extends MeshiProgram implements Residues, At
 
     	String tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	resStart = (new Integer(tmpString)).intValue();
+    	resStart = new Integer(tmpString);
     	System.out.println("# Starting residue is " + resStart);
 
     	tmpString = getOrderedArgument(args);
     	if (tmpString== null) throw new RuntimeException(errorMessage);
-    	resEnd = (new Integer(tmpString)).intValue();
+    	resEnd = new Integer(tmpString);
     	System.out.println("# Ending residue is " + resEnd);
     	
     	weightsFileName = getOrderedArgument(args);

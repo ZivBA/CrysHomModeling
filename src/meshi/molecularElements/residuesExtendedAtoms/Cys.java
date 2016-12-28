@@ -13,8 +13,7 @@ import meshi.molecularElements.AtomList;
  *           SG 
  **/
 public class Cys extends ResidueExtendedAtoms {
-    public final Atom SG;
-    public static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
+	private static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
 	"                O\n"+
 	"                |\n"+
 	"       N - CA - C...n\n"+
@@ -35,7 +34,8 @@ public class Cys extends ResidueExtendedAtoms {
 
 	Object[] temp = new Object[1];
 	int i=0;
-	temp[i++] = SG = getAtom("SG",CSG, atomList, this);
+	    Atom SG;
+	    temp[i++] = SG = getAtom("SG",CSG, atomList, this);
 	for (i = 0; i <temp.length; i++)
 	    if (temp[i] != null) atoms.add(temp[i]);
 

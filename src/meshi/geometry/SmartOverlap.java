@@ -5,7 +5,7 @@ import meshi.molecularElements.AtomList;
 import meshi.molecularElements.Protein;
 import meshi.util.overlap.Overlap;
 
-public class SmartOverlap {
+class SmartOverlap {
 
 public SmartOverlap() {}
 
@@ -24,28 +24,27 @@ public SmartOverlap() {}
 public static void moveChunk(Protein protein , int r1 , int r2 , int[][] resList) { 
 	AtomList ref = new AtomList();
 	AtomList move = new AtomList();
-	for (int c=0 ; c<resList.length ; c++) {
-		Atom atom1 = protein.atoms().findAtomInList('G' , resList[c][0]);
-		Atom atom2 = protein.atoms().findAtomInList('G' , resList[c][1]);
-		if ((atom1!=null) && (atom2!=null)) {
-			ref.add(protein.atoms().findAtomInList('G' , resList[c][0]));
-			move.add(protein.atoms().findAtomInList('B' , resList[c][1]));
-			ref.add(protein.atoms().findAtomInList('B' , resList[c][0]));
-			move.add(protein.atoms().findAtomInList('G' , resList[c][1]));			
+	for (int[] aResList : resList) {
+		Atom atom1 = protein.atoms().findAtomInList('G', aResList[0]);
+		Atom atom2 = protein.atoms().findAtomInList('G', aResList[1]);
+		if ((atom1 != null) && (atom2 != null)) {
+			ref.add(protein.atoms().findAtomInList('G', aResList[0]));
+			move.add(protein.atoms().findAtomInList('B', aResList[1]));
+			ref.add(protein.atoms().findAtomInList('B', aResList[0]));
+			move.add(protein.atoms().findAtomInList('G', aResList[1]));
+		} else {
+			ref.add(protein.atoms().findAtomInList("CB", aResList[0]));
+			move.add(protein.atoms().findAtomInList("CA", aResList[1]));
+			ref.add(protein.atoms().findAtomInList("CA", aResList[0]));
+			move.add(protein.atoms().findAtomInList("CB", aResList[1]));
 		}
-		else {
-			ref.add(protein.atoms().findAtomInList("CB" , resList[c][0]));
-			move.add(protein.atoms().findAtomInList("CA" , resList[c][1]));
-			ref.add(protein.atoms().findAtomInList("CA" , resList[c][0]));
-			move.add(protein.atoms().findAtomInList("CB" , resList[c][1]));
-		}
-		 
+		
 	}
 	makeOverlap(protein,r1,r2,ref,move);
 }
 
 
-public static void makeOverlap(Protein prot , int begin , int end , AtomList ref , AtomList al) {
+private static void makeOverlap(Protein prot, int begin, int end, AtomList ref, AtomList al) {
 	if (ref.size() != al.size())
 		throw new RuntimeException("\n\nThe size of the reference list and the matching atom list must be the same. \n\n"); 
 	

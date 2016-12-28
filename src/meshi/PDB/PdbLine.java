@@ -46,7 +46,7 @@ from http://www.rcsb.org/pdb/docs/format/pdbguide2.2/guide2.2_frame.html
 79 - 80        LString(2)      charge        Charge on the atom.
  */
 public class PdbLine  {
-    private String line;
+    private final String line;
     public PdbLine(String line) {
 	this.line = line;
     }
@@ -72,7 +72,8 @@ public class PdbLine  {
         case 1:name = " "+name+"  ";break;
         case 2:name = " "+name+" ";break;
         case 3:name = " "+name;break;
-        case 4:name = name;break;
+        case 4:
+	        break;
         }
         
         f.format("%-6s%5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %4s%2s%2s",
@@ -95,13 +96,13 @@ public class PdbLine  {
     public boolean isAnAtom() {
 	return line.startsWith("ATOM");
     }
-    public boolean isAHeteroAtom() {
+    private boolean isAHeteroAtom() {
 	return line.startsWith("HETATM"); 
     }
     public boolean isAnAtomOrHeteroAtom() {
 	return (isAnAtom() || isAHeteroAtom());
     }
-    public void needsToBeAnAtom() {
+    private void needsToBeAnAtom() {
 	if (! isAnAtomOrHeteroAtom() )
 	    throw new MeshiException("PdbLine error:\n"+
                                      "needs to be an atom:\n"+
@@ -113,7 +114,7 @@ public class PdbLine  {
     public double x() {
 	try {
 	    needsToBeAnAtom();
-	    return Double.valueOf(line.substring(30,38).trim()).doubleValue();
+	    return Double.valueOf(line.substring(30, 38).trim());
 	}
 	catch (Exception ex) { 
 	    throw new RuntimeException("PdbLine Error - Badly formatted PdbLine:\n"+line+"\n"+ex);
@@ -122,7 +123,7 @@ public class PdbLine  {
     public double y() {
 	try {
 	    needsToBeAnAtom();
-	    return Double.valueOf(line.substring(38,46).trim()).doubleValue();
+	    return Double.valueOf(line.substring(38, 46).trim());
 	}
 	catch (Exception ex) { 
 	    throw new RuntimeException("PdbLine Error - Badly formatted PdbLine:\n"+line+"\n"+ex);
@@ -131,7 +132,7 @@ public class PdbLine  {
     public double z() {
 	try {
 	    needsToBeAnAtom();
-	    return Double.valueOf(line.substring(46,54).trim()).doubleValue();
+	    return Double.valueOf(line.substring(46, 54).trim());
 	}
 	catch (Exception ex) { 
 	    throw new RuntimeException("PdbLine Error - Badly formatted PdbLine:\n"+line+"\n"+ex);
@@ -139,9 +140,8 @@ public class PdbLine  {
     }    
     public String chain(){
 	needsToBeAnAtom();
-	String temp = line.substring(21,22);
-	//	if (temp.equals(" ")) temp = "0";  commented out 28.8.2002 by chen
-	return temp;
+	    //	if (temp.equals(" ")) temp = "0";  commented out 28.8.2002 by chen
+	return line.substring(21,22);
     }
     public String residueName() {
 	needsToBeAnAtom();
@@ -169,14 +169,14 @@ public class PdbLine  {
      */
     public int getModel() {
 	if (isAModel()) 
-            return Integer.valueOf(line.substring(6).trim()).intValue();
+            return Integer.valueOf(line.substring(6).trim());
 	else
             return -1;
     }
     public double temperatureFactor() {
 	needsToBeAnAtom();
 	if (line.length() > 65)
-            try{return Double.valueOf(line.substring(60,66).trim()).doubleValue();}
+            try{return Double.valueOf(line.substring(60, 66).trim());}
             catch(NumberFormatException nfe){return 0.0;}
 	else
             return 0.0;
@@ -184,7 +184,7 @@ public class PdbLine  {
     public double occupancyNumber() {
 	needsToBeAnAtom();
 	if (line.length() > 59)
-            try{return Double.valueOf(line.substring(54,60).trim()).doubleValue();}
+            try{return Double.valueOf(line.substring(54, 60).trim());}
             catch(NumberFormatException nfe){return 0.0;}
 	else
             return 0.0;

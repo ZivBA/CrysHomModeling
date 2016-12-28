@@ -27,7 +27,7 @@ public abstract class AbstractHydrogenBond implements Activable {
     protected AtomList atomList=null;
     protected DistanceMatrix dm=null; 
     protected double hbVal = 0.0;
-    protected boolean active;
+    private boolean active;
 
     /** 
     * derivatives[i][0] is the derivative of the HB value relative to the X coordinate of atom i.
@@ -36,9 +36,9 @@ public abstract class AbstractHydrogenBond implements Activable {
     **/
     protected double[][] derivatives = null;
 
-    public AbstractHydrogenBond() {}
+    protected AbstractHydrogenBond() {}
 
-    public AbstractHydrogenBond(DistanceMatrix dm, AtomList atomList) {
+    protected AbstractHydrogenBond(DistanceMatrix dm, AtomList atomList) {
     	this.dm = dm;
     	this.atomList = atomList;
     	derivatives = new double[atomList.size()][3];

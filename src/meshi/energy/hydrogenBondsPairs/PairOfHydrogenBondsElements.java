@@ -5,37 +5,32 @@ import meshi.geometry.Distance;
 import meshi.molecularElements.Atom;
 import meshi.molecularElements.AtomList;
 
-public class PairOfHydrogenBondsElements {
+class PairOfHydrogenBondsElements {
 
     //---------------------------------- data ------------------------------------------
 
     /*
      * The hydroegn residue number in HOelement1 <= the hydroegn residue number in HOelement2  
      */
-    protected Distance HOelement1;
-	protected Distance HOelement2;	
+    Distance HOelement1;
+	Distance HOelement2;
 	
     /*
      * seqDistance means the gap between 2 atoms.
      */
-    protected int seqDistance1,seqDistance2;
-    protected int ooSeqDistance,hhSeqDistance,ohSeqDistance,hoSeqDistance;
-
-    /*
-     * any gap bigger then MAX_INER_SEQ_DISTANCE is treated as gap = MAX_INER_SEQ_DISTANCE
-     * [we don't care the loop size in betta sheets for now]
-     */
-    public final int MAX_INER_SEQ_DISTANCE = 10;
-    /*
-     * we determind that 2 HBpairs are close by using MAX_SEQ_PAIRS_DISTANCE.
-     */
-    public final int MAX_SEQ_PAIRS_DISTANCE = 5;
-    /*
-     * determinded by creterya that can be found in the method:
-     *    public  void set (Distance _HOelement1,Distance _HOelement2)
-     * protected field from efficiency aspects     
-     */
-    protected boolean lookAtThisPair;	    
+    int seqDistance1;
+	int seqDistance2;
+    int ooSeqDistance;
+	int hhSeqDistance;
+	int ohSeqDistance;
+	int hoSeqDistance;
+	
+	/*
+	 * determinded by creterya that can be found in the method:
+	 *    public  void set (Distance _HOelement1,Distance _HOelement2)
+	 * protected field from efficiency aspects
+	 */
+    boolean lookAtThisPair;
     private AtomList atoms;
     private static final int HB_PAIR_CAPACITY = 4; //should be 6 if we want also Nytrogens
 
@@ -58,7 +53,10 @@ public class PairOfHydrogenBondsElements {
     public final AtomList atoms(){return atoms;}
 
     //data for the set method - global from efficiency aspects
-	protected Atom oAtom1, hAtom1, oAtom2, hAtom2;
+    private Atom oAtom1;
+	private Atom hAtom1;
+	private Atom oAtom2;
+	private Atom hAtom2;
 
     public boolean isHelixPair() {
         return helixPair;
@@ -186,21 +184,22 @@ public class PairOfHydrogenBondsElements {
         oAtom2ResidueNumber = oAtom2.residueNumber();
         realSeqDistance1 = oAtom1ResidueNumber - hAtom1ResidueNumber;
         realSeqDistance2 = oAtom2ResidueNumber - hAtom2ResidueNumber;
-
-	        	        
-        if(realSeqDistance1 > MAX_INER_SEQ_DISTANCE)
-            seqDistance1 = MAX_INER_SEQ_DISTANCE+1;
+	
+	
+	        int MAX_INER_SEQ_DISTANCE = 10;
+	        if(realSeqDistance1 > MAX_INER_SEQ_DISTANCE)
+            seqDistance1 = MAX_INER_SEQ_DISTANCE +1;
         else
-	        if(realSeqDistance1 < -1*MAX_INER_SEQ_DISTANCE)
-	            seqDistance1 = -1*(MAX_INER_SEQ_DISTANCE+1);
+	        if(realSeqDistance1 < -1* MAX_INER_SEQ_DISTANCE)
+	            seqDistance1 = -1*(MAX_INER_SEQ_DISTANCE +1);
             else 
                 seqDistance1 = realSeqDistance1;
                 
         if(realSeqDistance2 > MAX_INER_SEQ_DISTANCE)
-            seqDistance2 = MAX_INER_SEQ_DISTANCE+1;
+            seqDistance2 = MAX_INER_SEQ_DISTANCE +1;
         else
-	        if(realSeqDistance2 < -1*MAX_INER_SEQ_DISTANCE)
-	            seqDistance2 = -1*(MAX_INER_SEQ_DISTANCE+1);
+	        if(realSeqDistance2 < -1* MAX_INER_SEQ_DISTANCE)
+	            seqDistance2 = -1*(MAX_INER_SEQ_DISTANCE +1);
             else
                 seqDistance2 = realSeqDistance2;
         if(seqDistance2 == -2)
@@ -210,51 +209,52 @@ public class PairOfHydrogenBondsElements {
         realHOSeqDistance = hAtom2ResidueNumber - oAtom1ResidueNumber;
         realOHSeqDistance = oAtom2ResidueNumber - hAtom1ResidueNumber;
 	        
-        int counter =0;	        
-        if(realOOSeqDistance > MAX_SEQ_PAIRS_DISTANCE){
+        int counter =0;
+	        int MAX_SEQ_PAIRS_DISTANCE = 5;
+	        if(realOOSeqDistance > MAX_SEQ_PAIRS_DISTANCE){
             counter++;
-            ooSeqDistance = MAX_SEQ_PAIRS_DISTANCE+1;
+            ooSeqDistance = MAX_SEQ_PAIRS_DISTANCE +1;
         }
         else
-	        if(realOOSeqDistance < -1*MAX_SEQ_PAIRS_DISTANCE){
+	        if(realOOSeqDistance < -1* MAX_SEQ_PAIRS_DISTANCE){
 	            counter++;
-	            ooSeqDistance = -1*(MAX_SEQ_PAIRS_DISTANCE+1);
+	            ooSeqDistance = -1*(MAX_SEQ_PAIRS_DISTANCE +1);
 	        }
             else
                 ooSeqDistance = realOOSeqDistance;    
 	        
         if(realHHSeqDistance > MAX_SEQ_PAIRS_DISTANCE){
             counter++;
-            hhSeqDistance = MAX_SEQ_PAIRS_DISTANCE+1;
+            hhSeqDistance = MAX_SEQ_PAIRS_DISTANCE +1;
         }
         else
-	        if(realHHSeqDistance < -1*MAX_SEQ_PAIRS_DISTANCE){
+	        if(realHHSeqDistance < -1* MAX_SEQ_PAIRS_DISTANCE){
 	            counter++;
-	            hhSeqDistance = -1*(MAX_SEQ_PAIRS_DISTANCE+1);
+	            hhSeqDistance = -1*(MAX_SEQ_PAIRS_DISTANCE +1);
 	        }
             else
                 hhSeqDistance = realHHSeqDistance;
                 
         if(realOHSeqDistance > MAX_SEQ_PAIRS_DISTANCE){
             counter++;
-            ohSeqDistance = MAX_SEQ_PAIRS_DISTANCE+1;
+            ohSeqDistance = MAX_SEQ_PAIRS_DISTANCE +1;
         }
         else
-	        if(realOHSeqDistance < -1*MAX_SEQ_PAIRS_DISTANCE){
+	        if(realOHSeqDistance < -1* MAX_SEQ_PAIRS_DISTANCE){
 	            counter++;
-	            ohSeqDistance = -1*(MAX_SEQ_PAIRS_DISTANCE+1);
+	            ohSeqDistance = -1*(MAX_SEQ_PAIRS_DISTANCE +1);
 	        }
             else
                 ohSeqDistance = realOHSeqDistance;
                 
-        if(realHOSeqDistance > MAX_SEQ_PAIRS_DISTANCE+1){
+        if(realHOSeqDistance > MAX_SEQ_PAIRS_DISTANCE +1){
             counter++;
-            hoSeqDistance = MAX_SEQ_PAIRS_DISTANCE+1;
+            hoSeqDistance = MAX_SEQ_PAIRS_DISTANCE +1;
         }
         else
-	        if(realHOSeqDistance < -1*(MAX_SEQ_PAIRS_DISTANCE+1)){
+	        if(realHOSeqDistance < -1*(MAX_SEQ_PAIRS_DISTANCE +1)){
 	            counter++;
-	            hoSeqDistance = -1*(MAX_SEQ_PAIRS_DISTANCE+1);
+	            hoSeqDistance = -1*(MAX_SEQ_PAIRS_DISTANCE +1);
 	        }        
             else
                 hoSeqDistance = realHOSeqDistance;
@@ -308,7 +308,7 @@ public class PairOfHydrogenBondsElements {
     }
 	    
 	    
-    public Atom hAtom(Distance atomPair){
+    private Atom hAtom(Distance atomPair){
 
         HB_AtomAttribute atom1Attribute =
             (HB_AtomAttribute) atomPair.atom1().getAttribute(HB_AtomAttribute.key);
@@ -333,7 +333,7 @@ public class PairOfHydrogenBondsElements {
         else throw new RuntimeException("This pair does not has oxygen "+atomPair);
     }
 	    
-    public boolean helixPair(Distance atomPair){
+    private boolean helixPair(Distance atomPair){
         String atom1SS = atomPair.atom1().residue().secondaryStructure();
         String atom2SS = atomPair.atom2().residue().secondaryStructure();
         return(atom1SS.equals("HELIX") || atom1SS .equals("HELIX_OR_COIL")) && (atom2SS.equals("HELIX") | atom2SS .equals("HELIX_OR_COIL") );

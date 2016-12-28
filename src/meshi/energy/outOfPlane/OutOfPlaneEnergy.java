@@ -10,21 +10,19 @@ import meshi.geometry.TorsionList;
  * OutOfPlane energy term. 
  **/
 public class OutOfPlaneEnergy extends SimpleEnergyTerm {
-    /**
-     * The constructor associates any outOfPlane with its parameters.
-     **/
-    protected TorsionList torsionList;
-    protected DistanceMatrix distanceMatrix;
-
-    public OutOfPlaneEnergy() {}
+	
+	public OutOfPlaneEnergy() {}
 
     public OutOfPlaneEnergy(DistanceMatrix distanceMatrix,
 			    TorsionList torsionList,
 			    OutOfPlaneParametersList  parametersList, 
 			    double weight) {
 	super(toArray(distanceMatrix, torsionList), parametersList, weight);
-	this.torsionList = torsionList;
-	this.distanceMatrix = distanceMatrix;
+	/*
+      The constructor associates any outOfPlane with its parameters.
+     */
+	    TorsionList torsionList1 = torsionList;
+	    DistanceMatrix distanceMatrix1 = distanceMatrix;
 	createElementsList(torsionList);
 	comment = "OutOfPlane";
     }

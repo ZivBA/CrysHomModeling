@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
  *
  */
 
-public class EnrichmentPhase1ParamaterSearch {
+class EnrichmentPhase1ParamaterSearch {
 	
 	public static void main(String[] args) {
 		System.out.println("Reading files from: " + args[0].trim());
@@ -59,19 +59,19 @@ public class EnrichmentPhase1ParamaterSearch {
 				for (int column=1 ; st.hasMoreTokens() ; column++) {
 					token = st.nextToken();
 					if (column==columnRMS)
-						data[loop][0][decoy] = (new Double(token)).doubleValue();
+						data[loop][0][decoy] = new Double(token);
 					if (column==column1)
-						data[loop][1][decoy] = (new Double(token)).doubleValue();
+						data[loop][1][decoy] = new Double(token);
 					if (column==column2)
-						data[loop][2][decoy] = (new Double(token)).doubleValue();
+						data[loop][2][decoy] = new Double(token);
 					if (column==column3)
-						data[loop][3][decoy] = (new Double(token)).doubleValue();
+						data[loop][3][decoy] = new Double(token);
 					if (column==column4)
-						data[loop][4][decoy] = (new Double(token)).doubleValue();
+						data[loop][4][decoy] = new Double(token);
 					if (column==column5)
-						data[loop][5][decoy] = (new Double(token)).doubleValue();
+						data[loop][5][decoy] = new Double(token);
 					if (column==column6)
-						data[loop][6][decoy] = (new Double(token)).doubleValue();
+						data[loop][6][decoy] = new Double(token);
 				}
 			}
 			pertileRMS[loop] = getPercentile(data[loop][0],enrichPercent);
@@ -94,53 +94,55 @@ public class EnrichmentPhase1ParamaterSearch {
 		double best4 = -9999;
 		double best5 = -9999;
 		double best6 = -9999;
-		for (int c3=0 ; c3<range3.length ; c3++)
-		for (int c1=0 ; c1<range1.length ; c1++)
-		for (int c2=0 ; c2<range2.length ; c2++)
-		for (int c4=0 ; c4<range4.length ; c4++)
-		for (int c5=0 ; c5<range5.length ; c5++) 
-		for (int c6=0 ; c6<range6.length ; c6++) {
-			// Calculating the enrichment
-			totalEnrich = 0.0;
-			for (int loop=0 ; loop<data.length ; loop++) {
-				for (int decoy=0 ; decoy<data[loop][0].length ; decoy++) {
-					data[loop][7][decoy] = range1[c1]*data[loop][1][decoy] + 
-					range2[c2]*data[loop][2][decoy] + 
-					range3[c3]*data[loop][3][decoy] + 
-					range4[c4]*data[loop][4][decoy] + 
-					range5[c5]*data[loop][5][decoy] + 
-					range6[c6]*data[loop][6][decoy];
-					data[loop][8][decoy] = data[loop][7][decoy];
-				}
-				Arrays.sort(data[loop][8]);
-				energyPercentile = data[loop][8][(int) (enrichPercent*data[loop][8].length)];
-				loopEnrich = 0;
-				for (int decoy=0 ; decoy<data[loop][0].length ; decoy++) { 
-					if ((data[loop][7][decoy]<energyPercentile) && (data[loop][0][decoy]<pertileRMS[loop]))
-						loopEnrich++;
-				}
-				loopEnrich = loopEnrich/(enrichPercent*enrichPercent*data[loop][0].length);
-				totalEnrich += loopEnrich;
-			}
-			totalEnrich = totalEnrich/data.length;
-			// Is this better?
-			if (totalEnrich>bestEnrich) {
-				best1 = range1[c1];
-				best2 = range2[c2];
-				best3 = range3[c3];
-				best4 = range4[c4];
-				best5 = range5[c5];
-				best6 = range6[c6];
-				bestEnrich = totalEnrich;
-				System.out.println("Best: " + bestEnrich + " " + best1 + " " + best2 + " " + best3 + " " + best4 + " " + best5 + " " + best6);
-			}
-		}		
+		for (double aRange3 : range3)
+			for (double aRange1 : range1)
+				for (double aRange2 : range2)
+					for (double aRange4 : range4)
+						for (double aRange5 : range5)
+							for (double aRange6 : range6) {
+								// Calculating the enrichment
+								totalEnrich = 0.0;
+								for (int loop = 0; loop < data.length; loop++) {
+									for (int decoy = 0; decoy < data[loop][0].length; decoy++) {
+										data[loop][7][decoy] = aRange1 * data[loop][1][decoy] +
+												aRange2 * data[loop][2][decoy] +
+												aRange3 * data[loop][3][decoy] +
+												aRange4 * data[loop][4][decoy] +
+												aRange5 * data[loop][5][decoy] +
+												aRange6 * data[loop][6][decoy];
+										data[loop][8][decoy] = data[loop][7][decoy];
+									}
+									Arrays.sort(data[loop][8]);
+									energyPercentile = data[loop][8][(int) (enrichPercent * data[loop][8].length)];
+									loopEnrich = 0;
+									for (int decoy = 0; decoy < data[loop][0].length; decoy++) {
+										if ((data[loop][7][decoy] < energyPercentile) && (data[loop][0][decoy] < pertileRMS[loop]))
+											loopEnrich++;
+									}
+									loopEnrich = loopEnrich / (enrichPercent * enrichPercent * data[loop][0].length);
+									totalEnrich += loopEnrich;
+								}
+								totalEnrich = totalEnrich / data.length;
+								// Is this better?
+								if (totalEnrich > bestEnrich) {
+									best1 = aRange1;
+									best2 = aRange2;
+									best3 = aRange3;
+									best4 = aRange4;
+									best5 = aRange5;
+									best6 = aRange6;
+									bestEnrich = totalEnrich;
+									System.out.println(
+											"Best: " + bestEnrich + " " + best1 + " " + best2 + " " + best3 + " " + best4 + " " + best5 + "" +
+													" " +
+													best6);
+								}
+							}
 	}
 	
-	public static double getPercentile(double[] ar, double pertile) {
+	private static double getPercentile(double[] ar, double pertile) {
 		double[] copy_ar = new double[ar.length];
-		for (int c=0 ; c<ar.length ; c++)
-			copy_ar[c] = ar[c];
+		System.arraycopy(ar, 0, copy_ar, 0, ar.length);
 		Arrays.sort(copy_ar);
 		return copy_ar[(int) (pertile*copy_ar.length)];
 	}

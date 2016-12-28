@@ -7,19 +7,25 @@ import meshi.molecularElements.Atom;
 import meshi.molecularElements.AtomList;
 
 public class OutOfPlaneEnergyElement extends EnergyElement {
-	/**
-	*The variable BUFF allow a buffer zone around the target, where the energy is flat. Outside 
-	*this zone the energy rise quadratically. BUFF also control the size of the zone where the 
-	*two parabolas are fused into derivability at target+PI.
-	**/
-	protected final double BUFF = 0.12;
-    protected Atom atom1, atom2, atom3, atom4;
-    protected double target, force, force2, forceSmooth, constSmooth;
-    protected double targetMinusBUFF, targetPlusBUFF, targetPlusPI, targetPlusPIMinusBUFF, targetPlusPIPlusBUFF, targetPlus2PIMinusBUFF;    
-    protected Torsion torsion;
-    protected double weight;
-    public OutOfPlaneEnergyElement(Torsion torsion, Parameters parameters, double weight) {
-	this.weight = weight;
+	private final Atom atom1;
+	private final Atom atom2;
+	private final Atom atom3;
+	private final Atom atom4;
+    private final double target;
+	private double force;
+	private double force2;
+	private double forceSmooth;
+	private double constSmooth;
+    private double targetMinusBUFF;
+	private double targetPlusBUFF;
+	private double targetPlusPI;
+	private double targetPlusPIMinusBUFF;
+	private double targetPlusPIPlusBUFF;
+	private double targetPlus2PIMinusBUFF;
+    private final Torsion torsion;
+	
+	public OutOfPlaneEnergyElement(Torsion torsion, Parameters parameters, double weight) {
+		double weight1 = weight;
 	atom1 = torsion.atom1;
 	atom2 = torsion.atom2;
 	atom3 = torsion.atom3;
@@ -27,24 +33,30 @@ public class OutOfPlaneEnergyElement extends EnergyElement {
 	setAtoms();
 	this.torsion = torsion;
 	target = ((OutOfPlaneParameters) parameters).target;
-	if (((target-BUFF)<-Math.PI) || ((target+BUFF)>0)) 
+	/*
+	The variable BUFF allow a buffer zone around the target, where the energy is flat. Outside
+	this zone the energy rise quadratically. BUFF also control the size of the zone where the
+	two parabolas are fused into derivability at target+PI.
+	*/
+		double BUFF = 0.12;
+		if (((target- BUFF)<-Math.PI) || ((target+ BUFF)>0))
 	   throw new RuntimeException("Currently, the functional format of OutOfPlaneEnergyElement can only\n" +
 	   "support targets that are smaller than -BUFF radians and larger than -PI+buff. If this pose a \n" + 
 	   "problem adjust the functional form in the evaluate() method\n");
 	force = ((OutOfPlaneParameters) parameters).force*weight;
 	force2 = ((OutOfPlaneParameters) parameters).force2*weight;	    
-	targetMinusBUFF = target-BUFF;
-	targetPlusBUFF= target+BUFF;
+	targetMinusBUFF = target- BUFF;
+	targetPlusBUFF= target+ BUFF;
 	targetPlusPI = target+Math.PI;
-	targetPlusPIMinusBUFF = target+Math.PI-BUFF; 
-	targetPlusPIPlusBUFF = target+Math.PI+BUFF;
-	targetPlus2PIMinusBUFF = target+2*Math.PI-BUFF;
-	forceSmooth = -force*(Math.PI-2*BUFF)/BUFF;
-	constSmooth = force*(Math.PI-2*BUFF)*(Math.PI-BUFF);
+	targetPlusPIMinusBUFF = target+Math.PI- BUFF;
+	targetPlusPIPlusBUFF = target+Math.PI+ BUFF;
+	targetPlus2PIMinusBUFF = target+2*Math.PI- BUFF;
+	forceSmooth = -force*(Math.PI-2* BUFF)/ BUFF;
+	constSmooth = force*(Math.PI-2* BUFF)*(Math.PI- BUFF);
 	updateFrozen();
     }
 
-    public void setAtoms() {
+    protected void setAtoms() {
 	atoms = new AtomList();
 	atoms.add(atom1);
 	atoms.add(atom2);
@@ -113,6 +125,6 @@ public class OutOfPlaneEnergyElement extends EnergyElement {
 	return ("OutOfPlaneEnergyElement "+torsion.name()+" target = "+Angle.rad2deg(target)+
 		" force = "+dFormatSrt.f(force)+" torsion = "+
 		dFormatSrt.f(Angle.rad2deg(torsion.torsion()))+" energy = "+dFormatSrt.f(evaluate())+"\n"+
-		atom1.verbose(1)+"\n"+atom2.verbose(1)+"\n"+atom3.verbose(1)+"\n"+atom4.verbose(1));
+		atom1.verbose()+"\n"+atom2.verbose()+"\n"+atom3.verbose()+"\n"+atom4.verbose());
     }
 }

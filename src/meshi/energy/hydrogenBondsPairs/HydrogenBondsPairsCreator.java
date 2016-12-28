@@ -21,7 +21,7 @@ public class HydrogenBondsPairsCreator extends EnergyCreator
 
     //----------------------------------- data ----------------------------
     
-	HydrogenBondsCreator hydrogenBondsCreator;
+	private final HydrogenBondsCreator hydrogenBondsCreator;
     private BetaParametersList betaParametersList;
     private HelixParametersList helixParametersList;
 

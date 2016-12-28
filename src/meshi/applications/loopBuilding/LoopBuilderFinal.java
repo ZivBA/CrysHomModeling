@@ -24,73 +24,25 @@ import java.util.Vector;
 public class LoopBuilderFinal extends
 		LoopBuilderUserDefinedFragmentsStochasticWithClosure {
 	
-	// User-defined CONST:
-	// *******************
-	// for demi-clustering
-	protected final double COVERAGE_CRITERIA = 0.5; 
-	protected final int CLUSTERS_FOR_COVERAGE_CRITERIA = 5; 
-	protected final double CUTOFF_INCREAMENTS = 0.5;
-	// for final clustering
-	protected final double FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER = 0.001; 
-	protected final int NUMBER_OF_CLUSTERS_IN_OUTPUT = 30; 
-	protected final int NUMBER_OF_SINGLE_IN_OUTPUT = 30; 
-
-	// for 'noClust' energy selection on 8mers
-	protected final double Wcent_8 = 1.00;
-	protected final double Whbsr_8 = 0.6;
-	protected final double Whblr_8 = 2.35;
-	protected final double Wev_8 = 2.0;
-	protected final double Wprop_8 = 0.65;
-	protected final double Wclu_8 = -0.55;
-
-	// for 'noClust' energy selection on 12mers                                                                                                                                                              
-	protected final double Wcent_12 = 1.0;
-	protected final double Whbsr_12 = 0.45;
-	protected final double Whblr_12 = 0.9;
-	protected final double Wev_12 = 0.25;
-	protected final double Wprop_12 = 0.1;
-	protected final double Wclu_12 = -0.15;
-
-	// for 'noClust' energy selection	
-	protected double Wcent = Double.NaN;
-	protected double Whbsr = Double.NaN;
-	protected double Whblr = Double.NaN;
-	protected double Wev = Double.NaN;
-	protected double Wprop = Double.NaN;
-	protected double Wclu = Double.NaN;
-
-
-	// for Cluster energy selection on 8mers
-	protected final double Wcent_c_8 = 1.00;
-	protected final double Whbsr_c_8 = 0.8;
-	protected final double Whblr_c_8 = 2.45;
-	protected final double Wev_c_8 = 0.7;
-	protected final double Wprop_c_8 = 0.65;
-	protected final double Wclu_c_8 = -0.55;
-
-	// for Cluster energy selection on 12mers                                                                                                                                                              
-	protected final double Wcent_c_12 = 1.0;
-	protected final double Whbsr_c_12 = 0.65;
-	protected final double Whblr_c_12 = 1.75;
-	protected final double Wev_c_12 = 0.15;
-	protected final double Wprop_c_12 = 0.55;
-	protected final double Wclu_c_12 = -0.9;
-
-	// for Cluster energy selection	
-	protected double Wcent_c = Double.NaN;
-	protected double Whbsr_c = Double.NaN;
-	protected double Whblr_c = Double.NaN;
-	protected double Wev_c = Double.NaN;
-	protected double Wprop_c = Double.NaN;
-	protected double Wclu_c = Double.NaN;
-
+	// for 'noClust' energy selection
+	private double Wcent = Double.NaN;
+	private double Whbsr = Double.NaN;
+	private double Whblr = Double.NaN;
+	private double Wev = Double.NaN;
+	private double Wprop = Double.NaN;
+	private double Wclu = Double.NaN;
 	
-    
-	protected ROT1SolvationEnergy cent_080 = null;
-	protected SimpleHydrogenBondEnergy hb_sr = null;
-	protected SimpleHydrogenBondEnergy hb_lr = null;
 	
-	protected int loopType = -999;
+	// for Cluster energy selection
+	private double Wcent_c = Double.NaN;
+	private double Whbsr_c = Double.NaN;
+	private double Whblr_c = Double.NaN;
+	private double Wev_c = Double.NaN;
+	private double Wprop_c = Double.NaN;
+	private double Wclu_c = Double.NaN;
+	
+	
+	private int loopType = -999;
 	
 	public LoopBuilderFinal(CommandList commands,
 			String writePath, Corpus corpus, Protein prot, Protein ref,
@@ -99,58 +51,82 @@ public class LoopBuilderFinal extends
 		super(commands, writePath, corpus, prot, ref, resStart, resEnd,
 				rmsMatchCO, rmsCutOff, fragsDescription, closureTolerance);
 		this.loopType = loopType;
-
+		
+		double wclu_12 = -0.15;
+		double wprop_12 = 0.1;
+		double wev_12 = 0.25;
+		double whblr_12 = 0.9;
+		double whbsr_12 = 0.45;
+		double wcent_12 = 1.0;
+		double wclu_8 = -0.55;
+		double wprop_8 = 0.65;
+		double wev_8 = 2.0;
+		double whblr_8 = 2.35;
+		double whbsr_8 = 0.6;
+		double wcent_8 = 1.00;
 		if ((resEnd-resStart+1)>=12) {
-			Wcent = Wcent_12;
-			Whbsr = Whbsr_12;
-			Whblr = Whblr_12;
-			Wev = Wev_12;
-			Wprop = Wprop_12;
-			Wclu = Wclu_12*(resEnd-resStart+1)/12.0;
+			Wcent = wcent_12;
+			Whbsr = whbsr_12;
+			Whblr = whblr_12;
+			Wev = wev_12;
+			Wprop = wprop_12;
+			Wclu = wclu_12 *(resEnd-resStart+1)/12.0;
 		}
 		else if ((resEnd-resStart+1)>8) {
-			Wcent = Wcent_8 + (Wcent_12-Wcent_8)*((resEnd-resStart+1)-8)/4.0;
-			Whbsr = Whbsr_8 + (Whbsr_12-Whbsr_8)*((resEnd-resStart+1)-8)/4.0;
-			Whblr = Whblr_8 + (Whblr_12-Whblr_8)*((resEnd-resStart+1)-8)/4.0;
-			Wev = Wev_8 + (Wev_12-Wev_8)*((resEnd-resStart+1)-8)/4.0;
-			Wprop = Wprop_8 + (Wprop_12-Wprop_8)*((resEnd-resStart+1)-8)/4.0;
-			Wclu = Wclu_8 + (Wclu_12-Wclu_8)*((resEnd-resStart+1)-8)/4.0;
+			Wcent = wcent_8 + (wcent_12 - wcent_8)*((resEnd-resStart+1)-8)/4.0;
+			Whbsr = whbsr_8 + (whbsr_12 - whbsr_8)*((resEnd-resStart+1)-8)/4.0;
+			Whblr = whblr_8 + (whblr_12 - whblr_8)*((resEnd-resStart+1)-8)/4.0;
+			Wev = wev_8 + (wev_12 - wev_8)*((resEnd-resStart+1)-8)/4.0;
+			Wprop = wprop_8 + (wprop_12 - wprop_8)*((resEnd-resStart+1)-8)/4.0;
+			Wclu = wclu_8 + (wclu_12 - wclu_8)*((resEnd-resStart+1)-8)/4.0;
 		}
 		else if ((resEnd-resStart+1)>3) {
-			Wcent = Wcent_8;
-			Whbsr = Whbsr_8;
-			Whblr = Whblr_8;
-			Wev = Wev_8;
-			Wprop = Wprop_8;
-			Wclu = Wclu_8*(resEnd-resStart+1)/8.0;			
+			Wcent = wcent_8;
+			Whbsr = whbsr_8;
+			Whblr = whblr_8;
+			Wev = wev_8;
+			Wprop = wprop_8;
+			Wclu = wclu_8 *(resEnd-resStart+1)/8.0;
 		} 
 		else
 			throw new RuntimeException("Currently handling only more than 3 mers loops.");
-
 		
+		
+		double wclu_c_12 = -0.9;
+		double wprop_c_12 = 0.55;
+		double wev_c_12 = 0.15;
+		double whblr_c_12 = 1.75;
+		double whbsr_c_12 = 0.65;
+		double wcent_c_12 = 1.0;
+		double wclu_c_8 = -0.55;
+		double wprop_c_8 = 0.65;
+		double wev_c_8 = 0.7;
+		double whblr_c_8 = 2.45;
+		double whbsr_c_8 = 0.8;
+		double wcent_c_8 = 1.00;
 		if ((resEnd-resStart+1)>=12) {
-			Wcent_c = Wcent_c_12;
-			Whbsr_c = Whbsr_c_12;
-			Whblr_c = Whblr_c_12;
-			Wev_c = Wev_c_12;
-			Wprop_c = Wprop_c_12;
-			Wclu_c = Wclu_c_12*(resEnd-resStart+1)/12.0;
+			Wcent_c = wcent_c_12;
+			Whbsr_c = whbsr_c_12;
+			Whblr_c = whblr_c_12;
+			Wev_c = wev_c_12;
+			Wprop_c = wprop_c_12;
+			Wclu_c = wclu_c_12 *(resEnd-resStart+1)/12.0;
 		}
 		else if ((resEnd-resStart+1)>8) {
-			Wcent_c = Wcent_c_8 + (Wcent_c_12-Wcent_c_8)*((resEnd-resStart+1)-8)/4.0;
-			Whbsr_c = Whbsr_c_8 + (Whbsr_c_12-Whbsr_c_8)*((resEnd-resStart+1)-8)/4.0;
-			Whblr_c = Whblr_c_8 + (Whblr_c_12-Whblr_c_8)*((resEnd-resStart+1)-8)/4.0;
-			Wev_c = Wev_c_8 + (Wev_c_12-Wev_c_8)*((resEnd-resStart+1)-8)/4.0;
-			Wprop_c = Wprop_c_8 + (Wprop_c_12-Wprop_c_8)*((resEnd-resStart+1)-8)/4.0;
-			Wclu_c = Wclu_c_8 + (Wclu_c_12-Wclu_c_8)*((resEnd-resStart+1)-8)/4.0;
+			Wcent_c = wcent_c_8 + (wcent_c_12 - wcent_c_8)*((resEnd-resStart+1)-8)/4.0;
+			Whbsr_c = whbsr_c_8 + (whbsr_c_12 - whbsr_c_8)*((resEnd-resStart+1)-8)/4.0;
+			Whblr_c = whblr_c_8 + (whblr_c_12 - whblr_c_8)*((resEnd-resStart+1)-8)/4.0;
+			Wev_c = wev_c_8 + (wev_c_12 - wev_c_8)*((resEnd-resStart+1)-8)/4.0;
+			Wprop_c = wprop_c_8 + (wprop_c_12 - wprop_c_8)*((resEnd-resStart+1)-8)/4.0;
+			Wclu_c = wclu_c_8 + (wclu_c_12 - wclu_c_8)*((resEnd-resStart+1)-8)/4.0;
 		}
 		else if ((resEnd-resStart+1)>3) {
-			Wcent_c = Wcent_c_8;
-			Whbsr_c = Whbsr_c_8;
-			Whblr_c = Whblr_c_8;
-			Wev_c = Wev_c_8;
-			Wprop_c = Wprop_c_8;
-			Wclu_c = Wclu_c_8*(resEnd-resStart+1)/8.0;			
+			Wcent_c = wcent_c_8;
+			Whbsr_c = whbsr_c_8;
+			Whblr_c = whblr_c_8;
+			Wev_c = wev_c_8;
+			Wprop_c = wprop_c_8;
+			Wclu_c = wclu_c_8 *(resEnd-resStart+1)/8.0;
 		} 
 		else
 			throw new RuntimeException("Currently handling only more than 3 mers loops.");	
@@ -209,13 +185,13 @@ public class LoopBuilderFinal extends
 						fmt2.format(evEnergy) + " " +
 						fmt2.format(touch) + " " + 
 						fmt2.format(results.bbHBenergy) + "         ");
-				for (int tmpc=0 ; tmpc<fragRank.length ; tmpc++) {
-					System.out.print(fragRank[tmpc]+" ");
+				for (int aFragRank : fragRank) {
+					System.out.print(aFragRank + " ");
 					//score += 0.0*(Math.log(1+fragRank[tmpc]));
 				}
 				System.out.print("       ");
-				for (int tmpc=0 ; tmpc<actuallyTaken.length ; tmpc++) {
-					System.out.print(actuallyTaken[tmpc]+" ");
+				for (int anActuallyTaken : actuallyTaken) {
+					System.out.print(anActuallyTaken + " ");
 				}
 				System.out.println();
 			}
@@ -227,7 +203,7 @@ public class LoopBuilderFinal extends
 	/** 
 	 * WARNING: prot and ref are changed into their centroid rep!!!
 	 */
-	public void cbAnalysis(int moduleBase) {
+	public void cbAnalysis() {
 		
 		// Building distance matrix between loops
 		double[][] disMat = new double[allResults.size()][allResults.size()];
@@ -273,9 +249,9 @@ public class LoopBuilderFinal extends
 				new SimpleHydrogenBond_Dahiyat_LowAccuracy_BBonly_ShortRange_Creator(1.0,false)
 		};
 		energy = new TotalEnergy(prot, new DistanceMatrix(prot.atoms(),  8.0, 0.1, 4), energyCreators, commands);
-		cent_080 = (ROT1SolvationEnergy) (energy.getEnergyTerms(new ROT1SolvationEnergy())[0]);
-		hb_lr = (SimpleHydrogenBondEnergy) (energy.getEnergyTerms(new SimpleHydrogenBondEnergy())[0]);
-		hb_sr = (SimpleHydrogenBondEnergy) (energy.getEnergyTerms(new SimpleHydrogenBondEnergy())[1]);
+		ROT1SolvationEnergy cent_080 = (ROT1SolvationEnergy) (energy.getEnergyTerms(new ROT1SolvationEnergy())[0]);
+		SimpleHydrogenBondEnergy hb_lr = (SimpleHydrogenBondEnergy) (energy.getEnergyTerms(new SimpleHydrogenBondEnergy())[0]);
+		SimpleHydrogenBondEnergy hb_sr = (SimpleHydrogenBondEnergy) (energy.getEnergyTerms(new SimpleHydrogenBondEnergy())[1]);
 		
 		// ***************************
 		// Building the energy vectors - Start
@@ -305,12 +281,13 @@ public class LoopBuilderFinal extends
 		
 		
 		// clustering and outputing
+		double COVERAGE_CRITERIA = 0.5;
 		double clustCutoff = findClusteringCriteria(disMat , COVERAGE_CRITERIA);
 		clusteringAndOutputing(array_Ecent, array_Ehb_sr,
 				array_Ehb_lr, array_Eev,
 				array_Eprop, array_RMS_honig, 
 				array_RMS_allHeavy, disMat, 
-				clustCutoff, "777755", "666655");		
+				clustCutoff);
 	}
 
 	
@@ -367,10 +344,10 @@ public class LoopBuilderFinal extends
 
 	
 	private void clusteringAndOutputing(double[] array_Ecent, double[] array_Ehb_sr,
-			double[] array_Ehb_lr, double[] array_Eev,
-			double[] array_Eprop, double[] array_RMS_honig, 
-			double[] array_RMS_allHeavy, double[][] disMat, 
-			double rmsClusteringCutoff, String headerAllLoops, String headerClusters) {
+	                                    double[] array_Ehb_lr, double[] array_Eev,
+	                                    double[] array_Eprop, double[] array_RMS_honig,
+	                                    double[] array_RMS_allHeavy, double[][] disMat,
+	                                    double rmsClusteringCutoff) {
 		// ***************************
 		// Clustering - Start
 		// ***************************
@@ -381,17 +358,18 @@ public class LoopBuilderFinal extends
 		HierarchicalClusterer clusterer = new HierarchicalClusterer(disMat);
 		clusterer.cluster(rmsClusteringCutoff, Integer.MAX_VALUE);
 		clusterer.initializeSerialTokenizer();
-		Vector<double[]> clusterData = new Vector<double[]>(); 
+		Vector<double[]> clusterData = new Vector<>();
 		int clusterCounter = 0;
-		for (Cluster clust=clusterer.getNextSerialToken() ; (clust!=null) && (clust.getClusterMembers().size()>1) ; clust=clusterer.getNextSerialToken()) {
-			if (clust.getClusterMembers().size()>(allResults.size()*FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER)) {
+		double FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER = 0.001;
+		for (Cluster clust = clusterer.getNextSerialToken(); (clust!=null) && (clust.getClusterMembers().size()>1) ; clust=clusterer.getNextSerialToken()) {
+			if (clust.getClusterMembers().size()>(allResults.size()* FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER)) {
 				double average_Ecent = clust.findPercentileOfTrait(array_Ecent,0.25);
 				double average_Ehb_sr = clust.findPercentileOfTrait(array_Ehb_sr,0.25);
 				double average_Ehb_lr = clust.findPercentileOfTrait(array_Ehb_lr,0.25);
 				double average_Eev = clust.findPercentileOfTrait(array_Eev,0.25);
 				double average_Eprop = clust.findPercentileOfTrait(array_Eprop,0.25);
 				for (int cc=0 ; cc<clust.getClusterMembers().size() ; cc++) {
-					clusterAffiliation[clust.getClusterMembers().get(cc).intValue()] = clusterCounter;
+					clusterAffiliation[clust.getClusterMembers().get(cc)] = clusterCounter;
 				}
 				double[] tmpArray = {average_Ecent, average_Ehb_sr, average_Ehb_lr, average_Eev, average_Eprop, 
 						clust.getClusterMembers().size(), clust.findCenter()};
@@ -452,7 +430,7 @@ public class LoopBuilderFinal extends
 				Whblr*array_Ehb_lr[modelNum] + 
 				Wev*array_Eev[modelNum] + 
 				Wprop*array_Eprop[modelNum]+
-				Wclu*Math.log(allResults.size()*FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER);
+				Wclu*Math.log(allResults.size()* FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER);
 			}
 			else {
 				singleScores[modelNum] = Wcent*array_Ecent[modelNum] + 
@@ -463,6 +441,7 @@ public class LoopBuilderFinal extends
 				Wclu*Math.log(clusterData.get(clusterAffiliation[modelNum])[5]);				
 			}
 		}
+		int NUMBER_OF_SINGLE_IN_OUTPUT = 30;
 		int[] sortedSingleScores = AbstractLoopBuilder.findTopMinArray(singleScores, NUMBER_OF_SINGLE_IN_OUTPUT, Double.MAX_VALUE);
 		try{
 			for (int writeLoop = 0; writeLoop<sortedSingleScores.length ; writeLoop++) {
@@ -495,8 +474,8 @@ public class LoopBuilderFinal extends
 							fmt2.format(array_Ehb_lr[sortedSingleScores[writeLoop]]) + " " +
 							fmt2.format(array_Eev[sortedSingleScores[writeLoop]]) + " " +
 							fmt2.format(array_Eprop[sortedSingleScores[writeLoop]]) + "   " +
-							fmt2.format(Math.log(allResults.size()*FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER)) + " " +
-							fmt2.format(allResults.size()*FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER) + " " + 
+							fmt2.format(Math.log(allResults.size()* FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER)) + " " +
+							fmt2.format(allResults.size()* FRACTION_OF_LOOPS_FOR_MINIMAL_CLUSTER) + " " +
 							fmt2.format(clusterAffiliation[sortedSingleScores[writeLoop]]) + "          ");		
 				}
 				else {
@@ -532,7 +511,8 @@ public class LoopBuilderFinal extends
 			Wclu_c*Math.log(clusterData.get(cc)[5]);				
 		}
 		int[] sortedClusterSize = AbstractLoopBuilder.findTopMinArray(clusterSizes, clusterSizes.length, Double.MAX_VALUE);
-		for (int cc=0 ; (cc<sortedClusterSize.length) && (cc<NUMBER_OF_CLUSTERS_IN_OUTPUT) ; cc++) {
+		int NUMBER_OF_CLUSTERS_IN_OUTPUT = 30;
+		for (int cc = 0; (cc<sortedClusterSize.length) && (cc< NUMBER_OF_CLUSTERS_IN_OUTPUT) ; cc++) {
 			int affiliationNumber = sortedClusterSize[cc];			
 			int center = (int) Math.round(clusterData.get(affiliationNumber)[6]);
 			System.out.println("999999 " + cc + " " +
@@ -552,7 +532,7 @@ public class LoopBuilderFinal extends
 
 		// Writing the '55Clust' loops
 		try{
-			for (int cc=0 ; (cc<sortedClusterSize.length) && (cc<NUMBER_OF_CLUSTERS_IN_OUTPUT) ; cc++) {
+			for (int cc = 0; (cc<sortedClusterSize.length) && (cc< NUMBER_OF_CLUSTERS_IN_OUTPUT) ; cc++) {
 				int affiliationNumber = sortedClusterSize[cc];			
 				int center = (int) Math.round(clusterData.get(affiliationNumber)[6]);
 				restoreLoopCoordinates(allResults.get(center).coors);	
@@ -583,6 +563,7 @@ public class LoopBuilderFinal extends
 		double initialRMScutOff = 0.0;
 		double sumSize = 0;
 		while (sumSize/allResults.size() < coverage_criteria) {
+			double CUTOFF_INCREAMENTS = 0.5;
 			initialRMScutOff += CUTOFF_INCREAMENTS;
 			HierarchicalClusterer clusterer = new HierarchicalClusterer(disMat);
 			clusterer.cluster(initialRMScutOff, Integer.MAX_VALUE);
@@ -590,7 +571,8 @@ public class LoopBuilderFinal extends
 			sumSize = 0;
 			int clusterCounter = 0;
 			System.out.print("Summing clusters: ");
-			for (Cluster clust=clusterer.getNextSizeToken() ; (clust!=null) && (clusterCounter<CLUSTERS_FOR_COVERAGE_CRITERIA) ; clusterCounter++) {
+			int CLUSTERS_FOR_COVERAGE_CRITERIA = 5;
+			for (Cluster clust = clusterer.getNextSizeToken(); (clust!=null) && (clusterCounter< CLUSTERS_FOR_COVERAGE_CRITERIA) ; clusterCounter++) {
 				System.out.print(clust.getClusterMembers().size() + " ");
 				sumSize += clust.getClusterMembers().size();
 				clust=clusterer.getNextSizeToken();

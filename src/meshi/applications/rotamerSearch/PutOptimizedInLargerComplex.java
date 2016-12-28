@@ -7,31 +7,32 @@ import meshi.util.file.MeshiWriter;
 
 import java.io.IOException;
 
-public class PutOptimizedInLargerComplex {
+class PutOptimizedInLargerComplex {
 
 
-	public static void changeChainPair(AtomList toChange, String leftChain, String rightChain, AtomList takeFrom, String leftChainTakeFrom, String rightChainTakeFrom, int[] changedResidues) {
+	private static void changeChainPair(AtomList toChange, String leftChain, String rightChain, AtomList takeFrom, String leftChainTakeFrom,
+	                                    String rightChainTakeFrom, int[] changedResidues) {
 		changeEntireChain(toChange.chainFilter(leftChain), changedResidues, true, takeFrom.chainFilter(leftChainTakeFrom));
 		changeEntireChain(toChange.chainFilter(rightChain), changedResidues, false, takeFrom.chainFilter(rightChainTakeFrom));		
 	}
 	
 	
-	public static void changeEntireChain(AtomList toChange, int[] changedResidues, boolean below1000,  AtomList takeFrom) {
+	private static void changeEntireChain(AtomList toChange, int[] changedResidues, boolean below1000, AtomList takeFrom) {
 		for (int c=0 ; c<toChange.size() ; c++) {
 			int resNum = toChange.atomAt(c).residueNumber();
 			if (!below1000) {
 				resNum += 1000;
 			}
-			for (int d=0 ; d<changedResidues.length ; d++) {
-				if (resNum==changedResidues[d]) {
-					changeAtom(toChange.atomAt(c), toChange.atomAt(c).residueNumber() , takeFrom);					
-				}				
+			for (int changedResidue : changedResidues) {
+				if (resNum == changedResidue) {
+					changeAtom(toChange.atomAt(c), takeFrom);
+				}
 			}			
 		}
 	}
 	
 		
-	public static void changeAtom(Atom toChange, int resNum, AtomList takeFrom) {
+	private static void changeAtom(Atom toChange, AtomList takeFrom) {
 //		System.out.println(toChange);
 		Atom atom = takeFrom.findAtomInList(toChange.name(), toChange.residueNumber());
 		if (atom==null) {
@@ -42,7 +43,7 @@ public class PutOptimizedInLargerComplex {
 		toChange.setXYZ(atom.x(), atom.y(), atom.z());
 	}
 	
-	public static int[] readInerface(String fileName) {
+	private static int[] readInerface(String fileName) {
 		String[] models = File2StringArray.f2a(fileName);
 		int[] out = new int[models.length];
 		for (int c=0 ; c<out.length ; c++) {

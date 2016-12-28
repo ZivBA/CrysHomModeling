@@ -51,7 +51,7 @@
 	 super.on();
      }
 
-        public void createElementsList(DistanceList baseList) {
+        private void createElementsList(DistanceList baseList) {
 	 elementsList = new MeshiList();
 
 	 Object baseElement;
@@ -68,12 +68,12 @@
 	 }
      }
 
-     public EnergyElement createElement(Object baseElement, Parameters parameters) {
-	 return new InflateEnergyElement(((Distance)baseElement), distanceMatrix, weight);
+     protected EnergyElement createElement(Object baseElement, Parameters parameters) {
+	 return new InflateEnergyElement(((Distance)baseElement), weight);
      }
 
      public static class TargetFilter implements Filter {
-	 private double target;
+	 private final double target;
 	 public TargetFilter(double target) {
 	     this.target = target;
 	 }

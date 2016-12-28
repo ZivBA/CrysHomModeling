@@ -10,11 +10,7 @@ public class ExcludedVolParameters extends Parameters {
     public final double  sigma;
     public final int smallType;
     public final int largeType;
-    /** 
-    * ALPHA is the transition zone (in Ang) where the energy change in the forth power 0.0 to 1.0.
-    **/    
-    public final double  ALPHA = 0.2; 
-    /**
+	/**
     * C is the parameter of  EV = C*(d-sigma)^4 in the range [0,sigma]
     **/    
     public final double  C;
@@ -39,7 +35,11 @@ public class ExcludedVolParameters extends Parameters {
         largeType = second;
     }	
 	sigma = toDouble(st.nextToken());
-	C =  1/(ALPHA*ALPHA*ALPHA*ALPHA);
+	/*
+     ALPHA is the transition zone (in Ang) where the energy change in the forth power 0.0 to 1.0.
+    */
+	    double ALPHA = 0.2;
+	    C =  1/(ALPHA * ALPHA * ALPHA * ALPHA);
     }
     
     public Filter isA() {return (new isA());}

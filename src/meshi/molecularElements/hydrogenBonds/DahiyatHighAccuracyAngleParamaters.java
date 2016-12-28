@@ -2,25 +2,24 @@ package meshi.molecularElements.hydrogenBonds;
 
 public class DahiyatHighAccuracyAngleParamaters extends
 		DahiyatImplementationConstants {
-
-	public final  double sigmoidBeginsAngleCenterOnH = 90.0;
-    public final  double sigmoidEndsAngleCenterOnH = 150.0;
-    public final  double sigmoidBeginsNoH = 90.0;
-    public final  double sigmoidEndsNoH = 110.0;
 	
 	protected double sigmoidBeginsAngleCenterOnH() {
+		double sigmoidBeginsAngleCenterOnH = 90.0;
 		return sigmoidBeginsAngleCenterOnH;
 	}
 
 	protected double sigmoidBeginsNoH() {
+		double sigmoidBeginsNoH = 90.0;
 		return sigmoidBeginsNoH;
 	}
 
 	protected double sigmoidEndsAngleCenterOnH() {
+		double sigmoidEndsAngleCenterOnH = 150.0;
 		return sigmoidEndsAngleCenterOnH;
 	}
 
 	protected double sigmoidEndsNoH() {
+		double sigmoidEndsNoH = 110.0;
 		return sigmoidEndsNoH;
 	}
 

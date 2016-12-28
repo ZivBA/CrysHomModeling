@@ -27,7 +27,7 @@ public class HydrogenBondsPairsEnergy extends NonBondedEnergyTerm implements Ato
     }
 
     //protected HydrogenBondsPairsEnergyElement energyElement;
-    protected PairsOfHBEElementsList pairsOfHBEElementsList;
+    private PairsOfHBEElementsList pairsOfHBEElementsList;
 
 
     private static final double DIFULT_PUNISHMENT = -10;        //TODO check this parameter
@@ -60,13 +60,13 @@ public class HydrogenBondsPairsEnergy extends NonBondedEnergyTerm implements Ato
         this(distanceMatrix,helixParametersList,betaParametersList, pairsOfHBEElementsList, weight,DIFULT_PUNISHMENT,DIFULT_HPUNISHMENT,specialDisArray,antiParallel);
     }
 
-    public HydrogenBondsPairsEnergy(DistanceMatrix distanceMatrix,
-                                    HelixParametersList helixParametersList,
-                                    BetaParametersList betaParametersList,
-                                    PairsOfHBEElementsList pairsOfHBEElementsList,
-                                    double weight,
-                                    double punish,
-                                    double hpunish ){
+    private HydrogenBondsPairsEnergy(DistanceMatrix distanceMatrix,
+                                     HelixParametersList helixParametersList,
+                                     BetaParametersList betaParametersList,
+                                     PairsOfHBEElementsList pairsOfHBEElementsList,
+                                     double weight,
+                                     double punish,
+                                     double hpunish){
 
         super(toArray(distanceMatrix,pairsOfHBEElementsList.hBondList(),pairsOfHBEElementsList),
               weight,
@@ -76,15 +76,15 @@ public class HydrogenBondsPairsEnergy extends NonBondedEnergyTerm implements Ato
         energyElement = new HydrogenBondsPairsEnergyElement(helixParametersList,betaParametersList, weight,punish,hpunish);
     }
 
-    public HydrogenBondsPairsEnergy(DistanceMatrix distanceMatrix,
-                                    HelixParametersList helixParametersList,
-                                    BetaParametersList betaParametersList,
-                                    PairsOfHBEElementsList pairsOfHBEElementsList, 
-                                    double weight,
-                                    double punish,
-                                    double hpunish,
-                                    int[] specialDisArray,
-                                    boolean antiParallel){
+    private HydrogenBondsPairsEnergy(DistanceMatrix distanceMatrix,
+                                     HelixParametersList helixParametersList,
+                                     BetaParametersList betaParametersList,
+                                     PairsOfHBEElementsList pairsOfHBEElementsList,
+                                     double weight,
+                                     double punish,
+                                     double hpunish,
+                                     int[] specialDisArray,
+                                     boolean antiParallel){
         
         super(toArray(distanceMatrix,pairsOfHBEElementsList.hBondList(),pairsOfHBEElementsList),
               weight,

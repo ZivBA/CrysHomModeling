@@ -11,7 +11,7 @@ import meshi.molecularElements.AtomList;
  *      H
  **/
 public class Ala extends ResidueExtendedAtoms {
-    public static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
+    private static final String COMMENT = "From Levitt, JMB 168:592 (1983) table 2.\n"+
 	"      CB  O\n"+
 	"      |   |\n"+
 	"  N - CA - C...n\n"+

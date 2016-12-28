@@ -21,45 +21,45 @@ public class TricAlignment {
 
 	public TricAlignment() {
 		String[] clustal = File2StringArray.f2a("C:\\Users\\Nir\\TRiC\\Organisms\\TRiC_11_2_2011_alignment_1line");
-		for (int c=0 ; c<clustal.length ; c++) {
-			StringTokenizer st = new StringTokenizer(clustal[c]);
-			if (st.countTokens()>=2) {
+		for (String aClustal : clustal) {
+			StringTokenizer st = new StringTokenizer(aClustal);
+			if (st.countTokens() >= 2) {
 				String prefix = st.nextToken();
 				String seq = st.nextToken();
-				if (prefix.equals("1Q3R=A")) { 
+				if (prefix.equals("1Q3R=A")) {
 					Q3R += seq;
 				}
-				if (prefix.equals("1A6D=A")) { 
+				if (prefix.equals("1A6D=A")) {
 					thermoA += seq;
 				}
-				if (prefix.equals("1A6D=B")) { 
+				if (prefix.equals("1A6D=B")) {
 					thermoB += seq;
 				}
-				if (prefix.equals("TRiC=A")) { 
+				if (prefix.equals("TRiC=A")) {
 					A += seq;
 				}
-				if (prefix.equals("TRiC=B")) { 
+				if (prefix.equals("TRiC=B")) {
 					B += seq;
 				}
-				if (prefix.equals("TRiC=G")) { 
+				if (prefix.equals("TRiC=G")) {
 					G += seq;
 				}
-				if (prefix.equals("TRiC=D")) { 
+				if (prefix.equals("TRiC=D")) {
 					D += seq;
 				}
-				if (prefix.equals("TRiC=E")) { 
+				if (prefix.equals("TRiC=E")) {
 					E += seq;
 				}
-				if (prefix.equals("TRiC=H")) { 
+				if (prefix.equals("TRiC=H")) {
 					H += seq;
 				}
-				if (prefix.equals("TRiC=Q")) { 
+				if (prefix.equals("TRiC=Q")) {
 					Q += seq;
 				}
-				if (prefix.equals("TRiC=Z")) { 
+				if (prefix.equals("TRiC=Z")) {
 					Z += seq;
 				}
-				if (prefix.equals("TRiC=W")) { 
+				if (prefix.equals("TRiC=W")) {
 					W += seq;
 				}
 			}

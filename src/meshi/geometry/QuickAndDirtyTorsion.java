@@ -3,8 +3,8 @@ package meshi.geometry;
  * Allows the use of approximated arc-cos function.
  * The use of the standard Math.acos function is the default.
  **/
-	
-public class QuickAndDirtyTorsion extends Torsion{
+
+class QuickAndDirtyTorsion extends Torsion{
     private final ArcCos ARC_COS = new ArcCos();
     public QuickAndDirtyTorsion(Angle angle1, Angle angle2, DistanceMatrix distanceMatrix) {
 	super(angle1, angle2, distanceMatrix);

@@ -26,7 +26,7 @@ import meshi.util.file.File2StringArray;
  *
  **/
 
-public class EvaluateForKB01 extends MeshiProgram implements Residues, AtomTypes {
+class EvaluateForKB01 extends MeshiProgram implements Residues, AtomTypes {
 
 	private static String modelsFileName = null;  
 	private static String refFileName = null;  
@@ -174,7 +174,7 @@ private static void init(String[] args) {
 			"<Wrg>  <Wev> <Wsolv> <Whb> <Wprop> <Wramach> \n"+
 	"                    ******************\n");
 
-	if (getFlag("-debug",args)) tableSet("debug",new Boolean(true));
+	if (getFlag("-debug",args)) tableSet("debug", Boolean.TRUE);
 
 	modelsFileName = getOrderedArgument(args);
 	if (modelsFileName == null) throw new RuntimeException(errorMessage);
@@ -188,13 +188,13 @@ private static void init(String[] args) {
 
 	String tmpString = getOrderedArgument(args);
 	if (tmpString!= null) { 
-		pathFirstEval = new String(tmpString.trim());
+		pathFirstEval = tmpString.trim();
 		System.out.println("# pathFirstEval is " + pathFirstEval);
 	}
 
 	tmpString = getOrderedArgument(args);
 	if (tmpString!= null) { 
-		pathSecondEval = new String(tmpString.trim());
+		pathSecondEval = tmpString.trim();
 		System.out.println("# pathSecondEval is " + pathSecondEval);
 	}
 }

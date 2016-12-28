@@ -23,35 +23,32 @@ public class Protein  extends MeshiProgram implements KeyWords{
     /**
      * The protein name.
      **/
-    protected String name = "unkownProtein"; 
+    String name = "unkownProtein";
     
     /**
      * Often many models of the same protein are generated. 
      **/
-    protected Integer modelNumber; 
+    Integer modelNumber;
     /**
      * A list of the protein's residues. 
      **/
-    protected ResidueList residues;
+    ResidueList residues;
 
     /** 
      * A list of the protein's atoms.
      **/
-    protected AtomList atoms;
+    AtomList atoms;
 
     /**
       * A list of the protein's bonds.
      **/
-    protected AtomPairList bonds = null;
+    AtomPairList bonds = null;
     protected AngleList angles = null;
     protected TorsionList torsions = null;
+	
+	//----------------------------------------  constructors -------------------------------------------
 
-    protected int firstResidueIndex = -1;
-
-    private boolean verbose = false;
-    //----------------------------------------  constructors -------------------------------------------
-
-    public Protein() {
+    protected Protein() {
     } 
     /**
      * Builds a protein from AA sequence and a secondary structure sequence.
@@ -107,8 +104,8 @@ public class Protein  extends MeshiProgram implements KeyWords{
     /**
      * Builds a protein from a PDB formatted file and a line filter.
      * 
-     **/ 
-    public Protein(MeshiLineReader file, Filter filter) {
+     **/
+    private Protein(MeshiLineReader file, Filter filter) {
 	name = getProteinName(file);
 	modelNumber = getModelNumber(file);
 	atoms = new AtomList(file,filter);
@@ -147,12 +144,12 @@ public class Protein  extends MeshiProgram implements KeyWords{
      * Extract the protein name from the filename.
      * expects name.pdb or name.modelNumber.pdb or pdbname.ent
      **/
-    public static String getProteinName(MeshiLineReader file) {	
+    private static String getProteinName(MeshiLineReader file) {
 	if (file == null) return "unKnown";
 	return getProteinName(file.path());
     }
 
-    public static String getProteinName(String pathString) {
+    private static String getProteinName(String pathString) {
 	StringList path = StringParser.breakPath(pathString);
 	String fileName = path.stringAt(path.size()-1);
 	StringList temp = StringParser.breakFileName(fileName);
@@ -177,16 +174,16 @@ public class Protein  extends MeshiProgram implements KeyWords{
      * Expects file name with the format name.modelNumber.pdb 
      **/
     private Integer getModelNumber(MeshiLineReader file) {
-	if (file == null) return new Integer(0);
+	if (file == null) return 0;
 	StringList path = (StringParser.breakPath(file.path()));
 	String fileName = path.stringAt(path.size()-1);
 	if ((StringParser.breakFileName(fileName)).size() >= 3) {
 	    try {
 		return new Integer((StringParser.breakFileName(fileName)).stringAt(1));
 	    }
-	    catch(Exception e) { return new Integer(0);} 
+	    catch(Exception e) { return 0;}
 	}	
-	else return new Integer(0);
+	else return 0;
     }
 
     /**
@@ -282,7 +279,9 @@ public class Protein  extends MeshiProgram implements KeyWords{
 	atoms.renumber();
 	bonds = new AtomPairList(residues); 
     }
-    public int firstResidueIndex() {return firstResidueIndex;}
+    public int firstResidueIndex() {
+	    int firstResidueIndex = -1;
+	    return firstResidueIndex;}
 
     public void allYouWantToKnow() {
 	System.out.println("##################################################################################\n"+
@@ -370,7 +369,8 @@ public class Protein  extends MeshiProgram implements KeyWords{
 	    }
 	}
 	//print the new residue list.
-	if (verbose)  residues.print(5," %-20s ");
+	    boolean verbose = false;
+	    if (verbose)  residues.print(5," %-20s ");
     }	
 
 
@@ -394,14 +394,14 @@ public class Protein  extends MeshiProgram implements KeyWords{
 	mw.close();
     }
 
-   public void setName(String name){this.name=name;}
+   void setName(String name){this.name=name;}
     
 
     public Residue residueAt(int residueNumber) {
 	return residues.residueAt(residueNumber);
     }
     
-    public Sequence sequence() {
+    private Sequence sequence() {
 	String comment = name;
 	String sequence = residues.toString();
 	return new ResidueSequence(sequence, comment);

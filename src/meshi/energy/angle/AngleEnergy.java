@@ -28,18 +28,16 @@ import meshi.geometry.DistanceMatrix;
  **/
 
 public class AngleEnergy extends SimpleEnergyTerm {
-    /**     * The list of angles that needs to be evaluated.
-     **/
-    protected AngleList angleList;
-    protected DistanceMatrix distanceMatrix;
-
-    public AngleEnergy() {}
+	
+	public AngleEnergy() {}
 
     public AngleEnergy(AngleList angleList, DistanceMatrix distanceMatrix,
 		       AngleParametersList parametersList, double weight) {
 	super(toArray(distanceMatrix, angleList), parametersList, weight);
-	this.angleList = angleList;
-	this.distanceMatrix = distanceMatrix;
+	/*     * The list of angles that needs to be evaluated.
+     */
+	    AngleList angleList1 = angleList;
+	    DistanceMatrix distanceMatrix1 = distanceMatrix;
 	createElementsList(angleList);
 	comment = "Angle";
     }

@@ -117,19 +117,15 @@ public class LBFGS extends Minimizer {
 	double   curv;
     }
     // for the two-loop recursion alg.
-    double[] R; // auxilary vector
-    double[] Q; // auxilary vector
-    double[] alpha; // auxilary vector
-    double beta;
-    double gama = 1;
-    Element e;
-
-    private double[][] coordinates; // The position and gradients of the system
+    private double[] R; // auxilary vector
+    private double[] Q; // auxilary vector
+    private double[] alpha; // auxilary vector
+	private double gama = 1;
+	
+	private double[][] coordinates; // The position and gradients of the system
     private double[][] bufferCoordinates;
-    private double magnitudeForce = 100000000;
-    private int iterationNum; // Iterations counter
-    private int bfgsError; // Error occured in the main bfgs loop
-    private String bfgsErrorString;
+	private int iterationNum; // Iterations counter
+	private String bfgsErrorString;
     private int numKickStarts; // The number of times the minimizer was restarted
 
     // LBFGS paramters
@@ -152,11 +148,11 @@ public class LBFGS extends Minimizer {
     private static final int DEFAULT_MAX_NUM_EVALUATIONS_WOLF_SEARCH = 10;
 
     // Steepest descent module paramters
-    int numStepsSteepestDecent;
-    double initStepSteepestDecent;
-    double stepSizeReductionSteepestDecent;
-    double stepSizeExpansionSteepestDecent;
-    public static final int DEFAULT_NUM_STEP_STEEPEST_DECENT = 250;
+    private int numStepsSteepestDecent;
+    private double initStepSteepestDecent;
+    private double stepSizeReductionSteepestDecent;
+    private double stepSizeExpansionSteepestDecent;
+    private static final int DEFAULT_NUM_STEP_STEEPEST_DECENT = 250;
     private static final double DEFAULT_INIT_STEP_STEEPEST_DECENT = 0.00000001;
     private static final double DEFAULT_STEP_SIZE_REDUCTION_STEEPEST_DECENT = 0.5;
     private static final double DEFAULT_STEP_SIZE_EXPENTION_STEEPEST_DECENT = 1.1;
@@ -237,20 +233,20 @@ public class LBFGS extends Minimizer {
     }
 	     
    //Full constructor
-    public LBFGS(TotalEnergy energy,
-		 double tolerance, 
-		 int maxIteration,
-		 int reportEvery,
-		 int allowedMaxR,
-		 int maxNumKickStarts,
-		 int m,
-		 boolean useGama,
-		 double c1, double c2,
-		 double extendAlphaFactorWolfSearch,
-		 int maxNumEvaluationsWolfSearch,
-		 int numStepsSteepestDecent, double initStepSteepestDecent,
-		 double stepSizeReductionSteepestDecent, 
-		 double stepSizeExpansionSteepestDecent) {
+   private LBFGS(TotalEnergy energy,
+                 double tolerance,
+                 int maxIteration,
+                 int reportEvery,
+                 int allowedMaxR,
+                 int maxNumKickStarts,
+                 int m,
+                 boolean useGama,
+                 double c1, double c2,
+                 double extendAlphaFactorWolfSearch,
+                 int maxNumEvaluationsWolfSearch,
+                 int numStepsSteepestDecent, double initStepSteepestDecent,
+                 double stepSizeReductionSteepestDecent,
+                 double stepSizeExpansionSteepestDecent) {
     	super(energy,tolerance,maxIteration);
 	if (maxIteration <=  numStepsSteepestDecent) 
 	    throw new RuntimeException(" numStepsSteepestDecent "+numStepsSteepestDecent+
@@ -278,17 +274,17 @@ public class LBFGS extends Minimizer {
     	this.stepSizeExpansionSteepestDecent = stepSizeExpansionSteepestDecent;
     }
    //Full constructor
-    public void setParameters(
-		 int allowedMaxR,
-		 int maxNumKickStarts,
-		 int m,
-		 boolean useGama,
-		 double c1, double c2,
-		 double extendAlphaFactorWolfSearch,
-		 int maxNumEvaluationsWolfSearch,
-		 int numStepsSteepestDecent, double initStepSteepestDecent,
-		 double stepSizeReductionSteepestDecent, 
-		 double stepSizeExpansionSteepestDecent) {
+   private void setParameters(
+		   int allowedMaxR,
+		   int maxNumKickStarts,
+		   int m,
+		   boolean useGama,
+		   double c1, double c2,
+		   double extendAlphaFactorWolfSearch,
+		   int maxNumEvaluationsWolfSearch,
+		   int numStepsSteepestDecent, double initStepSteepestDecent,
+		   double stepSizeReductionSteepestDecent,
+		   double stepSizeExpansionSteepestDecent) {
 	if (maxIteration <=  numStepsSteepestDecent) 
 	    throw new RuntimeException(" numStepsSteepestDecent "+numStepsSteepestDecent+
 				       " >= maxIteration "+ maxIteration+"\n"+
@@ -298,8 +294,7 @@ public class LBFGS extends Minimizer {
 //				       "if m ("+m+") >= n/2 ("+ energy.coordinates().length/2 +") "+
 //				       "then you are better off using the regular BFGS.");
  System.out.println("LBFGS starts with "+energy.coordinates().length+" coordinates");
-    	this.reportEvery = reportEvery;
-	this.allowedMaxR = allowedMaxR;
+	   this.allowedMaxR = allowedMaxR;
     	this.maxNumKickStarts = maxNumKickStarts;
 	this.m = m;
 	this.useGama = useGama;
@@ -332,7 +327,7 @@ public class LBFGS extends Minimizer {
 	alpha = new double[m];
 	gama = 1;
 	
-	storage = new LinkedList<Element>();
+	storage = new LinkedList<>();
 		
 	numKickStarts = 0;
 	iterationNum = 0;
@@ -350,10 +345,11 @@ public class LBFGS extends Minimizer {
         // and position (X) initialization 
     	kickStart();
     	// The main LBFGS loop
-    	while ((iterationNum < maxIteration) &&   
+	    double magnitudeForce = 100000000;
+	    while ((iterationNum < maxIteration) &&
 	       ((magnitudeForce = TotalEnergy.getGradMagnitude(coordinates)) > tolerance) &&
 	       (! terminator.dead())) {
-	    bfgsError = 0;
+		    int bfgsError = 0;
 	    
 	    // Gama as Hk0: 9.6 in page 226
 	    if (useGama) {
@@ -372,28 +368,29 @@ public class LBFGS extends Minimizer {
 			// algorithm 9.1 p. 225 ("L-BFGS two-loop recursion" ...which isn't recursive)
 			for (j=0; j<n; j++)
 				Q[j] = G[j];
-
-			for (i=0; i<storage.size(); i++) {
-				e = storage.get(i);
+		
+		    Element e1;
+		    for (i=0; i<storage.size(); i++) {
+				e1 = storage.get(i);
 				alpha[i] = 0;
 				for (j=0; j<n; j++)
-					alpha[i] += e.S[j]*Q[j];
-				alpha[i] *= e.curv;
+					alpha[i] += e1.S[j]*Q[j];
+				alpha[i] *= e1.curv;
 				for (j=0; j<n; j++)
-					Q[j] -= alpha[i]*e.Y[j];
+					Q[j] -= alpha[i]* e1.Y[j];
 			}
 
 			for (j=0; j<n; j++)
 				R[j] = gama*Q[j];
 			
 			for (i=storage.size()-1; i>=0; i--) {
-				e = storage.get(i);
-				beta = 0;
+				e1 = storage.get(i);
+				double beta = 0;
 				for (j=0; j<n; j++)
-					beta += e.Y[j]*R[j];
-				beta *= e.curv;
+					beta += e1.Y[j]*R[j];
+				beta *= e1.curv;
 				for (j=0; j<n; j++)
-					R[j] += e.S[j] * (alpha[i] - beta);
+					R[j] += e1.S[j] * (alpha[i] - beta);
 			}	
 			// end alg. 9.1
 			// now Pk = -R
@@ -433,25 +430,25 @@ public class LBFGS extends Minimizer {
         	// Calculate Gk+1,Sk,Yk and the curvature Yk*Sk. Check for pathological curvature
         	if (bfgsError == 0) {
 				if (storage.size() < m) {
-					e = new Element();
-					e.Y = new double[n];
-					e.S = new double[n];
+					e1 = new Element();
+					e1.Y = new double[n];
+					e1.S = new double[n];
 				} else {
-					e = storage.removeLast();
+					e1 = storage.removeLast();
 				}
-        		e.curv = 0;
+        		e1.curv = 0;
         		for (j=0 ; j<n ; j++) {
-        			e.Y[j] = -coordinates[j][1] - G[j];
-        			e.S[j] = coordinates[j][0] - X[j];
+        			e1.Y[j] = -coordinates[j][1] - G[j];
+        			e1.S[j] = coordinates[j][0] - X[j];
         			G[j] = -coordinates[j][1];
         			X[j] = coordinates[j][0];
-        			e.curv += e.Y[j]*e.S[j];	
+        			e1.curv += e1.Y[j]* e1.S[j];
         		}
-        		if (e.curv > allowedMaxR)
+        		if (e1.curv > allowedMaxR)
         			bfgsError = 3;
         		else {
-        			e.curv = 1/e.curv;
-					storage.addFirst(e);
+        			e1.curv = 1/ e1.curv;
+					storage.addFirst(e1);
 				}        	
 			}
        		iterationNum++;

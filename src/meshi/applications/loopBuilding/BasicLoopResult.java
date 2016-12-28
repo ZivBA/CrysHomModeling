@@ -1,15 +1,15 @@
 package meshi.applications.loopBuilding;
 
 
-public class BasicLoopResult {
-		protected double evEnergy;
-		protected double propEnergy;
-		protected double bbHBEnergy;
-		protected double score;		
-		protected double rms;		
-		protected double[][] coors = null; // This pointer refer to the output of the "saveLoopCoordinates()" method
-		protected double[][] myPhiPsi = null; // This pointer refer to the output of the "savePhiPsiOfLoop()" method
-		protected int[] fragRank = null; // From where in the library did the fragments which makes the solution come?
+class BasicLoopResult {
+		double evEnergy;
+		double propEnergy;
+		double bbHBEnergy;
+		double score;
+		double rms;
+		double[][] coors = null; // This pointer refer to the output of the "saveLoopCoordinates()" method
+		double[][] myPhiPsi = null; // This pointer refer to the output of the "savePhiPsiOfLoop()" method
+		int[] fragRank = null; // From where in the library did the fragments which makes the solution come?
 		private double[][] bbCoors = null; // for N residues this is a [3N][3] array. Indexing is N,Ca,C,N,Ca,C... and the other index is {x,y,z}
 
 		public BasicLoopResult() {}
@@ -25,8 +25,7 @@ public class BasicLoopResult {
 			this.bbCoors = bbCoors;
 			this.myPhiPsi = myPhiPsi;
 			fragRank = new int[fragRank_p.length];
-			for (int c=0 ; c<fragRank_p.length ; c++)
-				fragRank[c] = fragRank_p[c];
+		System.arraycopy(fragRank_p, 0, fragRank, 0, fragRank_p.length);
 		}
 
 		public double[][] getBBcoors() {return bbCoors;}
