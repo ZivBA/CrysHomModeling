@@ -1,6 +1,6 @@
 package ScoreUtilities.SFCheckIntegration;
 
-import ModellingTool.MainMenu;
+import ModellingTool.MainProgramThread;
 import ModellingTool.RunParameters;
 import ModellingUtilities.molecularElements.SimpleProtein;
 
@@ -25,6 +25,7 @@ import static ScoreUtilities.ScoringGeneralHelpers.makeSubFolderAt;
  */
 public class SFCheckThreadNew extends SwingWorker<Void,String[]>  {
 	private final JProgressBar sfchkProgress;
+	private final MainProgramThread thread;
 	private RunParameters params;
 	private File SFCheckExe;
 	private File outputFolder;
@@ -37,13 +38,14 @@ public class SFCheckThreadNew extends SwingWorker<Void,String[]>  {
 	/**
 	 * constructor - gets the PDB file to check and the run parameters object.
 	 */
-	public SFCheckThreadNew(ConcurrentLinkedDeque<File> protsToProcess, RunParameters params, JProgressBar sfchkProgress) throws IOException {
+	public SFCheckThreadNew(ConcurrentLinkedDeque<File> protsToProcess, RunParameters params, JProgressBar sfchkProgress, MainProgramThread mainProgramThread) throws IOException {
 		outputFolder = makeSubFolderAt(params.getScwrlOutputFolder().getParentFile(), "sfcheck_LogFiles");
 		outputFolder = makeSubFolderAt(outputFolder, String.valueOf(params.getChainToProcess()));
 		this.protsToProcess = protsToProcess;
 		SFCheckExe = params.getSFChkexe();
 		this.params = params;
 		this.sfchkProgress = sfchkProgress;
+		this.thread = mainProgramThread;
 		
 	}
 	
@@ -163,8 +165,8 @@ public class SFCheckThreadNew extends SwingWorker<Void,String[]>  {
 	@Override
 	protected void process(java.util.List<String[]> updateList){
 		for (String[] result : updateList){
-			MainMenu.SFCheckResultSet.addAll(updateList);
-			MainMenu.sfckProgressCounter = checksCounter;
+			MainProgramThread.SFCheckResultSet.addAll(updateList);
+			MainProgramThread.sfckProgressCounter = checksCounter;
 			sfchkProgress.setValue(checksCounter / protsToProcess.size() * 100);
 			sfchkProgress.setString(checksCounter+" Done");
 		}

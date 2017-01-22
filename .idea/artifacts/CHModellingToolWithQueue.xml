@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CHModellingToolWithQueue">
+    <output-path>$PROJECT_DIR$/out/artifacts/CHModellingToolWithQueue</output-path>
+    <root id="archive" name="CHModellingToolWithQueue.jar">
+      <element id="module-output" name="CHModellingTool" />
+      <element id="library" level="project" name="swing-layout-1.0.4" />
+    </root>
+  </artifact>
+</component>

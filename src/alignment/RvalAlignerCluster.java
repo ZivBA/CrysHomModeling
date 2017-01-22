@@ -198,7 +198,7 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		publish(100);
+		
 		setProgress(100);
 		System.out.flush();
 		return null;

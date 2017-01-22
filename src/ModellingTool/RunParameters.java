@@ -288,4 +288,12 @@ public class RunParameters extends Properties {
 	public void setFASTASeq(String FASTASeq) {
 		this.FASTASeq = FASTASeq;
 	}
+	
+	public File getFastaFile() {
+		return FASTAFile;
+	}
+	
+	public String getFastaSeq() {
+		return FASTASeq;
+	}
 }

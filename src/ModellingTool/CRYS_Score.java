@@ -85,8 +85,9 @@ class CRYS_Score {
 	 * SCWRL future executions per PDB permutation.
 	 * @throws IOException    If there's a problem reading some files or writing to disk.
 	 * @throws MissingChainID if there is no Chain ID to use for reference.
+	 * @param mainProgramThread
 	 */
-	List<List<SCWRLrunner>> iterateAndGenScwrl() throws IOException, MissingChainID {
+	List<List<SCWRLrunner>> iterateAndGenScwrl(MainProgramThread mainProgramThread) throws IOException, MissingChainID {
 		
 		List<List<SCWRLrunner>> taskList = new LinkedList<>();
 		// For faster executions when changing calculation parameters, if the raw data exists, only go through the calculation part of the program.
@@ -106,7 +107,7 @@ class CRYS_Score {
 			for (File chain : chainSubFolders) {
 				if (chain.isDirectory()) {
 					if (chain.getAbsolutePath().endsWith(File.separator + requestedChain) || requestedChain == '\0') {
-						taskList.add(SCWRLactions.genSCWRLforFolder(chain));
+						taskList.add(SCWRLactions.genSCWRLforFolder(chain, mainProgramThread));
 						if (!params.isDebug()) {
 							toDelete.add(chain);
 						}

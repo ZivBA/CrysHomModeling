@@ -1,6 +1,6 @@
 package ScoreUtilities.scwrlIntegration;
 
-import ModellingTool.MainMenu;
+import ModellingTool.MainProgramThread;
 
 import javax.swing.*;
 import java.io.*;
@@ -16,12 +16,14 @@ public class SCWRLrunner extends SwingWorker<String[], Void> {
 	private final File scwrlExe;
 	private final File input;
 	private final File output;
+	private final MainProgramThread thread;
 	private String[] runLog;
 	private boolean fakeRun = false;
 
-	public SCWRLrunner(String pathToScwrlExe, File inputFile, File outputFile) throws IOException {
+	public SCWRLrunner(String pathToScwrlExe, File inputFile, File outputFile, MainProgramThread mainProgramThread) throws IOException {
 
 		scwrlExe = new File(pathToScwrlExe);
+		this.thread = mainProgramThread;
 		this.output = outputFile;
 		this.input = inputFile;
 		if (!output.isFile()) {
@@ -71,7 +73,7 @@ public class SCWRLrunner extends SwingWorker<String[], Void> {
 	}
 
 	private void prepareNextStep() {
-		MainMenu.SCWRLfilesToSFcheck.add(output);
+		MainProgramThread.SCWRLfilesToSFcheck.add(output);
 		setProgress(100);
 	}
 

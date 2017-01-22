@@ -1,6 +1,6 @@
 package ScoreUtilities.SFCheckIntegration;
 
-import ModellingTool.MainMenu;
+import ModellingTool.MainProgramThread;
 import ModellingTool.RunParameters;
 import ModellingUtilities.molecularElements.SimpleProtein;
 
@@ -21,6 +21,7 @@ import static ScoreUtilities.ScoringGeneralHelpers.makeSubFolderAt;
  * create these when you want to run SFCheck against some PDB file, then pass the worker to an execution pool for processing.
  */
 public class SFCheckThread extends SwingWorker<String[],Void>  {
+	private final MainProgramThread thread;
 	private RunParameters params;
 	private File SFCheckExe;
 	private File outputFolder;
@@ -32,10 +33,10 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 	/**
 	 * constructor - gets the PDB file to check and the run parameters object.
 	 */
-	public SFCheckThread(File tempProt, RunParameters params) throws IOException {
+	public SFCheckThread(File tempProt, RunParameters params, MainProgramThread mainProgramThread) throws IOException {
 		outputFolder = makeSubFolderAt(params.getScwrlOutputFolder().getParentFile(), "sfcheck_LogFiles");
 		outputFolder = makeSubFolderAt(outputFolder, String.valueOf(params.getChainToProcess()));
-		
+		this.thread = mainProgramThread;
 		SFCheckExe = params.getSFChkexe();
 		protToProcess = tempProt;
 		this.params = params;
@@ -156,8 +157,8 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 	protected void done(){
 		try{
 			if (get().length!=0){
-				MainMenu.SFCheckResultSet.add(get());
-				MainMenu.sfckProgressCounter++;
+				MainProgramThread.SFCheckResultSet.add(get());
+				MainProgramThread.sfckProgressCounter++;
 				setProgress(100);
 			}
 		} catch (Exception e){

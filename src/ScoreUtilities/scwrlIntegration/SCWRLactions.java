@@ -1,12 +1,13 @@
 package ScoreUtilities.scwrlIntegration;
 
 
+import ModellingTool.MainProgramThread;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,10 +20,11 @@ public class SCWRLactions {
 	/**
 	 * iterate all files in folder and create a SCWRLrunner instance for each file..
 	 * @param tempFolder the folder to process
+	 * @param mainProgramThread
 	 * @return a list of SCWRLrunner instances for execution later
 	 * @throws IOException if some file cannot be read.
 	 */
-	public static List<SCWRLrunner> genSCWRLforFolder(File tempFolder) throws IOException {
+	public static List<SCWRLrunner> genSCWRLforFolder(File tempFolder, MainProgramThread mainProgramThread) throws IOException {
 		List<SCWRLrunner> SCWRLtasks = new LinkedList<>();
 
 //		List<File> fileNames = new ArrayList<>();
@@ -36,7 +38,7 @@ public class SCWRLactions {
 				}else {
 					 SCWRLFile = path.toFile();
 				}
-				SCWRLrunner oneRun = new SCWRLrunner(SCWRL_PATH, path.toFile(), SCWRLFile);
+				SCWRLrunner oneRun = new SCWRLrunner(SCWRL_PATH, path.toFile(), SCWRLFile, mainProgramThread);
 				SCWRLtasks.add(oneRun);
 				
 //				if (!path.getFileName().toString().endsWith("_SCWRLed.pdb")) {
