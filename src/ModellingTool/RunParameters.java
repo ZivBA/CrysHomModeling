@@ -46,6 +46,8 @@ public class RunParameters extends Properties {
 	private SimpleProtein sourceProt;
 	private boolean fullFastaThreading;
 	private File SWISSProt;
+	private File FASTAFile;
+	private String FASTASeq;
 	
 	public int getNumOfBetterThreads() {
 		return numOfBetterThreads;
@@ -279,4 +281,11 @@ public class RunParameters extends Properties {
 		return SWISSProt;
 	}
 	
+	public void setFASTAFile(File FASTAFile) {
+		this.FASTAFile = FASTAFile;
+	}
+	
+	public void setFASTASeq(String FASTASeq) {
+		this.FASTASeq = FASTASeq;
+	}
 }

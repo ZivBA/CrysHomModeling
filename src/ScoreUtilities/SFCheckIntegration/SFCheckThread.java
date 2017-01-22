@@ -10,7 +10,6 @@ import java.nio.charset.Charset;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -105,13 +104,13 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 		}
 		
 		
-
+		String curPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 		Process process = null;
 		try {
 			process = Runtime.getRuntime().exec(SFCheckExe.getAbsolutePath() +
 					" -f " + params.getMAPsrc() +
 					" -m " + protToProcess.getAbsolutePath() +
-					" -po " + output.getAbsolutePath(), null, Paths.get("").toAbsolutePath().toFile());
+					" -po " + output.getAbsolutePath());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

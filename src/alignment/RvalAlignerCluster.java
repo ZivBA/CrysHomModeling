@@ -12,19 +12,18 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class RvalAlignerCluster extends SwingWorker<Void, String> {
+public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 	
 	//	private final CustomOutputStream customOut;
 	private String row;
 	private final logObj log;
-	private RvalSequence Rseq;
+	private RvalSequence sourceSeq;
 	private final String profileFilePath;
 	private final String seqListPath;
 	private final boolean fullFasta;
@@ -73,22 +72,22 @@ public class RvalAlignerCluster extends SwingWorker<Void, String> {
 		System.out.println("Total num of SwissProt seqs: " + swissProt.size() + "\n");
 		MySequenceList mySeqList = new MySequenceList(seqListPath);
 		System.out.flush();
-		Rseq = new RvalSequence(profileFilePath);    // txt version of CSV "allWithSeq"
+		sourceSeq = new RvalSequence(profileFilePath);    // txt version of CSV "allWithSeq"
 
 //		log.logString += "working on profile file: " + profileFilePath + "\n";
 		System.out.println("working on profile file: " + profileFilePath + "\n");
 //		log.logString += mySeqList.fileName().substring(mySeqList.fileName().lastIndexOf("/") + 1, mySeqList.fileName()
 //				.lastIndexOf(".fasta")) + ":   ";
-//		log.logString += "Structure positions: " + Rseq.size() + "   Length of *true* seq: " + mySeqList.get(0).seq().length() +
+//		log.logString += "Structure positions: " + sourceSeq.size() + "   Length of *true* seq: " + mySeqList.get(0).seq().length() +
 //				"\n---------------------------------------------------------------------------------------\n";
 		System.out.println(mySeqList.fileName().substring(mySeqList.fileName().lastIndexOf("/") + 1, mySeqList.fileName().lastIndexOf(
-				".fasta")) + ":   Structure positions: " + Rseq.size() + "   Length of *true* seq: " + mySeqList
+				".fasta")) + ":   Structure positions: " + sourceSeq.size() + "   Length of *true* seq: " + mySeqList
 				.get(0).seq().length() + "\n---------------------------------------------------------------------------------------\n");
 
-		double sameSeqScore = singleRvalAlignerRun(mySeqList.get(0).seq(), Rseq);
+		double sameSeqScore = singleRvalAlignerRun(mySeqList.get(0).seq(), sourceSeq);
 		
 		row += seqListPath.substring(0, seqListPath.indexOf(".fasta")) + ",";
-		row += Rseq.size() + ", " + mySeqList.get(0).seq().length() + ", " + sameSeqScore + ", ";
+		row += sourceSeq.size() + ", " + mySeqList.get(0).seq().length() + ", " + sameSeqScore + ", ";
 		System.out.flush();
 
 		if (fullFasta) {
@@ -117,37 +116,45 @@ public class RvalAlignerCluster extends SwingWorker<Void, String> {
 						!(mySeq.seq().indexOf('Z') > -1) &&
 						!(mySeq.seq().indexOf('O') > -1) &&
 						!(mySeq.seq().indexOf('U') > -1)) {
-					if (mySeq.seq().length() >= Rseq.size()) {
+					if (mySeq.seq().length() >= sourceSeq.size()) {
 						final int finalCcc = ccc;
 						validSwissProt++;
+						if (validSwissProt % 512 == 0) {
+							progressBar.setString(validSwissProt + " valid sequences found");
+						}
 						futures.add(executorThreads.submit(() -> {
-							AminoAcidSequence AAseq = new AminoAcidSequence(mySeq.seq());
-							NeedlemanWunchSolver NW = new NeedlemanWunchSolver(Rseq, AAseq, new RvalScoringScheme());
-
-							return new Double[]{NW.alignmentScore(), (double) finalCcc};
+							AminoAcidSequence targetSeq = new AminoAcidSequence(mySeq.seq());
+							NeedlemanWunchSolver NW = new NeedlemanWunchSolver(sourceSeq, targetSeq, new RvalScoringScheme());
+							
+							return new Double[]{NW.alignmentScore(), (double) finalCcc, NW.getQualityIndex()};
 						}));
 					}
 				}
 
 			}
+			progressBar.setString(validSwissProt + " valid sequences found");
+			progressBar.setMaximum(validSwissProt);
 			int counter = 0;
 			Future<Double[]> completedThread;
 			List<Double[]> resultsList = new LinkedList<>();
 			while (counter < validSwissProt) {
 				completedThread = executorThreads.take();
 				counter++;
+				
 				resultsList.add(completedThread.get());
-				if (counter % 8192 == 0) {
+				if (counter % 512 == 0) {
 					setProgress(Math.round((float)(counter) / validSwissProt * 100f));
-					System.out.print(counter + ".. ");
-					publish();
+//					System.out.print(counter + ".. ");
+					publish(counter);
 				}
-				if (counter % 65536 == 0) {
-					setProgress(Math.round((float)(counter) / validSwissProt * 100f));
-					System.out.println(counter + ".. ");
-					publish();
-				}
+//				if (counter % 65536 == 0) {
+//					setProgress(Math.round((float)(counter) / validSwissProt * 100f));
+//					System.out.println(counter + ".. ");
+//					publish();
+//				}
 			}
+			setProgress(Math.round((float)(counter) / validSwissProt * 100f));
+			publish(counter);
 			
 			Collections.sort(resultsList,new ResultsComparator());
 			List<Double[]> validList = resultsList.stream().filter(p->p[0]>-1000).collect(Collectors.toList());
@@ -167,8 +174,9 @@ public class RvalAlignerCluster extends SwingWorker<Void, String> {
 			System.out.println("The top 10 best scores are:");
 			for (int i=0; i<10; i++){
 				MySequence mySeq = swissProt.get(validList.get(i)[1].intValue());
-				System.out.println("Number " + (i+1) +" is: " + mySeq.title().substring(0, Math.min(mySeq.title().length() - 1, 60)));
-				singleRvalAlignerRun(mySeq.seq(), Rseq);
+				System.out.println("Number " + (i+1) +" is: " + mySeq.title().substring(0, Math.min(mySeq.title().length() - 1, 60))
+									+ "\nWith Quality Index of: " + validList.get(i)[2]);
+				singleRvalAlignerRun(mySeq.seq(), sourceSeq);
 				System.out.println();
 				System.out.flush();
 			}
@@ -190,19 +198,23 @@ public class RvalAlignerCluster extends SwingWorker<Void, String> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		publish("Finished threading results");
+		publish(100);
 		setProgress(100);
 		System.out.flush();
 		return null;
 	}
 
 	@Override
-	protected void process(List<String> s) {
-		for (String line : s) {
-			System.out.print(line);
+	protected void process(List<Integer> s) {
+//		for (String line : s) {
+//			System.out.print(line);
+//		}
+		progressBar.setValue(s.get(s.size()-1));
+		progressBar.setString(progressBar.getValue() +" of " +progressBar.getMaximum() + " done");
+		if (progressBar.getValue() == progressBar.getMaximum()){
+			System.out.println("Finished threading all results.");
+			System.out.flush();
 		}
-		progressBar.setValue(getProgress());
-		System.out.flush();
 	}
 
 	@Override

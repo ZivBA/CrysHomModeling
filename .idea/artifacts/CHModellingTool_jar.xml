@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/CHModellingTool_jar</output-path>
     <root id="archive" name="CHModellingTool.jar">
       <element id="module-output" name="CHModellingTool" />
+      <element id="library" level="project" name="swing-layout-1.0.4" />
     </root>
   </artifact>
 </component>

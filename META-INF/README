@@ -1,0 +1,18 @@
+Combinatorial Homology Modelling Tool.
+This program is written entirely in Java using OpenJDK 1.7 and Java's SWING GUI toolkit.
+External components used/required:
+SCWRL4 (http://dunbrack.fccc.edu/scwrl4/) for the energy minimization of the generated PDB files. License must be obtained independently.
+SFCheck (http://www.ccp4.ac.uk/html/sfcheck.html) for scoring each PDB against the CIF file. Custom binary provided with the package.
+
+System requirements:
+Processor   - at least Dual core or Hyperthreaded single core.
+Software    - currently only supporting *nix system due to custom SFCheck module.
+            - JVM 1.7 or higher required.
+            - SCWRL4, SFCheck (see above)
+
+Installation/execution:
+    - Ensure SCWRL is installed, licensed and that you know where the SCWRL4 executable is located.
+    - Unzip the package to your desired location.
+    - Ensure that "CHModellingTool.jar" has execution permissions.
+    - double click the jar file, or from a command line run.
+

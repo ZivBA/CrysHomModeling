@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -72,8 +72,7 @@ public class MainMenu extends JPanel implements ActionListener {
 	public static int sfckProgressCounter = 0;
 
 	private int totalNumberOfFilesToProcess = 0;
-	public static ConcurrentLinkedQueue<File> SCWRLfilesToSFcheck;
-
+	public static ConcurrentLinkedDeque<File> SCWRLfilesToSFcheck;
 
 	private CRYS_Score crysScore;
 	public static final List<String[]> SFCheckResultSet = new LinkedList<>();
@@ -84,6 +83,7 @@ public class MainMenu extends JPanel implements ActionListener {
 	private File fastaFile;
 	private final CustomOutputStream customOut = new CustomOutputStream(log);
 	private boolean doneWithCSVs = false;
+	private boolean notStartedSFCheck = true;
 	
 	private MainMenu() {
 		super(new BorderLayout());
@@ -131,7 +131,7 @@ public class MainMenu extends JPanel implements ActionListener {
 		} else {
 			System.setOut(printStream);
 		}
-		SCWRLfilesToSFcheck = new ConcurrentLinkedQueue<>();
+		SCWRLfilesToSFcheck = new ConcurrentLinkedDeque<>();
 
 	}
 
@@ -171,6 +171,8 @@ public class MainMenu extends JPanel implements ActionListener {
 						(), 1);
 		threadLimit = new JSpinner(model1);
 		logPane = new JScrollPane(log);
+		UIManager.put("ProgressBar.selectionBackground", Color.BLACK);
+		UIManager.put("ProgressBar.selectionForeground", Color.BLACK);
 		
 
 	}
@@ -203,7 +205,8 @@ public class MainMenu extends JPanel implements ActionListener {
 				this.fastaFile = fastaDialog.fastaFile;
 				this.fastaSequence = fastaDialog.fastaSequence;
 			}
-
+			params.setFASTASeq(this.fastaSequence);
+			params.setFASTAFile(this.fastaFile);
 
 			//handle DEBUG button action.
 		} else if (e.getSource() == debug) {
@@ -286,7 +289,9 @@ public class MainMenu extends JPanel implements ActionListener {
 		params.setSaveDefaults(saveDefaultsCheckBox.isSelected());
 		params.setThreadingSelection(fullFastaRadioButton.isSelected());
 		scwrlProgress.setValue(0);
+		scwrlProgress.setStringPainted(true);
 		sfchkProgress.setValue(0);
+		sfchkProgress.setStringPainted(true);
 		scwrlProgressCounter = 0;
 		sfckProgressCounter = 0;
 		TableModel chainlist = chainListTable.getModel();
@@ -377,7 +382,9 @@ public class MainMenu extends JPanel implements ActionListener {
 					if (SCWRLruns == null) {
 						customOut.writeToFile();
 						scwrlProgress.setValue(scwrlProgress.getMaximum());
+						scwrlProgress.setString("Done");
 						sfchkProgress.setValue(sfchkProgress.getMaximum());
+						sfchkProgress.setString("Done");
 						
 						System.out.println("Finished processing existing files.\n");
 						System.out.flush();
@@ -394,7 +401,10 @@ public class MainMenu extends JPanel implements ActionListener {
 										SwingUtilities.invokeLater(() -> {
 											scwrlProgressCounter++;
 											scwrlProgress.setValue(scwrlProgressCounter);
-											checkSCWRLfile();
+											scwrlProgress.setString(scwrlProgressCounter+" done");
+											if (notStartedSFCheck){
+												checkSCWRLfile();
+											}
 										});
 										
 									}
@@ -426,6 +436,7 @@ public class MainMenu extends JPanel implements ActionListener {
 		finalThreadingRuns.addPropertyChangeListener(evt -> {
 			if (evt.getPropertyName().equals("progress")) {
 				threadProgress.setValue(finalThreadingRuns.getProgress());
+				threadProgress.setString(finalThreadingRuns.getProgress()+"%");
 			}
 
 		});
@@ -442,7 +453,7 @@ public class MainMenu extends JPanel implements ActionListener {
 		model1.setValueAt(params.getProperty(RunParameters.SWISSPROTpath), 4,1);
 		
 		try {
-			populateChainsList(params.getProtein());
+//			populateChainsList(params.getProtein());
 		} catch (Exception e) {
 			System.out.println("cant load protein from config file.");
 		}
@@ -522,13 +533,44 @@ public class MainMenu extends JPanel implements ActionListener {
 
 
 	private void checkSCWRLfile() {
+		
+		// new SFCHeck thread
+//		if (SCWRLfilesToSFcheck.size() == totalNumberOfFilesToProcess){
+//			notStartedSFCheck = false;
+//			try {
+//				SFCheckThreadNew sfThread = new SFCheckThreadNew(SCWRLfilesToSFcheck, params,sfchkProgress);
+//				sfThread.addPropertyChangeListener(e -> {
+//					if (e.getPropertyName().equals("progress")) {
+//
+//						SwingUtilities.invokeLater(() -> {
+//							sfchkProgress.setValue(sfckProgressCounter);
+//							sfchkProgress.setString(sfckProgressCounter+" done");
+//							checkIfLastSFCHECK();
+//						});
+//
+//					}
+//
+//				});
+//				executorSF.submit(sfThread);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//
+//		}
+		
+		// old SFCHECK thread
 		try {
-			SFCheckThread sfThread = new SFCheckThread(SCWRLfilesToSFcheck.poll(), params);
+			while (SCWRLfilesToSFcheck.size() <5 && sfckProgressCounter < 5 ){
+				// wait for queue to buffer a bit before polling. maybe prevents bad SFCheck runs...
+			}
+			
+			SFCheckThread sfThread = new SFCheckThread(SCWRLfilesToSFcheck.pollLast(), params);
 			sfThread.addPropertyChangeListener(e -> {
 				if (e.getPropertyName().equals("progress")) {
-					
+
 					SwingUtilities.invokeLater(() -> {
 						sfchkProgress.setValue(sfckProgressCounter);
+						sfchkProgress.setString(sfckProgressCounter + " done");
 						checkIfLastSFCHECK();
 					});
 

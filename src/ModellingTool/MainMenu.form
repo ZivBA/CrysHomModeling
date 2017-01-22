@@ -531,8 +531,10 @@
                   </grid>
                 </constraints>
                 <properties>
+                  <font name="Courier 10 Pitch"/>
                   <foreground color="-3617025"/>
-                  <stringPainted value="false"/>
+                  <string value=""/>
+                  <stringPainted value="true"/>
                 </properties>
               </component>
               <component id="2c42f" class="javax.swing.JProgressBar" binding="sfchkProgress">
@@ -543,7 +545,10 @@
                   </grid>
                 </constraints>
                 <properties>
+                  <font name="Courier 10 Pitch"/>
                   <foreground color="-3617025"/>
+                  <string value=""/>
+                  <stringPainted value="true"/>
                 </properties>
               </component>
               <component id="4a385" class="javax.swing.JProgressBar" binding="threadProgress">
@@ -554,7 +559,10 @@
                   </grid>
                 </constraints>
                 <properties>
+                  <font name="Courier 10 Pitch"/>
                   <foreground color="-3617025"/>
+                  <string value=""/>
+                  <stringPainted value="true"/>
                 </properties>
               </component>
             </children>

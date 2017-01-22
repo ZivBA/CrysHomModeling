@@ -3,11 +3,12 @@ package alignment;
 
 class NeedlemanWunchSolver {
 
-	private final Sequence seq1;
-	private final Sequence seq2;
+	private final Sequence seq1; // align this
+	private final Sequence seq2; // against this
 	private final ScoringScheme scoring;
 	private double[][] Smatrix;
 	private int[][] Dmatrix;
+	private double qualityIndex;
 	
 	public  NeedlemanWunchSolver(Sequence seq1, Sequence seq2, ScoringScheme scoring) {
 		this.scoring = scoring;
@@ -119,7 +120,9 @@ class NeedlemanWunchSolver {
 				}
 				// End of positive gap-penalty correction
 			} // of j
-		}  // of i		
+		}  // of i
+		
+		qualityIndex = Smatrix[Smatrix.length-1][Smatrix[0].length-1] / seq1.size();
 	} // Of compute
 
 	
@@ -165,7 +168,11 @@ class NeedlemanWunchSolver {
 		out.matches = matches;
 		return out;
 	}
-
+	
+	public double getQualityIndex() {
+		return qualityIndex;
+	}
+	
 	public class AlignmentReturnStructure {
 		public int matches;
 		public String S1;
