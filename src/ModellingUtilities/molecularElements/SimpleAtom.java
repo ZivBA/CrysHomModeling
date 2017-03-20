@@ -7,7 +7,7 @@ import static ScoreUtilities.ScoringGeneralHelpers.*;
  */
 public class SimpleAtom {
 
-	private final String name;
+	private final String type;
 	String originalString;
 	private final int serialNumber;
 	private String aAcidName;
@@ -22,7 +22,7 @@ public class SimpleAtom {
 	public SimpleAtom(String atom) {
 
 		originalString = atom;
-		name = atom.substring(ATOM_NAME_START, ATOM_NAME_END + 1);
+		type = atom.substring(ATOM_NAME_START, ATOM_NAME_END + 1);
 		serialNumber = Integer.parseInt(atom.substring(ATOM_NUM_START, ATOM_NUM_END + 1).trim());
 		aAcidName = atom.substring(RES_NAME_START, RES_NAME_END + 1);
 		chain = atom.charAt(CHAIN_ID);
@@ -34,7 +34,7 @@ public class SimpleAtom {
 			tempFactor = Double.MIN_VALUE;
 		}
 		atomCoords = parseCoords(atom.substring(30, 54));
-		isBackBone = name.matches("\\s*(C|CA|O|N)\\s*");
+		isBackBone = type.matches("\\s*(C|CA|O|N)\\s*");
 
 	}
 
@@ -54,9 +54,9 @@ public class SimpleAtom {
 		this.atomScore = atomScore;
 	}
 
-	public String getName() {
+	public String getType() {
 
-		return name;
+		return type;
 	}
 
 	public float[] getAtomCoords() {

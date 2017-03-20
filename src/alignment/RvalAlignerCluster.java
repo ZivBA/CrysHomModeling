@@ -5,9 +5,6 @@ import meshi.util.crossLinking.MySequence;
 import meshi.util.crossLinking.MySequenceList;
 
 import javax.swing.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -21,11 +18,11 @@ import java.util.stream.Collectors;
 public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 	
 	//	private final CustomOutputStream customOut;
-	private String row;
-	private final logObj log;
+//	private String row;
+//	private final logObj log;
 	private RvalSequence sourceSeq;
 	private final String profileFilePath;
-	private final String seqListPath;
+	private final String fastaSeqPath;
 	private final boolean fullFasta;
 	private final String swissProtPath;
 	private JProgressBar progressBar;
@@ -35,19 +32,18 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 	 * This ctor creates a worker thread that wraps around the NW aligner method by Nir Kalisman and provides input/output arguments to allow output
 	 * other than STD.
 	 *
-	 * @param singleFasta     path to selected FASTA input sequence
 	 * @param profileFilePath path to profile for threading
 	 * @param params          params object
 	 */
-	public RvalAlignerCluster(String singleFasta, String profileFilePath, RunParameters params) {
+	public RvalAlignerCluster(String profileFilePath, RunParameters params) {
 		this.profileFilePath = profileFilePath;
-		this.seqListPath = singleFasta;
+		this.fastaSeqPath = params.getFastaFile();
 		this.fullFasta = params.getFullFasta();
 		this.swissProtPath = params.getSWISSProt().getAbsolutePath();
 		//		customOut = params.getCustomOut();
-		log = new logObj();
+//		log = new logObj();
 
-		row = "Prot+Chain, Input seq length, *True* length, *True* score,Entries with higher score, Best result, \n";
+//		row = "Prot+Chain, Input seq length, *True* length, *True* score,Entries with higher score, Best result, \n";
 
 	}
 
@@ -70,7 +66,7 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 		MySequenceList swissProt = new MySequenceList(swissProtPath);
 
 		System.out.println("Total num of SwissProt seqs: " + swissProt.size() + "\n");
-		MySequenceList mySeqList = new MySequenceList(seqListPath);
+		MySequenceList mySeqList = new MySequenceList(fastaSeqPath);
 		System.out.flush();
 		sourceSeq = new RvalSequence(profileFilePath);    // txt version of CSV "allWithSeq"
 
@@ -83,16 +79,19 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 		System.out.println(mySeqList.fileName().substring(mySeqList.fileName().lastIndexOf("/") + 1, mySeqList.fileName().lastIndexOf(
 				".fasta")) + ":   Structure positions: " + sourceSeq.size() + "   Length of *true* seq: " + mySeqList
 				.get(0).seq().length() + "\n---------------------------------------------------------------------------------------\n");
-
-		double sameSeqScore = singleRvalAlignerRun(mySeqList.get(0).seq(), sourceSeq);
 		
-		row += seqListPath.substring(0, seqListPath.indexOf(".fasta")) + ",";
-		row += sourceSeq.size() + ", " + mySeqList.get(0).seq().length() + ", " + sameSeqScore + ", ";
+		AminoAcidSequence AAseq = new AminoAcidSequence(mySeqList.get(0).seq());
+		NeedlemanWunchSolver NWTrueSeq = new NeedlemanWunchSolver(sourceSeq, AAseq, new RvalScoringScheme());
+		NWTrueSeq.printAlignment();
+//		double sameSeqScore = singleRvalAlignerRun(mySeqList.get(0).seq(), sourceSeq);
+		double sameSeqScore = NWTrueSeq.alignmentScore();
+//		row += fastaSeqPath.substring(0, fastaSeqPath.indexOf(".fasta")) + ",";
+//		row += sourceSeq.size() + ", " + mySeqList.get(0).seq().length() + ", " + sameSeqScore + ", ";
 		System.out.flush();
 
 		if (fullFasta) {
 			
-			log.logString += "\nProcessing SwissProt sequences:\n";
+//			log.logString += "\nProcessing SwissProt sequences:\n";
 			System.out.println("\nProcessing SwissProt sequences:\n");
 			ExecutorCompletionService<Double[]> executorThreads = new ExecutorCompletionService<>(executor);
 			List<Future<Double[]>> futures = new LinkedList<>();
@@ -164,10 +163,10 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 			int worseScore = betterList.size();
 
 			
-			row += worseScore + ", " + largest + ", ";
-			System.out.println();
-			log.logString += worseScore + " entries out of valid " + validSeqCounter + " are with better score than the *true*. The " +
-					"best score that is not the *true* sequence is: " + largest + "\n";
+//			row += worseScore + ", " + largest + ", ";
+//			System.out.println();
+//			log.logString += worseScore + " entries out of valid " + validSeqCounter + " are with better score than the *true*. The " +
+//					"best score that is not the *true* sequence is: " + largest + "\n";
 			System.out.println(worseScore + " entries out of valid " + validSeqCounter + " are with better score than the *true*. The " +
 					"best score that is not the *true* sequence is: " + largest);
 			
@@ -182,22 +181,22 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 			}
 		}
 
-		row += "\n";
-		File resultCSV = new File(profileFilePath.replace(".txt", "_ThreadResults.csv"));
-		File logFile = new File(profileFilePath.replace(".txt", "_ThreadLog.txt"));
-
-		FileWriter FW;
-		try {
-			FW = new FileWriter(resultCSV);
-			FW.write(row);
-			FW.close();
-
-			FW = new FileWriter(logFile);
-			FW.write(log.logString);
-			FW.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		row += "\n";
+//		File resultCSV = new File(profileFilePath.replace(".txt", "_ThreadResults.csv"));
+//		File logFile = new File(profileFilePath.replace(".txt", "_ThreadLog.txt"));
+//
+//		FileWriter FW;
+//		try {
+//			FW = new FileWriter(resultCSV);
+//			FW.write(row);
+//			FW.close();
+//
+//			FW = new FileWriter(logFile);
+//			FW.write(log.logString);
+//			FW.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		publish(100);
 		setProgress(100);
 		System.out.flush();
@@ -230,14 +229,14 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 		this.executor = executor;
 	}
 
-	private static class logObj {
-		public String logString = "";
-
-		public logObj() {
-		}
-
-	}
-	
+//	private static class logObj {
+//		public String logString = "";
+//
+//		public logObj() {
+//		}
+//
+//	}
+//
 	
 	
 	

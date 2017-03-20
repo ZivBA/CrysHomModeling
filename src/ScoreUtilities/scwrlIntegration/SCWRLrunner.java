@@ -61,7 +61,12 @@ public class SCWRLrunner extends SwingWorker<String[], Void> {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
+			try{
+				input.delete();
+			} catch (Exception e){
+				System.err.println("Error deleting input PDB:");
+				e.printStackTrace();
+			}
 			prepareNextStep();
 			return runLog;
 		} else {

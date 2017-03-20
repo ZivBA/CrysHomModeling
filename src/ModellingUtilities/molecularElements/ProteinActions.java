@@ -67,7 +67,8 @@ public class ProteinActions {
 	public static File iterateAcids(SimpleProtein sourceProtein, RunParameters params) throws IOException {
 
 
-		File outputFolder = makeSubFolderAt(sourceProtein.getSource(), "_scwrlFiles");
+		File outputFolder = makeSubFolderAt(sourceProtein.getSource(), sourceProtein.getFileName());
+		outputFolder = makeSubFolderAt(outputFolder, "_scwrlFiles");
 
 		SimpleProtein.ProtChain chainToProcess = sourceProtein.getChain(params.getChainToProcess());
 		Character[] homologChains = params.getSymmetricHomologues();

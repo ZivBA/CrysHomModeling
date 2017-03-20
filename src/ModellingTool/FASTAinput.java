@@ -1,9 +1,10 @@
 package ModellingTool;
 
 import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
-import java.nio.file.Paths;
 
 class FASTAinput extends JDialog {
 	private JPanel contentPane;
@@ -19,7 +20,7 @@ class FASTAinput extends JDialog {
 
 	public FASTAinput(JFileChooser fc) {
 		this.fc =fc;
-		fc.setCurrentDirectory(Paths.get("").toAbsolutePath().toFile());
+//		fc.setCurrentDirectory(Paths.get("").toAbsolutePath().toFile());
 		setContentPane(contentPane);
 		setModal(true);
 		getRootPane().setDefaultButton(buttonOK);

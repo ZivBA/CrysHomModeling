@@ -44,7 +44,7 @@ package meshi.applications.prediction.analysis;
 //
 //	public boolean accept(Object obj) {
 //	    File file = (File) obj;
-//	    StringList fileName = new StringList(new StringTokenizer(file.getName(),"."));
+//	    StringList fileName = new StringList(new StringTokenizer(file.getType(),"."));
 //	    if (fileName.size() != 3) return false;
 //	    if (! fileName.stringAt(0).equals("result")) return false;
 //	    int number = Integer.valueOf(fileName.stringAt(1));

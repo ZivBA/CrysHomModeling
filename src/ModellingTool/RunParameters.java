@@ -3,10 +3,9 @@ package ModellingTool;
 import ModellingUtilities.molecularElements.SimpleProtein;
 import ScoreUtilities.ScoringGeneralHelpers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -23,7 +22,9 @@ public class RunParameters extends Properties {
 	private static final String CHAIN2PROC = "Chain To Process";
 	private static final String HOMCHAIN = "Homologue Chains";
 	private static final String CHAIN2STRIP = "Chains to Strip";
-	static final String FULL_FASTA = "thread against all available FASTA sequences, or just input sequence";
+	static final String FULL_FASTA = "thread SWISSPROT";
+	static final String FASTA_SEQ = "target fasta sequence";
+	static final String FASTA_FILE = "target fasta file";
 	private File SCWRLexe;
 	
 	
@@ -48,6 +49,8 @@ public class RunParameters extends Properties {
 	private File SWISSProt;
 	private File FASTAFile;
 	private String FASTASeq;
+	private boolean silent;
+	
 	
 	public int getNumOfBetterThreads() {
 		return numOfBetterThreads;
@@ -60,12 +63,18 @@ public class RunParameters extends Properties {
 	private int numOfBetterThreads;
 	private CustomOutputStream customOut;
 	
-	public RunParameters() throws FileNotFoundException {
-		
+	public RunParameters(String arg) throws FileNotFoundException {
+		String curPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		File configFile;
+		if (arg == null){
+			configFile = new File(curPath.substring(0, curPath.lastIndexOf(File.separatorChar)) + "/config.xml");
+		} else{
+			configFile = new File(arg);
+		}
 		// try to load the properties file, if a current one exists.
 		try {
-			String curPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-			File configFile = new File(curPath.substring(0, curPath.lastIndexOf(File.separatorChar)) + "/config.xml");
+			
+			
 			InputStream inputStream = new FileInputStream(configFile);
 			
 			this.loadFromXML(inputStream);
@@ -92,6 +101,16 @@ public class RunParameters extends Properties {
 			} catch (Exception e) {
 				System.err.println("Error opening MAP source, probably missing file.");
 			}
+			try {
+				setFASTASeq(this.getProperty(FASTA_SEQ));
+			} catch (Exception e) {
+				System.err.println("Error reading fasta SEQ from xml.");
+			}
+			try {
+				setFASTAFile(new File(this.getProperty(FASTA_FILE)));
+			} catch (Exception e) {
+				System.err.println("Error opening fasta file.");
+			}
 			
 			try {
 				setSWISSProt(new File(this.getProperty(SWISSPROTpath)));
@@ -105,6 +124,14 @@ public class RunParameters extends Properties {
 			setDebug(Boolean.parseBoolean(this.getProperty(DEBUG)));
 			setSaveDefaults(Boolean.parseBoolean(this.getProperty(DEFAULT)));
 			setThreadingSelection(Boolean.parseBoolean(this.getProperty(FULL_FASTA)));
+			
+			
+			try {
+				List<String> fileContent = Files.readAllLines(FASTAFile.toPath());
+				this.FASTASeq = String.join("", fileContent);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			
 			char[] tempchainstostrip = this.getProperty(CHAIN2STRIP).toCharArray();
 			Character[] tempchainstostrip2 = new Character[tempchainstostrip.length];
@@ -281,11 +308,26 @@ public class RunParameters extends Properties {
 		return SWISSProt;
 	}
 	
-	public void setFASTAFile(File FASTAFile) {
-		this.FASTAFile = FASTAFile;
+	public void setFASTAFile(File fastFile) {
+		this.FASTAFile = fastFile;
+		this.setProperty(FASTA_FILE, FASTAFile.getAbsolutePath());
 	}
 	
-	public void setFASTASeq(String FASTASeq) {
-		this.FASTASeq = FASTASeq;
+	public void setFASTASeq(String seq) {
+		this.FASTASeq = seq;
+		this.setProperty(FASTA_SEQ, FASTASeq);
+		
+	}
+	
+	public void setSilent(boolean silent) {
+		this.silent = silent;
+	}
+	
+	public String getFastaSeq() {
+		return FASTASeq;
+	}
+	
+	public String getFastaFile() {
+		return FASTAFile.getAbsolutePath();
 	}
 }

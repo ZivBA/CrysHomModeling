@@ -7,7 +7,6 @@ import ModellingUtilities.molecularElements.SimpleProtein;
 import javax.swing.*;
 import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
@@ -28,6 +27,8 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 	private File trueOutput;
 	private File protToProcess;
 	private boolean fakeRun = false;
+	private static int tempFolderCounter = 0;
+	private static byte[] sfcheckProgram;
 
 	/**
 	 * constructor - gets the PDB file to check and the run parameters object.
@@ -103,14 +104,25 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 			Thread.sleep(100);
 		}
 		
+
+		File tempDir = new File(SFCheckExe.getParent()+File.separatorChar+"tempFolder"+tempFolderCounter);
+		tempFolderCounter++;
+		try {
+			tempDir.mkdir();
+		}catch (Exception e){
+			throw e;
+		}
 		
-		String curPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		Path tempSFcheck = (new File(tempDir.getAbsolutePath()+File.separator+"sfcheck")).toPath();
+		Files.write(tempSFcheck,sfcheckProgram);
+		tempSFcheck.toFile().setExecutable(true);
+		
 		Process process = null;
 		try {
-			process = Runtime.getRuntime().exec(SFCheckExe.getAbsolutePath() +
+			process = Runtime.getRuntime().exec(tempSFcheck.toAbsolutePath() +
 					" -f " + params.getMAPsrc() +
 					" -m " + protToProcess.getAbsolutePath() +
-					" -po " + output.getAbsolutePath());
+					" -po " + output.getAbsolutePath(), null, tempDir.getAbsoluteFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -137,14 +149,30 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 			System.out.println(e.getMessage());
 		}
 
-		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(outputFolder.toPath())) {
-			for (Path path : directoryStream) {
-				if (!path.toString().endsWith(".log")) {
-					path.toFile().delete();
-				}
+//		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(outputFolder.toPath())) {
+//			for (Path path : directoryStream) {
+//				if (!path.toString().endsWith(".log")) {
+//					path.toFile().delete();
+//				}
+//			}
+//		}
+		File fobFile = new File(output+"sfcheck_fob.dat");
+		File phFile = new File(output+"sfcheck_ph.dat");
+		try{
+			fobFile.delete();
+			phFile.delete();
+			protToProcess.delete();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		for (File childFile : tempDir.listFiles()){
+			try{
+				childFile.delete();
+			} catch (Exception e){
+				throw e;
 			}
 		}
-		
+		tempDir.delete();
 		return new String[]{protToProcess.getName(),result};
 
 	}
@@ -163,5 +191,9 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
+	}
+	
+	public static void setSfcheckProgram(Path sfChkexe) throws IOException {
+		sfcheckProgram = Files.readAllBytes(sfChkexe);
 	}
 }

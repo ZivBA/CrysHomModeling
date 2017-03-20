@@ -53,7 +53,7 @@ class CRYS_Score {
 			this.myProt = new SimpleProtein(params.getPDBsrc(), params);
 			requestedChain = params.getChainToProcess();
 			expectedTotalNumberOfFiles = myProt.getChain(requestedChain).getLength() * 20;
-//			TODO find a way to read CIF files to map object to allow for multithreading of SFCHECK
+			//			TODO find a way to read CIF files to map object to allow for multithreading of SFCHECK
 			
 			
 		} catch (IOException e) {
@@ -207,9 +207,9 @@ class CRYS_Score {
 	 * @throws SfCheckResultError if the result line from the SFCheck logfile is not according to known pattern, an error is thrown.
 	 */
 	RvalAlignerCluster processSFCheckResults(List<String[]> sfCheckResultSet) throws SfCheckResultError {
-//		if (sfCheckResultSet.size() != 2){
-//			throw new SfCheckResultError(sfCheckResultSet.get(0)[0]);
-//		}
+		//		if (sfCheckResultSet.size() != 2){
+		//			throw new SfCheckResultError(sfCheckResultSet.get(0)[0]);
+		//		}
 		int chainLength = myProt.getChain(requestedChain).getLength();
 		Pattern p = Pattern.compile(".*?(?:_(\\d+)_).*?_([A-Z]+)_.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		Matcher m = p.matcher("");
@@ -273,7 +273,7 @@ class CRYS_Score {
 			}
 		}
 	}
-		
+	
 	/**
 	 * calculate the Median score for a protein chain. this is used for Z-Score calculations later.
 	 * also calculate seperate Median for the True results and False results (results in true positions Vs. all other iterations).
@@ -292,11 +292,12 @@ class CRYS_Score {
 			for (int j = 0; j < chain.resIntensityValueMatrix[i].length; j++) {
 				if (chain.originalPositions[j] != i) {
 					falseValuesList.get(i).add(chain.resIntensityValueMatrix[i][j]);
-					allValuesList.get(i).add(chain.resIntensityValueMatrix[i][j]);
+					
 				} else {
 					trueValuesList.get(i).add(chain.resIntensityValueMatrix[i][j]);
-					allValuesList.get(i).add(chain.resIntensityValueMatrix[i][j]);
+					
 				}
+				allValuesList.get(i).add(chain.resIntensityValueMatrix[i][j]);
 			}
 			Collections.sort(falseValuesList.get(i));
 			Collections.sort(trueValuesList.get(i));
@@ -399,15 +400,11 @@ class CRYS_Score {
 					}
 					// add score to original acid score only if right position
 					if (chain.originalPositions[j] == i) {
-						chain.trueZvalues[j] = tmpScore>4?4:tmpScore<-4?-4:tmpScore;
+						chain.trueZvalues[j] = tmpScore > 4 ? 4 : (tmpScore < -4 ? -4 : tmpScore);
 					}
-					if (tmpScore > 4.0) {
-						chain.allZvalueMatrix[i][j] = 4.0;
-					} else if (tmpScore < -4.0) {
-						chain.allZvalueMatrix[i][j] = -4.0;
-					} else {
-						chain.allZvalueMatrix[i][j] = tmpScore;
-					}
+					
+					chain.allZvalueMatrix[i][j] = tmpScore > 4 ? 4 : (tmpScore < -4 ? -4 : tmpScore);
+					
 				}
 			}
 		}
@@ -481,28 +478,24 @@ class CRYS_Score {
 		writeTrueValueCSVs(zscoreCorrect, chain);
 		
 		/***********************************
-			********* threading: ***********
+		 ********* threading: ***********
 		 **********************************/
 		
 		
-		String folderPath = myProt.getSource().getParent() + File.separator + "tempCSVs" + File.separator;
-		String filePrefix = myProt.getFileName() + "_" + requestedChain;
-		
-		// look for FASTA file in default position, if none is given through GUI.
-		String seqListPath = folderPath + filePrefix + ".fasta";
-		
-		if (fastaFile != null) {
-			seqListPath = fastaFile.getAbsolutePath();
-			
-		} else if (fastaSequence != null) {
-			FileWriter FW = new FileWriter(seqListPath);
-			FW.write(fastaSequence);
-			FW.close();
-		}
-		
-		
-		
-		
+//		String folderPath = myProt.getSource().getParent() + File.separator + "tempCSVs" + File.separator;
+//		String filePrefix = myProt.getFileName() + "_" + requestedChain;
+//
+//		// look for FASTA file in default position, if none is given through GUI.
+//		String seqListPath = folderPath + filePrefix + ".fasta";
+//
+//		if (fastaFile != null) {
+//			seqListPath = fastaFile.getAbsolutePath();
+//
+//		} else if (fastaSequence != null) {
+//			FileWriter FW = new FileWriter(seqListPath);
+//			FW.write(fastaSequence);
+//			FW.close();
+//		}
 		
 		
 		// return align thread without SVM.
@@ -511,11 +504,9 @@ class CRYS_Score {
 		
 		// return align thread with SVM
 		String profilePostSVM = postSvmMatrix.getAbsolutePath();
-		String profileNoSVM = combinedMatrix.getAbsolutePath();
-		final String finalSeqListPath = seqListPath;
+//		String profileNoSVM = combinedMatrix.getAbsolutePath();
 		
-		
-		alignThread = new RvalAlignerCluster(finalSeqListPath, profilePostSVM, params);
+		alignThread = new RvalAlignerCluster(profilePostSVM, params);
 		
 		
 		return alignThread;
@@ -525,7 +516,6 @@ class CRYS_Score {
 	///////////////////////////////////////////////////
 	// Matrix file writers for different type matrices
 	///////////////////////////////////////////////////
-	
 	
 	
 	private void writeMatrixToCSV(File outputCSV, double[][] matrix) throws IOException {
@@ -639,6 +629,12 @@ class CRYS_Score {
 	
 	void setFastaFile(File fastaFile) {
 		this.fastaFile = fastaFile;
+		try {
+			List<String> fileContent = Files.readAllLines(fastaFile.toPath());
+			this.fastaSequence = String.join("\n", fileContent);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	void setFastaSequence(String fastaSequence) {

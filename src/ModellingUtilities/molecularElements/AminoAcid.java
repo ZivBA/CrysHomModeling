@@ -35,7 +35,7 @@ public class AminoAcid implements Iterable<SimpleAtom>{
 
 		CATemp = Double.MIN_VALUE;
 		for (SimpleAtom atom : atoms) {
-			if (atom.getName().equals(" CA ")) {
+			if (atom.getType().equals(" CA ")) {
 				CATemp = atom.tempFactor;
 			}
 			if (atom.tempFactor == Double.MIN_VALUE) {
@@ -113,7 +113,7 @@ public class AminoAcid implements Iterable<SimpleAtom>{
 
 	public SimpleAtom getAtom(SimpleAtom reqAtom) {
 		for (SimpleAtom atom : this){
-			if (atom.getName().equals(reqAtom.getName())){
+			if (atom.getType().equals(reqAtom.getType())){
 				return atom;
 			}
 		}

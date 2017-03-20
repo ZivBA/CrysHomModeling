@@ -3,7 +3,6 @@ package ModellingTool;
 import javax.swing.*;
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -15,6 +14,7 @@ public class CustomOutputStream extends OutputStream {
 	private String buffer;
 	private PrintWriter writer;
 	String logFile;
+	private String logName;
 	
 	CustomOutputStream(JTextArea textArea) {
 		this.textArea = textArea;
@@ -77,5 +77,27 @@ public class CustomOutputStream extends OutputStream {
 	
 	public void closeFile() {
 		writer.close();
+	}
+	
+	public void setLogName(String logName, char chainToProcess) {
+		this.logName = logName;
+		String curPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		
+		logFile = curPath.substring(0, curPath.lastIndexOf(File.separatorChar)) + "/"+logName+"_"+chainToProcess+".log";
+		File log = new File(logFile);
+		if (log.exists()) {
+			File backupLog = new File(logFile + ".backup");
+			try {
+				Files.copy(log.toPath(), backupLog.toPath(), REPLACE_EXISTING);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			writer = new PrintWriter(log.getAbsolutePath(), "UTF-8");
+			textArea.append("Writing to: " + log.getAbsolutePath() + "\n");
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	}
 }

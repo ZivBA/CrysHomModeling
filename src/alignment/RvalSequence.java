@@ -1,15 +1,17 @@
 package alignment;
 
-import java.util.StringTokenizer;
 import meshi.util.file.File2StringArray;
 
-class RvalSequence extends Sequence {
+import java.util.StringTokenizer;
+
+public class RvalSequence extends Sequence {
+	
+	public final double gapOpeningIncentive = 20.0;
 	
 	public RvalSequence(String RvalFileName) {
 		int gapCounter=0;
 		String[] Rfile = File2StringArray.f2a(RvalFileName);
 		int lastResNum = Integer.MIN_VALUE;
-		double gapOpeningIncentive = 20.0;
 		for (String str : Rfile) {
 			StringTokenizer tok = new StringTokenizer(str);
 			int resNum = Integer.parseInt(tok.nextToken());
@@ -24,11 +26,11 @@ class RvalSequence extends Sequence {
 			}
 			RvalPosition rpos = new RvalPosition(resNum,resType,Rfits);
 			add(rpos);
-			lastResNum = resNum;			
+			lastResNum = resNum;
 		}
 		((RvalPosition) lastElement()).setGapOpeningScore(0.0); // To allow extension at the end for Needleman-Wunch
 		System.out.println("The gap opening reward is: " + gapOpeningIncentive);
 		System.out.println("Number of structural gaps: " + gapCounter);
 	}
-
+	
 }

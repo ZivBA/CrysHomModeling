@@ -7,7 +7,7 @@ package meshi.PDB;
 //	    throw new RuntimeException("weird input to isAPdbFile.accept\n"+
 //				       obj);
 //	File file = (File) obj;
-//	String name = file.getName();
+//	String name = file.getType();
 //	if (name.endsWith(".pdb")) return true;
 //	if (name.endsWith(".pdb.gz")) return true;
 // 	if (name.endsWith(".ent.gz")) return true;

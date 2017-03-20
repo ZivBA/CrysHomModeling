@@ -27,6 +27,7 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 	private List<String> footers;   // array of the remaining footer tags.
 	private int numChains;
 	public int[][] acidDist;
+	static int warningCounter=0;
 	
 	/**
 	 * constructor for SimpleProtein from PDB file.</br>
@@ -218,13 +219,27 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 	
 	public void replaceTempValue(SimpleProtein srcProt) {
 		String format = "%6.2f";
+		
 		for (ProtChain chain : this) {
 			for (AminoAcid acid : chain) {
 				for (SimpleAtom atom : acid) {
 					String tempOrg = atom.originalString;
 					
 					if (atom.isBackBone) {
-						atom.tempFactor = srcProt.getChain(chain.getChainID()).getAminoAcidAt(acid.getPosition()).getAtom(atom).tempFactor;
+						try {
+							atom.tempFactor = srcProt.getChain(chain.getChainID()).getAminoAcidAt(acid.getPosition()).getAtom(atom).tempFactor;
+						} catch (Exception e){
+							if (warningCounter == 0){
+								System.out.println("There are missing backbone atoms in original PDB\nBe warned, using CA temp factor instead.");
+								System.out.println("First occurences identified at: ");
+								System.out.println(atom.getOriginalString());
+								System.out.flush();
+								
+							}
+							warningCounter++;
+							if (warningCounter == 65536 ) warningCounter = 0;
+							atom.tempFactor = srcProt.getChain(chain.getChainID()).getAminoAcidAt(acid.getPosition()).getCAtempFactor();
+						}
 						String tempFactorString = String.format(format, atom.tempFactor);
 						atom.originalString = tempOrg.substring(0, RES_TEMP_START) + tempFactorString + tempOrg.substring(RES_TEMP_END + 1,
 								tempOrg.length());
@@ -301,8 +316,8 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 			
 			//intensity values and z values for residues
 			resIntensityValueMatrix = new double[20][residues.size()];
-			trueZvalues = new double[residues.size()];
 			newZvalue = new double[20][residues.size()];
+			trueZvalues = new double[residues.size()];
 			//intensity values and z values for backbone
 			backBoneIntensityValueMatrix = new double[20][residues.size()];
 			backBoneZvalue = new double[residues.size()];

@@ -1,14 +1,14 @@
 package alignment;
 
-
-class NeedlemanWunchSolver {
-
-	private final Sequence seq1; // align this
-	private final Sequence seq2; // against this
-	private final ScoringScheme scoring;
+public class NeedlemanWunchSolver {
+	
+	protected Sequence seq1;
+	protected Sequence seq2;
+	protected ScoringScheme scoring;
 	private double[][] Smatrix;
 	private int[][] Dmatrix;
 	private double qualityIndex;
+	
 	
 	public  NeedlemanWunchSolver(Sequence seq1, Sequence seq2, ScoringScheme scoring) {
 		this.scoring = scoring;
@@ -16,7 +16,7 @@ class NeedlemanWunchSolver {
 		this.seq2 = seq2;
 		compute();
 	}
-
+	
 	public void printSmatrix() {
 		for (int i=0; i<Smatrix.length ; i++) {
 			for (int j=0; j<Smatrix[i].length ; j++) {
@@ -40,7 +40,8 @@ class NeedlemanWunchSolver {
 	}
 	private String logAlignment() {
 		AlignmentReturnStructure bestAlign = backtrack(Smatrix.length-1, Smatrix[0].length-1);
-		return("Score: " + alignmentScore() + "  Matches: " + bestAlign.matches + "\n" + bestAlign.S1 + "\n" + bestAlign.S2);
+		return("Score: " + alignmentScore() + "  Matches: " + bestAlign.matches + "\n" + bestAlign.S1 + "\n" + bestAlign.S2 + "\n" + "Quality " +
+				"Index: " + qualityIndex);
 	}
 
 	public double alignmentScore() {
@@ -60,18 +61,18 @@ class NeedlemanWunchSolver {
 			Dmatrix[0][c] = -1;
 		}
 		for (int c=0; c<ColMaxPenaltyScore.length ; c++) {
-			Smatrix[c][0] = -0.0*c;
+			Smatrix[c][0] = -0.25*c;
 			ColMaxPenaltyScore[c] = Double.NEGATIVE_INFINITY;
 			Dmatrix[c][0] = 1;
 		}
-
+		
 		// Computing the rest of the matrix
 		for (int i=1; i<=seq2.length() ; i++) {
 			for (int j=1 ; j<=seq1.length() ; j++) {
 				double diagScore = Math.max(scoring.score(seq1.get(j-1) , seq2.get(i-1)) ,
 						Math.max(seq1.get(j-1).gapOpeningScore()+seq1.get(j-1).gapAligningScore() , seq2.get(i-1).gapOpeningScore()+seq2.get(i-1).gapAligningScore())); // Positive gap-penalty correction
 				Smatrix[i][j]=Smatrix[i-1][j-1]+diagScore;
-				Dmatrix[i][j]=0;					
+				Dmatrix[i][j]=0;
 				// gap along the row
 				double extendedGapScore = ColMaxPenaltyScore[i]+seq2.get(i-1).gapAligningScore();
 				double newGapScore = Smatrix[i][j-1]+seq2.get(i-1).gapOpeningScore()+seq2.get(i-1).gapAligningScore();
@@ -142,7 +143,7 @@ class NeedlemanWunchSolver {
 			else if (Dmatrix[startI][startJ]<0) {
 				for (int c=startJ ; c>startJ-Math.abs(Dmatrix[startI][startJ]) ; c--) {
 					S1=seq1.get(c-1).string() + S1;
-					S2=seq2.get(Math.max(0 , startI-1)).gapString() + S2;  // gaps in beginning are as defined for first position 
+					S2=seq2.get(Math.max(0 , startI-1)).gapString() + S2;  // gaps in beginning are as defined for first position
 				}
 				startJ-=Math.abs(Dmatrix[startI][startJ]);
 			}
@@ -180,4 +181,3 @@ class NeedlemanWunchSolver {
 	}
 	
 }
-
