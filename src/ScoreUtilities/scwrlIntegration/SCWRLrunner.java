@@ -77,6 +77,7 @@ public class SCWRLrunner extends SwingWorker<String[], Void> {
 
 	private void prepareNextStep() {
 		MainMenu.SCWRLfilesToSFcheck.add(output);
+		MainMenu.scwrlProgressCounter.incrementAndGet();
 		setProgress(100);
 	}
 

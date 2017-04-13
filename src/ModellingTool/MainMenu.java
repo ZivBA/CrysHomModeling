@@ -20,10 +20,8 @@ import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -33,8 +31,19 @@ import java.util.concurrent.Executors;
 public class MainMenu extends JPanel implements ActionListener {
 	
 	
+	public static final List<String[]> SFCheckResultSet = new LinkedList<>();
+	public static AtomicInteger scwrlProgressCounter = new AtomicInteger(0);
+	public static ConcurrentLinkedDeque<File> SCWRLfilesToSFcheck;
+	public static boolean doneThreading = false;
+	static javax.swing.Timer sfCheckTimer;
+	static javax.swing.Timer threadStartTimer;
 	private static RunParameters params;
+	private static AtomicInteger sfckProgressCounter = new AtomicInteger(0);
+	private static ThreadPoolExecutor executors;
+	private static boolean silentRun = false;
 	private final File configFile;
+	private final JFileChooser fc;
+	private final FASTAinput fastaDialog;
 	private JTextArea crystallographyModelingToolV0TextArea;
 	private JButton SCWRLExecutableButton;
 	private JButton SFCheckExecutableButton;
@@ -45,16 +54,14 @@ public class MainMenu extends JPanel implements ActionListener {
 	private JTextArea selectWhichChainsAreTextArea;
 	private JScrollPane logPane;
 	private JTextArea log;
+	private final CustomOutputStream customOut = new CustomOutputStream(log);
 	private JSpinner threadLimit;
 	private JButton executeButton;
 	private JTable chainListTable;
 	private JCheckBox saveDefaultsCheckBox;
-	
-	private final JFileChooser fc;
 	private JCheckBox debug;
 	private JCheckBox keepHetAtm;
 	private JScrollPane chainsListContainer;
-	
 	private JScrollPane filesContainer;
 	private JTextArea pleasePointToSCWRLTextArea;
 	private JTextArea pleaseChooseTheSourceTextArea;
@@ -64,29 +71,15 @@ public class MainMenu extends JPanel implements ActionListener {
 	private JRadioButton fullFastaRadioButton;
 	private JRadioButton inputSeqRadioButton;
 	private JProgressBar threadProgress;
-	private final FASTAinput fastaDialog;
-	
 	private JProgressBar scwrlProgress;
 	private JProgressBar sfchkProgress;
 	private JButton SWISSPROTButton;
 	private JButton exitButton;
-	
-	private static Integer scwrlProgressCounter = 0;
-	public static int sfckProgressCounter = 0;
-	
 	private int totalNumberOfFilesToProcess = 0;
-	public static ConcurrentLinkedDeque<File> SCWRLfilesToSFcheck;
-	
 	private CRYS_Score crysScore;
-	public static final List<String[]> SFCheckResultSet = new LinkedList<>();
-	private static ExecutorService executors;
 	private String fastaSequence;
-	
 	private File fastaFile;
-	private final CustomOutputStream customOut = new CustomOutputStream(log);
 	private boolean doneWithCSVs = false;
-	private static boolean silentRun = false;
-	static javax.swing.Timer sfCheckTimer;
 	
 	
 	private MainMenu() {
@@ -146,26 +139,34 @@ public class MainMenu extends JPanel implements ActionListener {
 		});
 	}
 	
-	private static void exitProgram(JButton exitButton) {
+	static void exitProgram(JButton exitButton) {
 		System.err.println("Closing program");
 		System.err.flush();
-		SwingWorker<Void, String> worker = new SwingWorker<Void, String>() {
-			
-			@Override
-			protected Void doInBackground() throws Exception {
-				
-				Thread.sleep(2000);
-				return null;
+		JFrame j = new JFrame();
+		final JDialog dialog = new JDialog(j, "Shut-Down", true);
+		JLabel label = new JLabel("<html><p align=center>"
+				+ "Program is now closing.<br>"
+				+ "So long and thanks for all the protein<br>");
+		label.setHorizontalAlignment(JLabel.CENTER);
+		Font font = label.getFont();
+		label.setFont(label.getFont().deriveFont(Font.PLAIN,
+				14.0f));
+		JPanel contentPane = new JPanel(new BorderLayout());
+		contentPane.add(label, BorderLayout.CENTER);
+		contentPane.setOpaque(true);
+		dialog.setContentPane(contentPane);
+		Timer timer = new Timer(10000, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dialog.setVisible(false);
+				dialog.dispose();
 			}
-			
-			
-		};
-		worker.execute();
-		try {
-			worker.get();
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
+		});
+		timer.setRepeats(false);
+		timer.start();
+		dialog.setSize(new Dimension(300, 150));
+		dialog.setLocationRelativeTo(j);
+		dialog.setVisible(true); // if modal, application will pause here
+		
 		Container frame = exitButton.getParent();
 		do
 			frame = frame.getParent();
@@ -199,6 +200,40 @@ public class MainMenu extends JPanel implements ActionListener {
 //		frame.setVisible(!silentRun);
 		frame.setVisible(true);
 		menu.startProgramMainThread();
+		
+		
+	}
+	
+	public static void main(String[] args) throws FileNotFoundException {
+		if (args.length > 0) {
+			params = new RunParameters(args[0]);
+			params.setSilent(true);
+			silentRun = true;
+			//Schedule a job for the event dispatch thread:
+			//creating and showing this application's GUI.
+			SwingUtilities.invokeLater(() -> {
+				//Turn off metal's use of bold fonts
+				UIManager.put("swing.boldMetal", Boolean.FALSE);
+				try {
+					createAndShowGUISilent();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+			});
+			
+		} else {
+			params = new RunParameters(null);
+			
+			//Schedule a job for the event dispatch thread:
+			//creating and showing this application's GUI.
+			SwingUtilities.invokeLater(() -> {
+				//Turn off metal's use of bold fonts
+				UIManager.put("swing.boldMetal", Boolean.FALSE);
+				createAndShowGUI();
+				
+			});
+		}
 		
 		
 	}
@@ -339,33 +374,33 @@ public class MainMenu extends JPanel implements ActionListener {
 		
 	}
 	
-	
 	private void startProgramMainThread() throws IOException {
 		
-		ActionListener timerListener = new ActionListener() {
-			boolean firstTime = false;
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (!firstTime){
-					System.err.println("First Timer Event");
-					firstTime = true;
-				}
-				
-				scwrlProgress.setValue(scwrlProgressCounter);
-				scwrlProgress.setString(scwrlProgressCounter + " done");
-				
-				checkSCWRLfile();
-				
-				checkIfLastSFCHECK();
-				
-			}
+		ActionListener uiUpdateListener = e -> {
+			
+			scwrlProgress.setValue(scwrlProgressCounter.get());
+			scwrlProgress.setString(scwrlProgressCounter + " done");
+			sfchkProgress.setValue(sfckProgressCounter.get());
+			sfchkProgress.setString(sfckProgressCounter + " done");
+			
+			
 		};
 		
-		sfCheckTimer = new Timer(5000,timerListener);
-		sfCheckTimer.setInitialDelay(20000);
+		ActionListener sfcheckEventListener = e -> checkSCWRLfile();
+		
+		ActionListener threadStartEvent = e -> {
+			if (!doneWithCSVs)
+				checkIfLastSFCHECK();
+			if (doneThreading)
+				exitProgram(exitButton);
+		};
 		
 		
-		
+		Timer uiTimer = new Timer(500, uiUpdateListener);
+		sfCheckTimer = new Timer(750, sfcheckEventListener);
+		sfCheckTimer.setInitialDelay(5000);
+		threadStartTimer = new Timer(1000, threadStartEvent);
+		threadStartTimer.setInitialDelay(5000);
 		
 		
 		SFCheckThread.setSfcheckProgram(params.getSFChkexe().toPath());
@@ -382,8 +417,8 @@ public class MainMenu extends JPanel implements ActionListener {
 		scwrlProgress.setStringPainted(true);
 		sfchkProgress.setValue(0);
 		sfchkProgress.setStringPainted(true);
-		scwrlProgressCounter = 0;
-		sfckProgressCounter = 0;
+		scwrlProgressCounter.set(0);
+		sfckProgressCounter.set(0);
 		TableModel chainlist = chainListTable.getModel();
 		LinkedList<Character> chainsToStrip = new LinkedList<>();
 		LinkedList<Character> homologues = new LinkedList<>();
@@ -446,7 +481,7 @@ public class MainMenu extends JPanel implements ActionListener {
 		int threads = params.getThreadLimit();
 //		int ScwrlThreads = (threads / 3 * 2) == 0 ? 1 : threads / 3 * 2;
 		//		int SFCheckThreads = (threads / 3) == 0 ? 1 : threads / 3;
-		executors = Executors.newFixedThreadPool(threads);
+		executors = new ThreadPoolExecutor(threads, threads, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 		//		executorSF = Executors.newFixedThreadPool(SFCheckThreads);
 		ScoringGeneralHelpers.debug = debug.isSelected();
 		
@@ -471,6 +506,7 @@ public class MainMenu extends JPanel implements ActionListener {
 				try {
 					
 					List<List<SCWRLrunner>> SCWRLruns = crysScore.iterateAndGenScwrl();
+					
 					if (SCWRLruns == null) {
 						customOut.writeToFile();
 						scwrlProgress.setValue(scwrlProgress.getMaximum());
@@ -487,17 +523,6 @@ public class MainMenu extends JPanel implements ActionListener {
 						System.out.flush();
 						for (List<SCWRLrunner> SCWRLTasks : SCWRLruns) {
 							for (SCWRLrunner singleRun : SCWRLTasks) {
-								singleRun.addPropertyChangeListener(e -> {
-									if (e.getPropertyName().equals("progress")) {
-										
-										SwingUtilities.invokeLater(() -> {
-											scwrlProgressCounter++;
-											
-										});
-										
-									}
-									
-								});
 								executors.submit(singleRun);
 							}
 						}
@@ -523,6 +548,8 @@ public class MainMenu extends JPanel implements ActionListener {
 		
 		mainThread.execute();
 		sfCheckTimer.start();
+		threadStartTimer.start();
+		uiTimer.start();
 		
 	}
 	
@@ -537,12 +564,10 @@ public class MainMenu extends JPanel implements ActionListener {
 			
 		});
 		
-		finalThreadingRuns.run();
+		finalThreadingRuns.execute();
 		
 		crysScore.deleteChains();
 		System.out.println("Done!");
-		if (silentRun)
-			exitProgram(exitButton);
 		
 		
 	}
@@ -626,57 +651,62 @@ public class MainMenu extends JPanel implements ActionListener {
 		
 	
 		try {
-			if (SCWRLfilesToSFcheck.isEmpty()){
-				return;
+			
+			for (int k = 0; k < 200; k++) {
+				if (!SCWRLfilesToSFcheck.isEmpty()) {
+					SFCheckThread sfThread = new SFCheckThread(SCWRLfilesToSFcheck.pollFirst(), params);
+					sfThread.addPropertyChangeListener(e -> {
+						if (e.getPropertyName().equals("progress")) {
+							
+							SwingUtilities.invokeLater(() -> {
+								sfckProgressCounter.incrementAndGet();
+								
+							});
+							
+						}
+						
+					});
+					executors.submit(sfThread);
+					threadStartTimer.restart();
+				} else {
+					return;
+				}
 			}
 			
-			SFCheckThread sfThread = new SFCheckThread(SCWRLfilesToSFcheck.pollFirst(), params);
-			sfThread.addPropertyChangeListener(e -> {
-				if (e.getPropertyName().equals("progress")) {
-					
-					SwingUtilities.invokeLater(() -> {
-						sfchkProgress.setValue(sfckProgressCounter);
-						sfchkProgress.setString(sfckProgressCounter + " done");
-						checkIfLastSFCHECK();
-					});
-					
-				}
-				
-			});
-			executors.submit(sfThread);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	private void checkIfLastSFCHECK() {
 		
-		if (sfckProgressCounter == totalNumberOfFilesToProcess && sfckProgressCounter > 0) {
-			
-			System.out.println("Removing temporary files");
-			//			crysScore.deleteChains();
-			
-			if (!doneWithCSVs) {
+		if (debug.isSelected()) {
+			System.err.println(executors.getActiveCount() + "active, completed:" + executors.getCompletedTaskCount());
+		}
+		if ((sfckProgressCounter.get() == totalNumberOfFilesToProcess) && (sfckProgressCounter.get() > 0)) {
+				
 				customOut.writeToFile();
 				System.out.println("Processing Results\n");
 				try {
 					RvalAlignerCluster results = crysScore.processSFCheckResults(SFCheckResultSet);
-					runThreadingThread(results);
 					doneWithCSVs = true;
+					runThreadingThread(results);
 					
 				} catch (SfCheckResultError e) {
 					System.out.println("Problem with one of the SFCheck log files:");
 					System.out.println(e.getMessage() + "\n");
+					executors.shutdownNow();
+					exitProgram(exitButton);
 					
 				}
 				System.out.println("Finished Processing Results!\n");
 				System.out.println("Please wait for threading results to appear, then you may exit!");
 				System.out.flush();
-			}
 			
 			
 		}
+			
 		
 	}
 	
@@ -689,40 +719,6 @@ public class MainMenu extends JPanel implements ActionListener {
 			//			System.exit(0);
 			
 			
-		}
-		
-		
-	}
-	
-	public static void main(String[] args) throws FileNotFoundException {
-		if (args.length > 0) {
-			params = new RunParameters(args[0]);
-			params.setSilent(true);
-			silentRun = true;
-			//Schedule a job for the event dispatch thread:
-			//creating and showing this application's GUI.
-			SwingUtilities.invokeLater(() -> {
-				//Turn off metal's use of bold fonts
-				UIManager.put("swing.boldMetal", Boolean.FALSE);
-				try {
-					createAndShowGUISilent();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
-			});
-			
-		} else {
-			params = new RunParameters(null);
-			
-			//Schedule a job for the event dispatch thread:
-			//creating and showing this application's GUI.
-			SwingUtilities.invokeLater(() -> {
-				//Turn off metal's use of bold fonts
-				UIManager.put("swing.boldMetal", Boolean.FALSE);
-				createAndShowGUI();
-				
-			});
 		}
 		
 		

@@ -88,15 +88,12 @@ public class ProteinActions {
 				// write new processed file
 				File fileWithNewRes = new File(ChainFolder.getAbsolutePath() + File.separator + sourceProtein
 						.getFileName() + "_res_" + aminoAcid.getPosition() + "_to_" + newAcid + PDB_EXTENSION);
-				File scwrledWithNewRes = new File(fileWithNewRes.getAbsolutePath().replace(".pdb", "_SCWRLed.pdb"));
+				//				File scwrledWithNewRes = new File(fileWithNewRes.getAbsolutePath().replace(".pdb", "_SCWRLed.pdb"));
 				if (params.isDebug()) {
 					System.out.println("Generating permutation: " + fileWithNewRes.getName());
 				}
-				if (!scwrledWithNewRes.exists()) {
-					if (!fileWithNewRes.exists() || fileWithNewRes.length() == 0) {
-						sourceProtein.writePDB(fileWithNewRes);
-					}
-				}
+				sourceProtein.writePDB(fileWithNewRes);
+				
 
 				//reset to original type
 				aminoAcid.substituteWith(originalAcidType);

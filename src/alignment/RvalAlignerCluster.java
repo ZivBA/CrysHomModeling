@@ -1,5 +1,6 @@
 package alignment;
 
+import ModellingTool.MainMenu;
 import ModellingTool.RunParameters;
 import meshi.util.crossLinking.MySequence;
 import meshi.util.crossLinking.MySequenceList;
@@ -17,14 +18,14 @@ import java.util.stream.Collectors;
 
 public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 	
-	//	private final CustomOutputStream customOut;
-//	private String row;
-//	private final logObj log;
-	private RvalSequence sourceSeq;
 	private final String profileFilePath;
 	private final String fastaSeqPath;
 	private final boolean fullFasta;
 	private final String swissProtPath;
+	//	private final CustomOutputStream customOut;
+	//	private String row;
+	//	private final logObj log;
+	private RvalSequence sourceSeq;
 	private JProgressBar progressBar;
 	private ExecutorService executor;
 
@@ -197,8 +198,8 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
-		publish(100);
-		setProgress(100);
+		publish(progressBar.getMaximum());
+		setProgress(progressBar.getMaximum());
 		System.out.flush();
 		return null;
 	}
@@ -213,6 +214,7 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 		if (progressBar.getValue() == progressBar.getMaximum()){
 			System.out.println("Finished threading all results.");
 			System.out.flush();
+			MainMenu.doneThreading = true;
 		}
 	}
 

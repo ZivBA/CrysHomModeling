@@ -20,6 +20,8 @@ import static ScoreUtilities.ScoringGeneralHelpers.makeSubFolderAt;
  * create these when you want to run SFCheck against some PDB file, then pass the worker to an execution pool for processing.
  */
 public class SFCheckThread extends SwingWorker<String[],Void>  {
+	private static int tempFolderCounter = 0;
+	private static byte[] sfcheckProgram;
 	private RunParameters params;
 	private File SFCheckExe;
 	private File outputFolder;
@@ -27,8 +29,8 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 	private File trueOutput;
 	private File protToProcess;
 	private boolean fakeRun = false;
-	private static int tempFolderCounter = 0;
-	private static byte[] sfcheckProgram;
+	private String[] res;
+	private boolean cifNotSF = false;
 
 	/**
 	 * constructor - gets the PDB file to check and the run parameters object.
@@ -54,7 +56,10 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 
 
 	}
-
+	
+	public static void setSfcheckProgram(Path sfChkexe) throws IOException {
+		sfcheckProgram = Files.readAllBytes(sfChkexe);
+	}
 
 	@Override
 	/**
@@ -85,12 +90,15 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 					BufferedReader reader = Files.newBufferedReader(trueOutput.toPath(), Charset.defaultCharset());
 					LineNumberReader lineReader = new LineNumberReader(reader)
 			){
-				String line = null;
+				String line;
 				while ((line = lineReader.readLine()) != null) {
 					m.reset(line); //reset the input
 					if (m.find()) {
 						result = line.substring(24);
 						break;
+					}
+					if (line.equals("ERROR: it is CIFile of coordinates, not SF")) {
+						cifNotSF = true;
 					}
 				}
 				reader.close();
@@ -98,10 +106,11 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 			catch (IOException ex){
 				ex.printStackTrace();
 			}
+			if (cifNotSF) {
+				return new String[]{"ERROR: it is CIFile of coordinates, not SF"};
+				
+			}
 			return new String[]{protToProcess.getName(),result};
-		}
-		while (protToProcess.length() == 0){
-			Thread.sleep(100);
 		}
 		
 
@@ -149,13 +158,6 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 			System.out.println(e.getMessage());
 		}
 
-//		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(outputFolder.toPath())) {
-//			for (Path path : directoryStream) {
-//				if (!path.toString().endsWith(".log")) {
-//					path.toFile().delete();
-//				}
-//			}
-//		}
 		File fobFile = new File(output+"sfcheck_fob.dat");
 		File phFile = new File(output+"sfcheck_ph.dat");
 		try{
@@ -173,27 +175,23 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 			}
 		}
 		tempDir.delete();
-		return new String[]{protToProcess.getName(),result};
+		res = new String[]{protToProcess.getName(), result};
+		return res;
 
 	}
-
+	
 	@Override
 	/**
 	 * when done, add the result to the SFCheck resultset collection and advance the progress counter.
 	 */
 	protected void done(){
 		try{
-			if (get().length!=0){
-				MainMenu.SFCheckResultSet.add(get());
-				MainMenu.sfckProgressCounter++;
+			
+			MainMenu.SFCheckResultSet.add(get());
 				setProgress(100);
-			}
+			
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-	}
-	
-	public static void setSfcheckProgram(Path sfChkexe) throws IOException {
-		sfcheckProgram = Files.readAllBytes(sfChkexe);
 	}
 }

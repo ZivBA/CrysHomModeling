@@ -27,19 +27,13 @@ import static ScoreUtilities.ScoringGeneralHelpers.csvToMatrix;
  */
 class CRYS_Score {
 	private final RunParameters params;
+	private final ArrayList<File> toDelete = new ArrayList<>();
 	private RvalAlignerCluster alignThread;
-	
-	public SimpleProtein getMyProt() {
-		return myProt;
-	}
-	
 	private SimpleProtein myProt;
 	private char requestedChain;
-	private final ArrayList<File> toDelete = new ArrayList<>();
 	private File fastaFile;
 	private String fastaSequence;
 	private int expectedTotalNumberOfFiles;
-	
 	/**
 	 * Constructor for CRYS_Score main program object.
 	 * Creates the SimpleProtein object and sets the requested chains to process according to Params.
@@ -63,6 +57,10 @@ class CRYS_Score {
 			e.printStackTrace();
 			
 		}
+	}
+	
+	public SimpleProtein getMyProt() {
+		return myProt;
 	}
 	
 	/**
@@ -216,6 +214,9 @@ class CRYS_Score {
 		
 		double[][] chainIntensityMatrix = new double[20][chainLength];
 		for (String[] line : sfCheckResultSet) {
+			if (line[0].equals("ERROR: it is CIFile of coordinates, not SF")) {
+				throw new SfCheckResultError(line[0]);
+			}
 			m.reset(line[0]);
 			if (!m.matches()) {
 				throw new SfCheckResultError(line[0]);
