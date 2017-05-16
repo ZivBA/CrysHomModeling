@@ -80,8 +80,14 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 		System.out.println(mySeqList.fileName().substring(mySeqList.fileName().lastIndexOf("/") + 1, mySeqList.fileName().lastIndexOf(
 				".fasta")) + ":   Structure positions: " + sourceSeq.size() + "   Length of *true* seq: " + mySeqList
 				.get(0).seq().length() + "\n---------------------------------------------------------------------------------------\n");
-		
-		AminoAcidSequence AAseq = new AminoAcidSequence(mySeqList.get(0).seq());
+		AminoAcidSequence AAseq;
+		try {
+			AAseq = new AminoAcidSequence(mySeqList.get(0).seq());
+		} catch (RuntimeException e) {
+			System.out.println("Error: ");
+			System.out.println(e.getMessage());
+			throw e;
+		}
 		NeedlemanWunchSolver NWTrueSeq = new NeedlemanWunchSolver(sourceSeq, AAseq, new RvalScoringScheme());
 		NWTrueSeq.printAlignment();
 //		double sameSeqScore = singleRvalAlignerRun(mySeqList.get(0).seq(), sourceSeq);
@@ -220,7 +226,7 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 
 	@Override
 	protected void done() {
-
+		
 	}
 
 	public void setProgressBar(JProgressBar progressBar) {

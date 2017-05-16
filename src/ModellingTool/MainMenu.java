@@ -386,7 +386,10 @@ public class MainMenu extends JPanel implements ActionListener {
 			
 		};
 		
-		ActionListener sfcheckEventListener = e -> checkSCWRLfile();
+		ActionListener sfcheckEventListener = e -> {
+			if (!SCWRLfilesToSFcheck.isEmpty())
+				checkSCWRLfile();
+		};
 		
 		ActionListener threadStartEvent = e -> {
 			if (!doneWithCSVs)
@@ -396,8 +399,8 @@ public class MainMenu extends JPanel implements ActionListener {
 		};
 		
 		
-		Timer uiTimer = new Timer(500, uiUpdateListener);
-		sfCheckTimer = new Timer(750, sfcheckEventListener);
+		Timer uiTimer = new Timer(250, uiUpdateListener);
+		sfCheckTimer = new Timer(1000, sfcheckEventListener);
 		sfCheckTimer.setInitialDelay(5000);
 		threadStartTimer = new Timer(1000, threadStartEvent);
 		threadStartTimer.setInitialDelay(5000);
@@ -526,6 +529,9 @@ public class MainMenu extends JPanel implements ActionListener {
 								executors.submit(singleRun);
 							}
 						}
+						sfCheckTimer.start();
+						threadStartTimer.start();
+						
 					}
 				} catch (IOException | MissingChainID e) {
 					System.err.println(e.getMessage());
@@ -547,8 +553,7 @@ public class MainMenu extends JPanel implements ActionListener {
 		};
 		
 		mainThread.execute();
-		sfCheckTimer.start();
-		threadStartTimer.start();
+		
 		uiTimer.start();
 		
 	}
@@ -563,9 +568,13 @@ public class MainMenu extends JPanel implements ActionListener {
 			}
 			
 		});
-		
-		finalThreadingRuns.execute();
-		
+		try {
+			finalThreadingRuns.execute();
+		} catch (Exception e) {
+			System.out.println("Error: ");
+			System.out.println(e.getMessage());
+			exitProgram(exitButton);
+		}
 		crysScore.deleteChains();
 		System.out.println("Done!");
 		
@@ -652,9 +661,9 @@ public class MainMenu extends JPanel implements ActionListener {
 	
 		try {
 			
-			for (int k = 0; k < 200; k++) {
+			for (int k = 0; k < 10; k++) {
 				if (!SCWRLfilesToSFcheck.isEmpty()) {
-					SFCheckThread sfThread = new SFCheckThread(SCWRLfilesToSFcheck.pollFirst(), params);
+					SFCheckThread sfThread = new SFCheckThread(SCWRLfilesToSFcheck.pollLast(), params);
 					sfThread.addPropertyChangeListener(e -> {
 						if (e.getPropertyName().equals("progress")) {
 							
