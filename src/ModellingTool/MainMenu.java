@@ -661,7 +661,7 @@ public class MainMenu extends JPanel implements ActionListener {
 	
 		try {
 			
-			for (int k = 0; k < 10; k++) {
+			for (int k = 0; k < 100; k++) {
 				if (!SCWRLfilesToSFcheck.isEmpty()) {
 					SFCheckThread sfThread = new SFCheckThread(SCWRLfilesToSFcheck.pollLast(), params);
 					sfThread.addPropertyChangeListener(e -> {

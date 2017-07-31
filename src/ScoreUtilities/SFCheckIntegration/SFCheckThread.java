@@ -9,6 +9,8 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,7 +22,7 @@ import static ScoreUtilities.ScoringGeneralHelpers.makeSubFolderAt;
  * create these when you want to run SFCheck against some PDB file, then pass the worker to an execution pool for processing.
  */
 public class SFCheckThread extends SwingWorker<String[],Void>  {
-	private static int tempFolderCounter = 0;
+	private static AtomicLong tempFolderCounter = new AtomicLong(0);
 	private static byte[] sfcheckProgram;
 	private RunParameters params;
 	private File SFCheckExe;
@@ -113,9 +115,9 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 			return new String[]{protToProcess.getName(),result};
 		}
 		
-
-		File tempDir = new File(SFCheckExe.getParent()+File.separatorChar+"tempFolder"+tempFolderCounter);
-		tempFolderCounter++;
+		
+		File tempDir = new File(
+				SFCheckExe.getParent() + File.separatorChar + protToProcess.getName() + "_tempFolder" + tempFolderCounter.incrementAndGet());
 		try {
 			tempDir.mkdir();
 		}catch (Exception e){
@@ -125,7 +127,13 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 		Path tempSFcheck = (new File(tempDir.getAbsolutePath()+File.separator+"sfcheck")).toPath();
 		Files.write(tempSFcheck,sfcheckProgram);
 		tempSFcheck.toFile().setExecutable(true);
-		
+		do {
+			int counter = 100;
+			for (int i = 0; i < 1000; i++) {
+				counter++;
+			}
+		}
+		while (!Arrays.equals(Files.readAllBytes(tempSFcheck), sfcheckProgram));
 		Process process = null;
 		try {
 			process = Runtime.getRuntime().exec(tempSFcheck.toAbsolutePath() +

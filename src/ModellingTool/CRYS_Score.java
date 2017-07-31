@@ -235,6 +235,8 @@ class CRYS_Score {
 				myProt.getChain(requestedChain).resIntensityValueMatrix = chainIntensityMatrix;
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
+				chainIntensityMatrix[resNum][position] = 0.0;
+				myProt.getChain(requestedChain).resIntensityValueMatrix = chainIntensityMatrix;
 			}
 		}
 		

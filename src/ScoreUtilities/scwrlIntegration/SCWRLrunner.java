@@ -30,7 +30,8 @@ public class SCWRLrunner extends SwingWorker<String[], Void> {
 		} else {
 			fakeRun = true;
 		}
-
+		
+		
 		if (!scwrlExe.isFile()) {
 			throw new FileNotFoundException(pathToScwrlExe);
 		}
