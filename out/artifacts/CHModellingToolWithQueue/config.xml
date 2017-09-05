@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Modeling Tool default settings</comment>
+<entry key="SWISS-Prot DB Source File">/home/zivben/IdeaProjects/Results/uniprot_sprot_10_2015.fasta</entry>
+<entry key="SFCheck Executable">/home/zivben/IdeaProjects/CrysHomModeller/out/artifacts/CHModellingToolWithQueue/sfcheck</entry>
+<entry key="Chains to Strip">A</entry>
+<entry key="SCWRL Executable">/home/zivben/IdeaProjects/CrysHomModeller/out/artifacts/CHModellingToolWithQueue/SCWRL4/Scwrl4</entry>
+<entry key="Debug Flag">false</entry>
+<entry key="PDB Source File">/home/zivben/IdeaProjects/CrysHomModeller/out/artifacts/CHModellingToolWithQueue/4uw0.pdb</entry>
+<entry key="Homologue Chains"/>
+<entry key="Process Het-Atm">false</entry>
+<entry key="Max threads ratio">2</entry>
+<entry key="thread against all available FASTA sequences, or just input sequence">false</entry>
+<entry key="Map Source File">/home/zivben/IdeaProjects/CrysHomModeller/out/artifacts/CHModellingToolWithQueue/4uw0-sf.cif</entry>
+<entry key="Save Defaults">true</entry>
+</properties>

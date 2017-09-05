@@ -1,6 +1,7 @@
 package ModellingTool;
 
 import ModellingUtilities.molecularElements.SimpleProtein;
+//import ScoreUtilities.EMCheckIntegration.EMCheckThread;
 import ScoreUtilities.SFCheckIntegration.SFCheckThread;
 import ScoreUtilities.ScoringGeneralHelpers;
 import ScoreUtilities.scwrlIntegration.SCWRLrunner;
@@ -31,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MainMenu extends JPanel implements ActionListener {
 	
 	
-	public static final List<String[]> SFCheckResultSet = new LinkedList<>();
+	public static final List<String[]> MapCorrResultSet = new LinkedList<>();
 	public static AtomicInteger scwrlProgressCounter = new AtomicInteger(0);
 	public static ConcurrentLinkedDeque<File> SCWRLfilesToSFcheck;
 	public static boolean doneThreading = false;
@@ -407,6 +408,7 @@ public class MainMenu extends JPanel implements ActionListener {
 		
 		
 		SFCheckThread.setSfcheckProgram(params.getSFChkexe().toPath());
+//		EMCheckThread.setMRCMap(params.getMAPsrc().toPath());
 		customOut.setLogName(params.getProtein().getFileName(), params.getChainToProcess());
 		params.setCustomOutputStream(customOut);
 		System.out.println("");
@@ -698,7 +700,7 @@ public class MainMenu extends JPanel implements ActionListener {
 				customOut.writeToFile();
 				System.out.println("Processing Results\n");
 				try {
-					RvalAlignerCluster results = crysScore.processSFCheckResults(SFCheckResultSet);
+					RvalAlignerCluster results = crysScore.processSFCheckResults(MapCorrResultSet);
 					doneWithCSVs = true;
 					runThreadingThread(results);
 					

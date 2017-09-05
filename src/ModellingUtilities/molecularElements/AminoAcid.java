@@ -87,6 +87,7 @@ public class AminoAcid implements Iterable<SimpleAtom>{
 		try {
 			name = newAcid;
 			for (SimpleAtom atom : atoms) {
+				curAtom = atom.getOriginalString();
 				atom.setaAcidName(newAcid);
 			}
 		}catch (NullPointerException e){

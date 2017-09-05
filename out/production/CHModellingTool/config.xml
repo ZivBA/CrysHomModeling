@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Modeling Tool default settings</comment>
+<entry key="SWISS-Prot DB Source File">/home/zivben/IdeaProjects/Results/uniprot_sprot_10_2015.fasta</entry>
+<entry key="SFCheck Executable">/home/zivben/IdeaProjects/sfcheck</entry>
+<entry key="Chains to Strip">A</entry>
+<entry key="SCWRL Executable">/home/zivben/SCWRL4/Scwrl4</entry>
+<entry key="Debug Flag">false</entry>
+<entry key="PDB Source File">/mnt/155595fa-9f11-4c6f-bf73-2b6f22dcd689/Ziv/allCrysFiles/4s1y.pdb</entry>
+<entry key="Homologue Chains"/>
+<entry key="Process Het-Atm">false</entry>
+<entry key="Max threads ratio">6</entry>
+<entry key="Map Source File">/mnt/155595fa-9f11-4c6f-bf73-2b6f22dcd689/Ziv/allCrysFiles/4s1y-sf.cif</entry>
+<entry key="Chain To Process">A</entry>
+<entry key="thread SWISSPROT">true</entry>
+<entry key="target fasta file">/mnt/155595fa-9f11-4c6f-bf73-2b6f22dcd689/Ziv/allCrysFiles/4S1Y_A.fasta</entry>
+<entry key="Save Defaults">true</entry>
+</properties>

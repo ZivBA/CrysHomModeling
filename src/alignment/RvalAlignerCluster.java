@@ -128,6 +128,7 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 						if (validSwissProt % 512 == 0) {
 							progressBar.setString(validSwissProt + " valid sequences found");
 						}
+						
 						futures.add(executorThreads.submit(() -> {
 							AminoAcidSequence targetSeq = new AminoAcidSequence(mySeq.seq());
 							NeedlemanWunchSolver NW = new NeedlemanWunchSolver(sourceSeq, targetSeq, new RvalScoringScheme());
@@ -138,6 +139,7 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 				}
 
 			}
+			
 			progressBar.setString(validSwissProt + " valid sequences found");
 			progressBar.setMaximum(validSwissProt);
 			int counter = 0;

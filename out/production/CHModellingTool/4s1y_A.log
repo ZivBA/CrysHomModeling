@@ -1,0 +1,11 @@
+Writing to: /home/zivben/IdeaProjects/CrysHomModeller/out/production/CHModellingTool/CrysModeling.log
+Writing to: /home/zivben/IdeaProjects/CrysHomModeller/out/production/CHModellingTool/4s1y_A.log
+
+Starting run!
+
+Saved values to /home/zivben/IdeaProjects/CrysHomModeller/out/production/CHModellingTool/config.xml param file.
+
+Existing CSVs not found or malformed, processing from scratch.
+Starting protein scoring, saving original positions.
+Stripping all amino acid resiudes and setting to ALA for selected chains.
+Iterating all acid permutations and creating SCWRL input files

@@ -195,7 +195,7 @@ public class SFCheckThread extends SwingWorker<String[],Void>  {
 	protected void done(){
 		try{
 			
-			MainMenu.SFCheckResultSet.add(get());
+			MainMenu.MapCorrResultSet.add(get());
 				setProgress(100);
 			
 		} catch (Exception e){

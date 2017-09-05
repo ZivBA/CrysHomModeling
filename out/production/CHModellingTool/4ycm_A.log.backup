@@ -1,0 +1,27 @@
+Writing to: /home/zivben/IdeaProjects/CrysHomModeller/out/production/CHModellingTool/CrysModeling.log
+Writing to: /home/zivben/IdeaProjects/CrysHomModeller/out/production/CHModellingTool/4ycm_A.log
+
+Starting run!
+
+Saved values to /home/zivben/IdeaProjects/CrysHomModeller/out/production/CHModellingTool/config.xml param file.
+
+Starting calculations
+
+
+######  Written buffer to logfile: ######
+ ######  /home/zivben/IdeaProjects/CrysHomModeller/out/production/CHModellingTool/4ycm_A.log  ######
+Finished processing existing files.
+
+Creating CSV Files
+Done!
+Total num of SwissProt seqs: 549215
+
+The gap opening reward is: 20.0
+Number of structural gaps: 0
+working on profile file: /mnt/155595fa-9f11-4c6f-bf73-2b6f22dcd689/Ziv/allCrysFiles/tempCSVs/4ycm_A_profileWithSVM.txt
+
+4YCM_A:   Structure positions: 993   Length of *true* seq: 994
+---------------------------------------------------------------------------------------
+
+Error: 
+Unkown amino acid type: X
