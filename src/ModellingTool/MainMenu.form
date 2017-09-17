@@ -254,7 +254,7 @@
                       </component>
                     </children>
                   </grid>
-                  <grid id="48f51" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="2" vgap="2">
+                  <grid id="48f51" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="2" vgap="2">
                     <margin top="0" left="0" bottom="0" right="0"/>
                     <constraints>
                       <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -271,17 +271,6 @@
                         </constraints>
                         <properties>
                           <text value="SCWRL Executable"/>
-                        </properties>
-                      </component>
-                      <component id="7fb52" class="javax.swing.JButton" binding="SFCheckExecutableButton" default-binding="true">
-                        <constraints>
-                          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false">
-                            <minimum-size width="200" height="-1"/>
-                            <preferred-size width="200" height="-1"/>
-                          </grid>
-                        </constraints>
-                        <properties>
-                          <text value="SFCheck Executable"/>
                         </properties>
                       </component>
                     </children>
@@ -464,7 +453,7 @@
             </properties>
             <border type="none"/>
             <children>
-              <component id="7f304" class="javax.swing.JTextArea" binding="crystallographyModelingToolV0TextArea" default-binding="true">
+              <component id="7f304" class="javax.swing.JTextArea" binding="EMModelingToolV0TextArea" default-binding="true">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="8" fill="0" indent="0" use-parent-layout="false">
                     <minimum-size width="500" height="-1"/>
@@ -477,7 +466,7 @@
                   <enabled value="true"/>
                   <font name="FreeMono" size="20" style="1"/>
                   <lineWrap value="true"/>
-                  <text value="Crystallography Modeling Tool V0.5π"/>
+                  <text value="EM Modeling Tool V0.1"/>
                   <wrapStyleWord value="true"/>
                 </properties>
               </component>
@@ -509,7 +498,7 @@
                   </grid>
                 </constraints>
                 <properties>
-                  <text value="SFCheck"/>
+                  <text value="Scoring"/>
                 </properties>
               </component>
               <component id="dbadd" class="javax.swing.JLabel">
@@ -537,7 +526,7 @@
                   <stringPainted value="true"/>
                 </properties>
               </component>
-              <component id="2c42f" class="javax.swing.JProgressBar" binding="sfchkProgress">
+              <component id="2c42f" class="javax.swing.JProgressBar" binding="mapCheck">
                 <constraints>
                   <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false">
                     <minimum-size width="200" height="-1"/>

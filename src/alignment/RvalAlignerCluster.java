@@ -6,6 +6,10 @@ import meshi.util.crossLinking.MySequence;
 import meshi.util.crossLinking.MySequenceList;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -17,17 +21,19 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
-	
+
+	private static DecimalFormat df6 = new DecimalFormat(".######");
 	private final String profileFilePath;
 	private final String fastaSeqPath;
 	private final boolean fullFasta;
 	private final String swissProtPath;
 	//	private final CustomOutputStream customOut;
-	//	private String row;
+	private String row;
 	//	private final logObj log;
 	private RvalSequence sourceSeq;
 	private JProgressBar progressBar;
 	private ExecutorService executor;
+
 
 	/**
 	 * This ctor creates a worker thread that wraps around the NW aligner method by Nir Kalisman and provides input/output arguments to allow output
@@ -44,8 +50,8 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 		//		customOut = params.getCustomOut();
 //		log = new logObj();
 
-//		row = "Prot+Chain, Input seq length, *True* length, *True* score,Entries with higher score, Best result, \n";
-
+		String row = "Prot+Chain, Input seq length, *True* length, *True* score, matches, Entries with higher score, Best " +
+				"result, \n";
 	}
 
 	private static double singleRvalAlignerRun(String seq, RvalSequence Rseq) {
@@ -63,6 +69,7 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 
 	@Override
 	protected Void doInBackground() throws Exception {
+
 		System.out.flush();
 		MySequenceList swissProt = new MySequenceList(swissProtPath);
 
@@ -92,8 +99,8 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 		NWTrueSeq.printAlignment();
 //		double sameSeqScore = singleRvalAlignerRun(mySeqList.get(0).seq(), sourceSeq);
 		double sameSeqScore = NWTrueSeq.alignmentScore();
-//		row += fastaSeqPath.substring(0, fastaSeqPath.indexOf(".fasta")) + ",";
-//		row += sourceSeq.size() + ", " + mySeqList.get(0).seq().length() + ", " + sameSeqScore + ", ";
+		row += fastaSeqPath.substring(0, fastaSeqPath.indexOf(".fasta")) + ",";
+		row += sourceSeq.size() + ", " + mySeqList.get(0).seq().length() + ", " + df6.format(NWTrueSeq.alignmentScore()) + ", " + NWTrueSeq.bestAlign.matches;
 		System.out.flush();
 
 		if (fullFasta) {
@@ -169,14 +176,14 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 			List<Double[]> betterList = validList.stream().filter(FilterPredicates.largerThan(sameSeqScore)).collect(Collectors.toList());
 			double largest = validList.get(0)[0];
 			int validSeqCounter = validList.size();
-			int worseScore = betterList.size();
+			int numBetterScoring = betterList.size();
 
-			
-//			row += worseScore + ", " + largest + ", ";
+
+			row += numBetterScoring + ", " + largest + ", ";
 //			System.out.println();
-//			log.logString += worseScore + " entries out of valid " + validSeqCounter + " are with better score than the *true*. The " +
+//			log.logString += numBetterScoring + " entries out of valid " + validSeqCounter + " are with better score than the *true*. The " +
 //					"best score that is not the *true* sequence is: " + largest + "\n";
-			System.out.println(worseScore + " entries out of valid " + validSeqCounter + " are with better score than the *true*. The " +
+			System.out.println(numBetterScoring + " entries out of valid " + validSeqCounter + " are with better score than the *true*. The " +
 					"best score that is not the *true* sequence is: " + largest);
 			
 			System.out.println("The top 10 best scores are:");
@@ -190,24 +197,22 @@ public class RvalAlignerCluster extends SwingWorker<Void, Integer> {
 			}
 		}
 
-//		row += "\n";
-//		File resultCSV = new File(profileFilePath.replace(".txt", "_ThreadResults.csv"));
+		row += "\n";
+		File resultCSV = new File(profileFilePath.replace(".txt", "_ThreadResults.csv"));
 //		File logFile = new File(profileFilePath.replace(".txt", "_ThreadLog.txt"));
-//
-//		FileWriter FW;
-//		try {
-//			FW = new FileWriter(resultCSV);
-//			FW.write(row);
-//			FW.close();
-//
-//			FW = new FileWriter(logFile);
-//			FW.write(log.logString);
-//			FW.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+
+		FileWriter FW;
+		try {
+			FW = new FileWriter(resultCSV);
+			FW.write(row);
+			FW.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		publish(progressBar.getMaximum());
 		setProgress(progressBar.getMaximum());
+//		MainMenu.doneThreading = true;
 		System.out.flush();
 		return null;
 	}

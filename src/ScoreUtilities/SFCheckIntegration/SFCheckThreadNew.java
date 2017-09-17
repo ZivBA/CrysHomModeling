@@ -164,7 +164,7 @@
 //	@Override
 //	protected void process(java.util.List<String[]> updateList){
 //		for (String[] result : updateList){
-//			MainMenu.MapCorrResultSet.addAll(updateList);
+//			MainMenu.mapIntensityResults.addAll(updateList);
 //			MainMenu.sfckProgressCounter = checksCounter;
 //			sfchkProgress.setValue(checksCounter / protsToProcess.size() * 100);
 //			sfchkProgress.setString(checksCounter+" Done");

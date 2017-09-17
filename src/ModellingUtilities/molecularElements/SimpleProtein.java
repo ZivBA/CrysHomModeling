@@ -15,19 +15,18 @@ import static ScoreUtilities.ScoringGeneralHelpers.*;
  * Created by Ziv_BA on 30/07/2015.
  */
 public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
-	
+
+	static int warningCounter = 0;
+	private final boolean keepHetAtm;
+	private final List<Integer[]> protOriginalPositions = new ArrayList<>();
+	public int[][] acidDist;
 	private File source;
 	private String fileName;
-	private final boolean keepHetAtm;
-	
-	private final List<Integer[]> protOriginalPositions = new ArrayList<>();
 	private String crysHeader;
 	private List<ProtChain> protChains; // list of the seperate AminoAcid chains
 	private List<String> hetAtm;   // array of the remaining HeteroAtoms.
 	private List<String> footers;   // array of the remaining footer tags.
 	private int numChains;
-	public int[][] acidDist;
-	static int warningCounter=0;
 	
 	/**
 	 * constructor for SimpleProtein from PDB file.</br>
@@ -261,27 +260,22 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 	 * also performs the actual processing from string array to molecular elements.
 	 */
 	public class ProtChain implements Iterable<AminoAcid> {
-		private char chainID;
+		public final double[] signalMaybe = new double[20];
+		private final List<AminoAcid> residues = new ArrayList<>();
 		public double[][] resIntensityValueMatrix;  // Residue intensity values from map
 		public double[][] backBoneIntensityValueMatrix; // BB intensity values from map
-		
 		public double[][] allZvalueMatrix;          // ZScore values for all iterations
 		public double[] trueZvalues;                // zvalues of the residues in the original protein
 		public double[][] backBoneZvalueMatrix;     // ZValues for BB atoms
-		public double[] backBoneZvalue;             // zvalues of the BB atoms in the original protein
-		
+		public double[] BBTrueZvalue;             // zvalues of the BB atoms in the original protein
 		public Integer[] originalPositions;         // acid ID of the original AAcids in the protein
-		
 		public double[] medianTrue = new double[20];
 		public double[] medianFalse = new double[20];
-		
-		public final double[] signalMaybe = new double[20];
-		
-		
-		private final List<AminoAcid> residues = new ArrayList<>();
 		public double[] allMedian;
 		public double[][] newZvalue;
-		
+		public double[] backBoneMedian;
+		private char chainID;
+
 		/**
 		 * constructor creating a chain from a list of strings (assume all strings are for a single chain)
 		 *
@@ -320,7 +314,7 @@ public class SimpleProtein implements Iterable<SimpleProtein.ProtChain> {
 			trueZvalues = new double[residues.size()];
 			//intensity values and z values for backbone
 			backBoneIntensityValueMatrix = new double[20][residues.size()];
-			backBoneZvalue = new double[residues.size()];
+			BBTrueZvalue = new double[residues.size()];
 			
 			Collections.sort(residues, new ResidueComparator());
 			for (int i = 0; i < residues.size(); i++) {

@@ -24,13 +24,14 @@ public class SCWRLrunner extends SwingWorker<String[], Void> {
 		scwrlExe = new File(pathToScwrlExe);
 		this.output = outputFile;
 		this.input = inputFile;
-		if (!output.isFile()) {
+		long inputSize = inputFile.length();
+		if (output.isFile() && output.length() > inputSize * 0.5) {
+			fakeRun = true;
+		} else {
 			output.createNewFile();
 			output.setWritable(true);
-		} else {
-			fakeRun = true;
 		}
-		
+
 		
 		if (!scwrlExe.isFile()) {
 			throw new FileNotFoundException(pathToScwrlExe);
@@ -77,7 +78,7 @@ public class SCWRLrunner extends SwingWorker<String[], Void> {
 	}
 
 	private void prepareNextStep() {
-		MainMenu.SCWRLfilesToSFcheck.add(output);
+		MainMenu.SCWRLfilesToMapCheck.add(output);
 		MainMenu.scwrlProgressCounter.incrementAndGet();
 		setProgress(100);
 	}

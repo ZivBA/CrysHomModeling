@@ -7,21 +7,22 @@ import static ScoreUtilities.ScoringGeneralHelpers.*;
  */
 public class SimpleAtom {
 
-	private final String type;
-	String originalString;
-	private final int serialNumber;
-	private String aAcidName;
 	final char chain;
 	final int aAcidSequence;
-	private final float[] atomCoords;
-	double tempFactor;
-
-	private double atomScore;
 	final boolean isBackBone;
+	private final String type;
+	private final String name;
+	private final int serialNumber;
+	private final float[] atomCoords;
+	String originalString;
+	double tempFactor;
+	private String aAcidName;
+	private double atomScore;
 
 	public SimpleAtom(String atom) {
 
 		originalString = atom;
+		name = atom.substring(ATOM_NAME_START, ATOM_NAME_END + 1);
 		type = atom.substring(ATOM_NAME_START, ATOM_NAME_END + 1);
 		serialNumber = Integer.parseInt(atom.substring(ATOM_NUM_START, ATOM_NUM_END + 1).trim());
 		aAcidName = atom.substring(RES_NAME_START, RES_NAME_END + 1);
@@ -63,6 +64,10 @@ public class SimpleAtom {
 		return atomCoords;
 	}
 
+	public String getName() {
+
+		return name;
+	}
 
 	public String getaAcidName() {
 		return aAcidName;

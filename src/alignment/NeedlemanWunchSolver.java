@@ -5,6 +5,7 @@ public class NeedlemanWunchSolver {
 	protected Sequence seq1;
 	protected Sequence seq2;
 	protected ScoringScheme scoring;
+	protected AlignmentReturnStructure bestAlign;
 	private double[][] Smatrix;
 	private int[][] Dmatrix;
 	private double qualityIndex;
@@ -39,7 +40,7 @@ public class NeedlemanWunchSolver {
 		System.out.println(logAlignment());
 	}
 	private String logAlignment() {
-		AlignmentReturnStructure bestAlign = backtrack(Smatrix.length-1, Smatrix[0].length-1);
+		bestAlign = backtrack(Smatrix.length - 1, Smatrix[0].length - 1);
 		return("Score: " + alignmentScore() + "  Matches: " + bestAlign.matches + "\n" + bestAlign.S1 + "\n" + bestAlign.S2 + "\n" + "Quality " +
 				"Index: " + qualityIndex);
 	}

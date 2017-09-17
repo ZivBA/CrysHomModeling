@@ -67,7 +67,7 @@ public class ProteinActions {
 	public static File iterateAcids(SimpleProtein sourceProtein, RunParameters params) throws IOException {
 
 
-		File outputFolder = makeSubFolderAt(sourceProtein.getSource(), sourceProtein.getFileName());
+		File outputFolder = sourceProtein.getSource().getParentFile();
 		outputFolder = makeSubFolderAt(outputFolder, "_scwrlFiles");
 
 		SimpleProtein.ProtChain chainToProcess = sourceProtein.getChain(params.getChainToProcess());
@@ -93,7 +93,7 @@ public class ProteinActions {
 					System.out.println("Generating permutation: " + fileWithNewRes.getName());
 				}
 				sourceProtein.writePDB(fileWithNewRes);
-				
+
 
 				//reset to original type
 				aminoAcid.substituteWith(originalAcidType);
@@ -101,7 +101,7 @@ public class ProteinActions {
 				for (Character homologChain : homologChains) {
 					sourceProtein.getChain(homologChain).getAminoAcidAt(aminoAcid.getPosition()).substituteWith(originalAcidType);
 					sourceProtein.getChain(homologChain).getAminoAcidAt(aminoAcid.getPosition()).strip();
-					
+
 				}
 
 
